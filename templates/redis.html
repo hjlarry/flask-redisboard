@@ -25,7 +25,7 @@
 
 
 
-    {% for db, db_detail in databases.items %}
+    {% for db, db_detail in databases.items() %}
     <fieldset class="module aligned database-details">
         <h2>
             Database {{ db }}:
@@ -44,7 +44,7 @@
         {% if db_detail.active %}
         <table>
             <tr>
-                <th rowspan="2">Keys({{ db_detail.keys|length }})</th>
+                <th rowspan="2">Keys({{ db_detail.keys()|length }})</th>
                 <th colspan="7">Details</th>
             </tr>
             <tr>
@@ -56,7 +56,7 @@
                 <th>Refs</th>
             </tr>
 
-            {% for key, key_detail in db_detail.keys.items %}
+            {% for key, key_detail in db_detail['keys'].items() %}
             <tr>
                 <td><a href="">{{ key }}</a>
                 </td>
