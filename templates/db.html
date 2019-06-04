@@ -1,0 +1,52 @@
+<div id="content-main">
+    <fieldset class="module aligned database-details">
+        <h2>
+            Database {{ db }}:
+            {{ db_detail.size }} keys,
+            memory:
+            ~{{ db_detail.total_memory|filesizeformat }} total,
+            ~{{ db_detail.volatile_memory|filesizeformat }} volatile,
+            ~{{ db_detail.persistent_memory|filesizeformat }} persistent
+
+            {% if db_detail.active %}
+            &larr;
+            {% else %}
+            &ndash; <a href="">Show details</a>
+            {% endif %}
+        </h2>
+        {% if db_detail.active %}
+        <table>
+            <tr>
+                <th rowspan="2">Keys({{ db_detail.keys()|length }})</th>
+                <th colspan="7">Details</th>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <th>TTL</th>
+                <th>Encoding</th>
+                <th>Items</th>
+                <th>Idletime</th>
+                <th>Refs</th>
+            </tr>
+
+            {% for key, key_detail in db_detail['keys'].items() %}
+            <tr>
+                <td><a href="">{{ key }}</a>
+                </td>
+                {% if key_detail.error %}
+                <td class="error" colspan="6">ERROR: {{ key_detail.error }}</td>
+                {% else %}
+                <td>{{ key_detail.type }}</td>
+                <td>{{ key_detail.ttl }}</td>
+                <td>{{ key_detail.encoding }}</td>
+                <td>{{ key_detail.length }}</td>
+                <td>{{ key_detail.idletime }}</td>
+                <td>{{ key_detail.refcount }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+
+        </table>
+        {% endif %}
+    </fieldset>
+</div>

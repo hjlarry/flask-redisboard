@@ -15,7 +15,6 @@ REDISBOARD_DETAIL_FILTERS = [
         "bgrewriteaof_in_progress",
         "bgsave_in_progress",
         "changes_since_last_save",
-        "db.*",
         "last_save_time",
         "multiplexing_api",
         "total_commands_processed",
@@ -91,17 +90,10 @@ class RedisServer:
 
     @cached_property
     def connection(self):
-        # if self.hostname.startswith("/"):
-        #     unix_socket_path = self.hostname
-        #     hostname = None
-        # else:
-        #     hostname = self.hostname
-        #     unix_socket_path = None
         return redis.Redis(
             # host=hostname,
             # port=self.port,
             # password=self.password,
-            # unix_socket_path=unix_socket_path,
             # socket_timeout=REDISBOARD_SOCKET_TIMEOUT,
             # socket_connect_timeout=REDISBOARD_SOCKET_CONNECT_TIMEOUT,
             # socket_keepalive=REDISBOARD_SOCKET_KEEPALIVE,
@@ -126,6 +118,7 @@ class RedisServer:
                     for k, v in info.items()
                     if name.match(k)
                 ),
+                "db": {k[2:]: v for k, v in info.items() if k.startswith("db")},
                 "slowlog": slowlog,
                 "slowlog_len": slowlog_len,
             }
@@ -318,45 +311,28 @@ def _get_db_summary(server, db):
 
 
 @app.route("/")
-def home():
-    stats = server.stats
-    conn = server.connection
-    database_details = OrderedDict()
-    key_details = None
+def info():
+    return render_template("info.html", stats=server.stats)
 
-    if stats["status"] == "UP":
-        key = request.args.get("key", None)
-        if key:
-            db = request.args.get("db", 0)
-            page = request.args.get("page", 1)
-            key_details = _get_key_details(conn, db, key, page)
-        else:
-            databases = sorted(
-                name[2:] for name in conn.info() if name.startswith("db")
-            )
-            total_size = 0
-            for db in databases:
-                database_details[db] = summary = _get_db_summary(server, db)
-                total_size += summary["size"]
-            if total_size < server.sampling_threshold:
-                for db in databases:
-                    database_details[db].update(
-                        _get_db_details(server, db), active=True
-                    )
-            elif "db" in request.GET:
-                db = request.GET["db"]
-                if db in database_details:
-                    database_details[db].update(
-                        _get_db_details(server, db), active=True
-                    )
-                else:
-                    abort(404)
-    context = {
-        "databases": database_details,
-        "key_details": key_details,
-        "stats": stats,
-    }
-    return render_template("redis.html", **context)
+
+@app.route("/db/<id>")
+def db_detail(id):
+    conn = server.connection
+    total_size = 0
+    db_detail = _get_db_summary(server, id)
+    total_size += db_detail["size"]
+    if total_size < server.sampling_threshold:
+        db_detail.update(_get_db_details(server, id), active=True)
+    return render_template("db.html", db_detail=db_detail, db=id)
+
+
+@app.route("/key/<id>")
+def key_detail(id):
+    conn = server.connection
+    db = request.args.get("db", 0)
+    page = request.args.get("page", 1)
+    key_details = _get_key_details(conn, db, id, page)
+    return render_template("key.html", key_details=key_details)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,36 @@
+<div id="content-main">
+    <table class="server-status">
+        <tr>
+            <th>Status</th>
+            <th>Memory</th>
+            <th>Clients</th>
+            <th>Details</th>
+            <th>DB</th>
+        </tr>
+        <tr>
+            <td>{{ stats.status }}</td>
+            <td>{{ stats.memory }}</td>
+            <td>{{ stats.clients }}</td>
+            <td>
+                <table>
+                    {% for key, value in stats.brief_details.items() %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+            <td>
+                <table>
+                    {% for key, value in stats.db.items() %}
+                    <tr>
+                        <td><a href="{{url_for('db_detail', id=key)}}">{{ key }}</a></td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
