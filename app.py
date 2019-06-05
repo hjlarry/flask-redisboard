@@ -39,7 +39,7 @@ VALUE_GETTERS = {
     "list": lambda conn, key, start=0, end=-1: [
         (pos + start, val) for (pos, val) in enumerate(conn.lrange(key, start, end))
     ],
-    "string": lambda conn, key, *args: [("string", conn.get(key))],
+    "string": lambda conn, key, *args: [("string", _decode_bytes(conn.get(key)))],
     "set": lambda conn, key, *args: list(enumerate(conn.smembers(key))),
     "zset": lambda conn, key, start=0, end=-1: [
         (pos + start, val) for (pos, val) in enumerate(conn.zrange(key, start, end))
@@ -71,9 +71,13 @@ def _fixup_pair(pair):
 
 def _decode_bytes(value):
     if isinstance(value, bytes):
-        return value.decode("utf8")
+        try:
+            result = value.decode()
+        except UnicodeDecodeError:
+            result = value
     else:
-        return value
+        result = value
+    return result
 
 
 def prettify(key, value):
@@ -123,17 +127,7 @@ class RedisServer:
                 "slowlog": slowlog,
                 "slowlog_len": slowlog_len,
             }
-        except redis.exceptions.ConnectionError:
-            return {
-                "status": "DOWN",
-                "clients": "n/a",
-                "memory": "n/a",
-                "details": {},
-                "brief_details": {},
-                "slowlog": [],
-                "slowlog_len": 0,
-            }
-        except redis.exceptions.ResponseError as exc:
+        except Exception as exc:
             return {
                 "status": f"ERROR: {exc.args}",
                 "clients": "n/a",
@@ -179,7 +173,7 @@ def _get_db_details(db, cursor=0, count=50):
     return dict(keys=key_details, cursor=new_cursor)
 
 
-def _get_key_details(conn, db, key, page):
+def _get_key_details(conn, db, key):
     conn.execute_command("SELECT", db)
     details = _get_key_info(conn, key)
     details["db"] = db
@@ -193,48 +187,36 @@ def _get_key_details(conn, db, key, page):
 
 
 def _get_key_info(conn, key):
+    obj_type = conn.type(key)
+    pipe = conn.pipeline()
     try:
-        obj_type = conn.type(key)
-        pipe = conn.pipeline()
-        try:
-            pipe.object("REFCOUNT", key)
-            pipe.object("ENCODING", key)
-            pipe.object("IDLETIME", key)
-            LENGTH_GETTERS[obj_type](pipe, key)
-            pipe.ttl(key)
+        pipe.object("REFCOUNT", key)
+        pipe.object("ENCODING", key)
+        pipe.object("IDLETIME", key)
+        LENGTH_GETTERS[obj_type](pipe, key)
+        pipe.ttl(key)
 
-            refcount, encoding, idletime, obj_length, obj_ttl = pipe.execute()
-        except redis.exceptions.ResponseError as exc:
-            return {
-                "type": obj_type,
-                "name": key,
-                "length": "n/a",
-                "error": str(exc),
-                "ttl": "n/a",
-                "refcount": "n/a",
-                "encoding": "n/a",
-                "idletime": "n/a",
-            }
-        return {
-            "type": _decode_bytes(obj_type),
-            "name": key,
-            "length": obj_length,
-            "ttl": obj_ttl,
-            "refcount": refcount,
-            "encoding": _decode_bytes(encoding),
-            "idletime": idletime,
-        }
+        refcount, encoding, idletime, obj_length, obj_ttl = pipe.execute()
     except redis.exceptions.ResponseError as exc:
         return {
-            "type": "n/a",
-            "length": "n/a",
+            "type": obj_type,
             "name": key,
+            "length": "n/a",
             "error": str(exc),
             "ttl": "n/a",
             "refcount": "n/a",
             "encoding": "n/a",
             "idletime": "n/a",
         }
+    return {
+        "type": _decode_bytes(obj_type),
+        "name": key,
+        "length": obj_length,
+        "ttl": obj_ttl,
+        "refcount": refcount,
+        "encoding": _decode_bytes(encoding),
+        "idletime": idletime,
+    }
 
 
 def _get_db_summary(db):
@@ -313,13 +295,11 @@ def db_detail(id):
     return render_template("db.html", db_detail=db_detail, db=id)
 
 
-@app.route("/key/<id>")
-def key_detail(id):
+@app.route("/db/<id>/<key>")
+def key_detail(id, key):
     conn = server.connection
-    db = request.args.get("db", 0)
-    page = request.args.get("page", 1)
-    key = parse.unquote_plus(id)
-    key_details = _get_key_details(conn, db, key, page)
+    key = parse.unquote_plus(key)
+    key_details = _get_key_details(conn, id, key)
     return render_template("key.html", key_details=key_details)
 
 
