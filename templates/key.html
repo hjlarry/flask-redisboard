@@ -27,7 +27,7 @@
     <fieldset class="module aligned key-data">
         <h2>Key data: {{ key_details.name }}</h2>
         <table>
-            {% for key, value in key_details.data.object_list %}
+            {% for key, value in key_details.data %}
             <tr>
                 <td>{{ key }}</td>
                 <td>{{ value|pprint }}</td>

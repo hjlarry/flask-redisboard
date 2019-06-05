@@ -2,11 +2,12 @@ from flask import Flask, render_template, request, abort
 import re
 import redis
 import datetime
+from urllib import parse
 from collections import OrderedDict
 from werkzeug import cached_property
 
 app = Flask(__name__)
-
+app.jinja_env.filters["quote_plus"] = parse.quote_plus
 
 REDISBOARD_DETAIL_FILTERS = [
     re.compile(name)
@@ -184,6 +185,7 @@ def _get_db_details(server, db):
     else:
         sampling = False
         for key in conn.keys():
+            key = key.decode()
             key_details[key] = _get_key_info(conn, key)
 
     return dict(keys=key_details, sampling=sampling)
@@ -331,7 +333,8 @@ def key_detail(id):
     conn = server.connection
     db = request.args.get("db", 0)
     page = request.args.get("page", 1)
-    key_details = _get_key_details(conn, db, id, page)
+    key = parse.unquote_plus(id)
+    key_details = _get_key_details(conn, db, key, page)
     return render_template("key.html", key_details=key_details)
 
 

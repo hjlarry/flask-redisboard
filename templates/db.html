@@ -17,7 +17,7 @@
         {% if db_detail.active %}
         <table>
             <tr>
-                <th rowspan="2">Keys({{ db_detail.keys()|length }})</th>
+                <th rowspan="2">Keys({{ db_detail|length }})</th>
                 <th colspan="7">Details</th>
             </tr>
             <tr>
@@ -31,7 +31,7 @@
 
             {% for key, key_detail in db_detail['keys'].items() %}
             <tr>
-                <td><a href="">{{ key }}</a>
+                <td><a href="{{url_for('key_detail', id=key|quote_plus)}}">{{ key }}</a>
                 </td>
                 {% if key_detail.error %}
                 <td class="error" colspan="6">ERROR: {{ key_detail.error }}</td>
