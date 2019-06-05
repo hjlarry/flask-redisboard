@@ -167,28 +167,16 @@ class RedisServer:
 server = RedisServer()
 
 
-def _get_db_details(server, db):
+def _get_db_details(db, cursor=0, count=50):
     conn = server.connection
     conn.execute_command("SELECT", db)
-    size = conn.dbsize()
-
+    new_cursor, keys = conn.scan(cursor=cursor, count=count)
     key_details = {}
-    if size > server.sampling_threshold:
-        sampling = True
-        pipe = conn.pipeline()
-        for _ in range(server.sampling_size):
-            pipe.randomkey()
+    for key in keys:
+        key = key.decode()
+        key_details[key] = _get_key_info(conn, key)
 
-        for key in set(pipe.execute()):
-            key_details[key] = _get_key_info(conn, key)
-
-    else:
-        sampling = False
-        for key in conn.keys():
-            key = key.decode()
-            key_details[key] = _get_key_info(conn, key)
-
-    return dict(keys=key_details, sampling=sampling)
+    return dict(keys=key_details, cursor=new_cursor)
 
 
 def _get_key_details(conn, db, key, page):
@@ -249,7 +237,7 @@ def _get_key_info(conn, key):
         }
 
 
-def _get_db_summary(server, db):
+def _get_db_summary(db):
     server.connection.execute_command("SELECT", db)
     pipe = server.connection.pipeline()
 
@@ -319,12 +307,9 @@ def info():
 
 @app.route("/db/<id>")
 def db_detail(id):
-    conn = server.connection
-    total_size = 0
-    db_detail = _get_db_summary(server, id)
-    total_size += db_detail["size"]
-    if total_size < server.sampling_threshold:
-        db_detail.update(_get_db_details(server, id), active=True)
+    db_detail = _get_db_summary(id)
+    cursor = request.args.get("cursor", type=int, default=0)
+    db_detail.update(_get_db_details(id, cursor=cursor))
     return render_template("db.html", db_detail=db_detail, db=id)
 
 

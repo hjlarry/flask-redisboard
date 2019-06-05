@@ -7,17 +7,11 @@
             ~{{ db_detail.total_memory|filesizeformat }} total,
             ~{{ db_detail.volatile_memory|filesizeformat }} volatile,
             ~{{ db_detail.persistent_memory|filesizeformat }} persistent
-
-            {% if db_detail.active %}
-            &larr;
-            {% else %}
-            &ndash; <a href="">Show details</a>
-            {% endif %}
         </h2>
-        {% if db_detail.active %}
+
         <table>
             <tr>
-                <th rowspan="2">Keys({{ db_detail|length }})</th>
+                <th rowspan="2">Keys({{ db_detail['keys']|length }})</th>
                 <th colspan="7">Details</th>
             </tr>
             <tr>
@@ -45,8 +39,7 @@
                 {% endif %}
             </tr>
             {% endfor %}
-
         </table>
-        {% endif %}
     </fieldset>
+    <a href="{{url_for('db_detail', id=db, cursor=db_detail.cursor)}}">下一页</a>
 </div>
