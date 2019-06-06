@@ -302,7 +302,7 @@ def _get_db_summary(db):
 
 @app.route("/")
 def info():
-    return render_template("basetable.html", stats=server.stats)
+    return render_template("serverinfo.html", stats=server.stats)
 
 
 @app.route("/db/<id>/")
