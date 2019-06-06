@@ -2483,7 +2483,6 @@ body.layout-3 .navbar {
 body.layout-3 .navbar.navbar-secondary {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
   background-color: #fff;
-  top: 70px;
   padding: 0;
   z-index: 889; }
   body.layout-3 .navbar.navbar-secondary .navbar-nav > .nav-item.active > .nav-link {
@@ -2569,7 +2568,7 @@ body.layout-3 .navbar.navbar-secondary {
 body.layout-3 .main-content {
   padding-left: 0;
   padding-right: 0;
-  padding-top: 170px; }
+  padding-top: 110px; }
 body.layout-3 .main-footer {
   padding-left: 0;
   padding-right: 0; }

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+        <title>Flask Redis Board</title>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='modules/bootstrap/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='modules/fontawesome/css/all.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='modules/jquery-selectric/selectric.css') }}">
+
+        <!-- Template CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    </head>
+
+    <body class="layout-3">
+        <div id="app">
+            <div class="main-wrapper container">
+                <nav class="navbar navbar-expand-lg navbar-secondary">
+                    <div class="container">
+                        <ul class="navbar-nav">
+
+                            <li class="nav-item ">
+                                <a href="#" class="nav-link"><i class="far fa-heart"></i><span>Server Info</span></a>
+                            </li>
+                            <li class="nav-item dropdown active">
+                                <a href="#" data-toggle="dropdown" class="nav-link has-dropdown"><i
+                                        class="fas fa-fire"></i><span>Connection(db0)</span></a>
+                                <ul class="dropdown-menu">
+                                    <li class="nav-item"><a href="index-0.html" class="nav-link">DB 1</a>
+                                    </li>
+                                    <li class="nav-item"><a href="index.html" class="nav-link">DB 2</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <!-- Main Content -->
+                <div class="main-content">
+                    {% block content %}
+                    {% endblock content %}
+                </div>
+            </div>
+        </div>
+
+        <script src="{{ url_for('static', filename='modules/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='modules/popper.js') }}"></script>
+        <script src="{{ url_for('static', filename='modules/tooltip.js') }}"></script>
+        <script src="{{ url_for('static', filename='modules/bootstrap/js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/stisla.js') }}"></script>
+        <script src="{{ url_for('static', filename='modules/jquery-selectric/jquery.selectric.min.js') }}"></script>
+
+        <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+    </body>
+
+</html>
