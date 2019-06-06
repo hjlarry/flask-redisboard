@@ -30,21 +30,9 @@
             {% for key, value in key_details.data %}
             <tr>
                 <td>{{ key }}</td>
-                <td>{{ value|pprint }}</td>
+                <td>{{ value|pprint |truncate }}</td>
             </tr>
             {% endfor %}
         </table>
-        {% if key_details.data.paginator and key_details.data.paginator.num_pages > 1 %}
-        <p class="paginator">
-            {% for nr in key_details.data.paginator.page_range %}
-            {% if key_details.data.number == nr %}
-            <span class="this-page">{{ nr }}</span>
-            {% else %}
-            <a href="">{{ nr }}</a>
-            {% endif %}
-            {% endfor %}
-            {{ key_details.data.paginator.count }} items
-        </p>
-        {% endif %}
     </fieldset>
 </div>

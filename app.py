@@ -35,16 +35,36 @@ REDISBOARD_SOCKET_KEEPALIVE = None
 REDISBOARD_SOCKET_KEEPALIVE_OPTIONS = None
 
 
+def zset_getter(conn, key):
+    result = conn.zrange(key, start=0, end=-1, withscores=True)
+    result = [(_decode_bytes(item[0]), item[1]) for item in result]
+    return result
+
+
+def set_getter(conn, key):
+    return [
+        (index, _decode_bytes(value))
+        for index, value in enumerate(conn.smembers(key), 1)
+    ]
+
+
+def list_getter(conn, key):
+    return [
+        (index, _decode_bytes(value))
+        for index, value in enumerate(conn.lrange(key, start=0, end=-1), 1)
+    ]
+
+
+def hash_getter(conn, key):
+    return [(_decode_bytes(k), _decode_bytes(v)) for k, v in conn.hgetall(key).items()]
+
+
 VALUE_GETTERS = {
-    "list": lambda conn, key, start=0, end=-1: [
-        (pos + start, val) for (pos, val) in enumerate(conn.lrange(key, start, end))
-    ],
-    "string": lambda conn, key, *args: [("string", _decode_bytes(conn.get(key)))],
-    "set": lambda conn, key, *args: list(enumerate(conn.smembers(key))),
-    "zset": lambda conn, key, start=0, end=-1: [
-        (pos + start, val) for (pos, val) in enumerate(conn.zrange(key, start, end))
-    ],
-    "hash": lambda conn, key, *args: conn.hgetall(key).items(),
+    "list": list_getter,
+    "string": lambda conn, key, *args: [("", _decode_bytes(conn.get(key)))],
+    "set": set_getter,
+    "zset": zset_getter,
+    "hash": hash_getter,
     "n/a": lambda conn, key, *args: (),
 }
 
@@ -177,17 +197,15 @@ def _get_key_details(conn, db, key):
     conn.execute_command("SELECT", db)
     details = _get_key_info(conn, key)
     details["db"] = db
-    if details["type"] in ("list", "zset"):
-        # TODO paginator
-        details["data"] = None
-    else:
-        details["data"] = VALUE_GETTERS[details["type"]](conn, key)
-
+    # TODO paginator for some datatype
+    details["data"] = VALUE_GETTERS[details["type"]](conn, key)
     return details
 
 
 def _get_key_info(conn, key):
     obj_type = conn.type(key)
+    if obj_type == b"none":
+        abort(404)
     pipe = conn.pipeline()
     try:
         pipe.object("REFCOUNT", key)
@@ -287,7 +305,7 @@ def info():
     return render_template("info.html", stats=server.stats)
 
 
-@app.route("/db/<id>")
+@app.route("/db/<id>/")
 def db_detail(id):
     db_detail = _get_db_summary(id)
     cursor = request.args.get("cursor", type=int, default=0)
