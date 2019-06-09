@@ -300,9 +300,32 @@ def _get_db_summary(db):
     )
 
 
+INFO_GROUPS = [
+    "Server",
+    "Clients",
+    "Memory",
+    "Persistence",
+    "Stats",
+    "Replication",
+    "Cpu",
+    "Cluster",
+    "Keyspace",
+]
+
+
+def _get_server_info():
+    pipe = server.connection.pipeline()
+    for part in INFO_GROUPS:
+        pipe.info(part)
+    results = pipe.execute()
+    info = dict(zip(INFO_GROUPS, results))
+    return info
+
+
 @app.route("/")
 def info():
-    return render_template("serverinfo.html", stats=server.stats)
+    info = _get_server_info()
+    return render_template("serverinfo.html", info=info)
 
 
 @app.route("/db/<id>/")
