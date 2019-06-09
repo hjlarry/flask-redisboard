@@ -27,6 +27,7 @@ INFO_GROUPS = [
     "Cpu",
     "Cluster",
     "Keyspace",
+    "Commandstats",
 ]
 
 
@@ -117,6 +118,10 @@ class RedisServer:
             pipe.info(part)
         results = pipe.execute()
         return dict(zip(INFO_GROUPS, results))
+
+    @cached_property
+    def databases(self):
+        return [item[2:] for item in self.info["Keyspace"].keys()]
 
     def slowlog_len(self):
         try:
@@ -260,6 +265,11 @@ def _get_db_summary(db):
     )
 
 
+@app.context_processor
+def inject_param():
+    return {"databases": server.databases}
+
+
 @app.route("/")
 def home():
     return redirect(url_for("info"))
@@ -270,8 +280,9 @@ def info():
     return render_template("serverinfo.html", info=server.info)
 
 
+@app.route("/db/")
 @app.route("/db/<id>/")
-def db_detail(id):
+def db_detail(id=0):
     db_detail = _get_db_summary(id)
     cursor = request.args.get("cursor", type=int, default=0)
     db_detail.update(_get_db_details(id, cursor=cursor))
