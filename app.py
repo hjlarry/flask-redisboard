@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, abort
+from flask import Flask, render_template, request, abort, redirect, url_for
 import re
 import redis
 import datetime
@@ -9,23 +9,7 @@ from werkzeug import cached_property
 app = Flask(__name__)
 app.jinja_env.filters["quote_plus"] = parse.quote_plus
 
-REDISBOARD_DETAIL_FILTERS = [
-    re.compile(name)
-    for name in (
-        "aof_enabled",
-        "bgrewriteaof_in_progress",
-        "bgsave_in_progress",
-        "changes_since_last_save",
-        "last_save_time",
-        "multiplexing_api",
-        "total_commands_processed",
-        "total_connections_received",
-        "uptime_in_days",
-        "uptime_in_seconds",
-        "vm_enabled",
-        "redis_version",
-    )
-]
+
 REDISBOARD_DETAIL_TIMESTAMP_KEYS = ("last_save_time",)
 REDISBOARD_DETAIL_SECONDS_KEYS = ("uptime_in_seconds",)
 REDISBOARD_SLOWLOG_LEN = 10
@@ -33,6 +17,17 @@ REDISBOARD_SOCKET_TIMEOUT = None
 REDISBOARD_SOCKET_CONNECT_TIMEOUT = None
 REDISBOARD_SOCKET_KEEPALIVE = None
 REDISBOARD_SOCKET_KEEPALIVE_OPTIONS = None
+INFO_GROUPS = [
+    "Server",
+    "Clients",
+    "Memory",
+    "Persistence",
+    "Stats",
+    "Replication",
+    "Cpu",
+    "Cluster",
+    "Keyspace",
+]
 
 
 def zset_getter(conn, key):
@@ -100,18 +95,8 @@ def _decode_bytes(value):
     return result
 
 
-def prettify(key, value):
-    if key in REDISBOARD_DETAIL_SECONDS_KEYS:
-        return key, datetime.timedelta(seconds=value)
-    elif key in REDISBOARD_DETAIL_TIMESTAMP_KEYS:
-        return key, datetime.fromtimestamp(value)
-    else:
-        return key, value
-
-
 class RedisServer:
     sampling_threshold = 1000
-    sampling_size = 200
 
     @cached_property
     def connection(self):
@@ -126,37 +111,12 @@ class RedisServer:
         )
 
     @cached_property
-    def stats(self):
-        try:
-            conn = self.connection
-            info = conn.info()
-            slowlog = conn.slowlog_get()
-            slowlog_len = conn.slowlog_len()
-            return {
-                "status": "UP",
-                "details": info,
-                "memory": f"{info['used_memory_human']} (peak: {info.get('used_memory_peak_human', 'n/a')})",
-                "clients": info["connected_clients"],
-                "brief_details": OrderedDict(
-                    prettify(k, v)
-                    for name in REDISBOARD_DETAIL_FILTERS
-                    for k, v in info.items()
-                    if name.match(k)
-                ),
-                "db": {k[2:]: v for k, v in info.items() if k.startswith("db")},
-                "slowlog": slowlog,
-                "slowlog_len": slowlog_len,
-            }
-        except Exception as exc:
-            return {
-                "status": f"ERROR: {exc.args}",
-                "clients": "n/a",
-                "memory": "n/a",
-                "details": {},
-                "brief_details": {},
-                "slowlog": [],
-                "slowlog_len": 0,
-            }
+    def info(self):
+        pipe = server.connection.pipeline()
+        for part in INFO_GROUPS:
+            pipe.info(part)
+        results = pipe.execute()
+        return dict(zip(INFO_GROUPS, results))
 
     def slowlog_len(self):
         try:
@@ -300,32 +260,14 @@ def _get_db_summary(db):
     )
 
 
-INFO_GROUPS = [
-    "Server",
-    "Clients",
-    "Memory",
-    "Persistence",
-    "Stats",
-    "Replication",
-    "Cpu",
-    "Cluster",
-    "Keyspace",
-]
-
-
-def _get_server_info():
-    pipe = server.connection.pipeline()
-    for part in INFO_GROUPS:
-        pipe.info(part)
-    results = pipe.execute()
-    info = dict(zip(INFO_GROUPS, results))
-    return info
-
-
 @app.route("/")
+def home():
+    return redirect(url_for("info"))
+
+
+@app.route("/info/")
 def info():
-    info = _get_server_info()
-    return render_template("serverinfo.html", info=info)
+    return render_template("serverinfo.html", info=server.info)
 
 
 @app.route("/db/<id>/")
@@ -333,7 +275,7 @@ def db_detail(id):
     db_detail = _get_db_summary(id)
     cursor = request.args.get("cursor", type=int, default=0)
     db_detail.update(_get_db_details(id, cursor=cursor))
-    return render_template("db.html", db_detail=db_detail, db=id)
+    return render_template("database.html", db_detail=db_detail, db=id)
 
 
 @app.route("/db/<id>/<key>")
