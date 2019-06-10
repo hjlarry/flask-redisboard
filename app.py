@@ -146,16 +146,17 @@ class RedisServer:
 server = RedisServer()
 
 
-def _get_db_details(db, cursor=0, count=50):
+def _get_db_details(db, cursor=0, keypattern=None, count=20):
     conn = server.connection
     conn.execute_command("SELECT", db)
-    new_cursor, keys = conn.scan(cursor=cursor, count=count)
+    keypattern = f"*{keypattern}*" if keypattern else None
+    cursor, keys = conn.scan(cursor=cursor, match=keypattern, count=count)
     key_details = {}
     for key in keys:
         key = key.decode()
         key_details[key] = _get_key_info(conn, key)
 
-    return dict(keys=key_details, cursor=new_cursor)
+    return dict(key_details=key_details, cursor=cursor)
 
 
 def _get_key_details(conn, db, key):
@@ -292,11 +293,16 @@ badge_class = {
 @app.route("/db/")
 @app.route("/db/<id>/")
 def db_detail(id=0):
-    db_detail = _get_db_summary(id)
+    db_detail = server.info.get("Keyspace").get(f"db{id}")
     cursor = request.args.get("cursor", type=int, default=0)
-    db_detail.update(_get_db_details(id, cursor=cursor))
+    keypattern = request.args.get("keypattern", default="")
+    db_detail.update(_get_db_details(id, cursor=cursor, keypattern=keypattern))
     return render_template(
-        "database.html", db_detail=db_detail, db=id, badge_class=badge_class
+        "database.html",
+        db_detail=db_detail,
+        db=id,
+        badge_class=badge_class,
+        keypattern=keypattern,
     )
 
 
