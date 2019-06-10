@@ -72,17 +72,13 @@ LENGTH_GETTERS = {
     b"hash": lambda conn, key: conn.hlen(key),
 }
 
-
-def safeint(value):
-    try:
-        return int(value)
-    except ValueError:
-        return value
-
-
-def _fixup_pair(pair):
-    a, b = pair
-    return a, safeint(b)
+BADGE_CLASS = {
+    "string": "badge-info",
+    "list": "badge-success",
+    "set": "badge-warning",
+    "hash": "badge-dark",
+    "zset": "badge-light",
+}
 
 
 def _decode_bytes(value):
@@ -97,8 +93,6 @@ def _decode_bytes(value):
 
 
 class RedisServer:
-    sampling_threshold = 1000
-
     @cached_property
     def connection(self):
         return redis.Redis(
@@ -203,69 +197,6 @@ def _get_key_info(conn, key):
     }
 
 
-def _get_db_summary(db):
-    server.connection.execute_command("SELECT", db)
-    pipe = server.connection.pipeline()
-
-    pipe.dbsize()
-    for i in range(server.sampling_threshold):
-        pipe.randomkey()
-
-    results = pipe.execute()
-    size = results.pop(0)
-    keys = sorted(set(results))
-
-    pipe = server.connection.pipeline()
-    for key in keys:
-        pipe.execute_command("DEBUG", "OBJECT", key)
-        pipe.ttl(key)
-
-    total_memory = 0
-    volatile_memory = 0
-    persistent_memory = 0
-    total_keys = 0
-    volatile_keys = 0
-    persistent_keys = 0
-    results = pipe.execute()
-    for key, details, ttl in zip(keys, results[::2], results[1::2]):
-        if not isinstance(details, dict):
-            details = dict(
-                _fixup_pair(i.split(b":")) for i in details.split() if b":" in i
-            )
-
-        length = details[b"serializedlength"] + len(key)
-
-        if ttl:
-            persistent_memory += length
-            persistent_keys += 1
-        else:
-            volatile_memory += length
-            volatile_keys += 1
-        total_memory += length
-        total_keys += 1
-
-    if total_keys:
-        total_memory = (total_memory / total_keys) * size
-    else:
-        total_memory = 0
-
-    if persistent_keys:
-        persistent_memory = (persistent_memory / persistent_keys) * size
-    else:
-        persistent_memory = 0
-
-    if volatile_keys:
-        volatile_memory = (volatile_memory / volatile_keys) * size
-    else:
-        volatile_memory = 0
-    return dict(
-        size=size,
-        total_memory=total_memory,
-        volatile_memory=volatile_memory,
-        persistent_memory=persistent_memory,
-    )
-
-
 @app.context_processor
 def inject_param():
     return {"databases": server.databases}
@@ -281,15 +212,6 @@ def info():
     return render_template("serverinfo.html", info=server.info)
 
 
-badge_class = {
-    "string": "badge-info",
-    "list": "badge-success",
-    "set": "badge-warning",
-    "hash": "badge-dark",
-    "zset": "badge-light",
-}
-
-
 @app.route("/db/")
 @app.route("/db/<id>/")
 def db_detail(id=0):
@@ -301,7 +223,7 @@ def db_detail(id=0):
         "database.html",
         db_detail=db_detail,
         db=id,
-        badge_class=badge_class,
+        badge_class=BADGE_CLASS,
         keypattern=keypattern,
     )
 
