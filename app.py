@@ -280,13 +280,24 @@ def info():
     return render_template("serverinfo.html", info=server.info)
 
 
+badge_class = {
+    "string": "badge-info",
+    "list": "badge-success",
+    "set": "badge-warning",
+    "hash": "badge-dark",
+    "zset": "badge-light",
+}
+
+
 @app.route("/db/")
 @app.route("/db/<id>/")
 def db_detail(id=0):
     db_detail = _get_db_summary(id)
     cursor = request.args.get("cursor", type=int, default=0)
     db_detail.update(_get_db_details(id, cursor=cursor))
-    return render_template("database.html", db_detail=db_detail, db=id)
+    return render_template(
+        "database.html", db_detail=db_detail, db=id, badge_class=badge_class
+    )
 
 
 @app.route("/db/<id>/<key>")
