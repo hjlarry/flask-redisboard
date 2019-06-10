@@ -4,7 +4,7 @@
     <div class="section-header">
         <h1><a href="{{url_for('db_detail', id=db)}}">Database {{db}}</a></h1>
         <div class="section-header-breadcrumb">
-            <div class="breadcrumb-item">Keys: {{ db_detail['keys'] }} </div>
+            <div class="breadcrumb-item">Keys: {{ db_detail._keys}} </div>
             <div class="breadcrumb-item">Expires: {{ db_detail.expires }}</div>
         </div>
     </div>
@@ -64,7 +64,9 @@
                                             <label for="checkbox-1" class="custom-control-label">&nbsp;</label>
                                         </div>
                                     </td>
-                                    <td><a href="{{url_for('key_detail',id=db, key=key|quote_plus)}}">{{ key }}</a></td>
+                                    <td><a href="{{url_for('key_detail',id=db, key=key|quote_plus)}}"
+                                            data-toggle="tooltip"
+                                            data-original-title="{{ key }}">{{ key|truncate(20) }}</a></td>
                                     {% if key_detail.error %}
                                     <td class="error" colspan="6">
                                         ERROR: {{ key_detail.error }}
@@ -85,8 +87,15 @@
                         </div>
                         <div class="card-footer">
                             <ul class="pagination float-right">
-                                <li class="page-item"><a class="page-link"
-                                        href="{{url_for('db_detail', id=db, cursor=db_detail.cursor, keypattern=keypattern)}}">Next</a>
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="{{url_for('db_detail', id=db, cursor=db_detail.cursor, keypattern=keypattern)}}">
+                                        {% if db_detail.cursor == 0 %}
+                                        Index Page
+                                        {% else %}
+                                        Next Page
+                                        {% endif %}
+                                    </a>
                                 </li>
                             </ul>
                         </div>

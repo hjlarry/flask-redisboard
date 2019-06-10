@@ -92,6 +92,18 @@ def _decode_bytes(value):
     return result
 
 
+def ttl_formatter(seconds):
+    if seconds == -1:
+        return "forever"
+    ttl = datetime.timedelta(seconds=seconds)
+    mm, ss = divmod(ttl.seconds, 60)
+    hh, mm = divmod(mm, 60)
+    if ttl.days:
+        return f"{ttl.days}day,{hh}hour,{mm}min,{ss}seconds"
+    else:
+        return f"{hh}hour,{mm}min,{ss}seconds"
+
+
 class RedisServer:
     @cached_property
     def connection(self):
@@ -190,7 +202,7 @@ def _get_key_info(conn, key):
         "type": _decode_bytes(obj_type),
         "name": key,
         "length": obj_length,
-        "ttl": obj_ttl,
+        "ttl": ttl_formatter(obj_ttl),
         "refcount": refcount,
         "encoding": _decode_bytes(encoding),
         "idletime": idletime,
@@ -215,7 +227,10 @@ def info():
 @app.route("/db/")
 @app.route("/db/<id>/")
 def db_detail(id=0):
-    db_detail = server.info.get("Keyspace").get(f"db{id}")
+    db_detail = server.info.get("Keyspace").get(f"db{id}") or dict()
+    if "keys" in db_detail:
+        # 避免和dict.keys()重名
+        db_detail["_keys"] = db_detail["keys"]
     cursor = request.args.get("cursor", type=int, default=0)
     keypattern = request.args.get("keypattern", default="")
     db_detail.update(_get_db_details(id, cursor=cursor, keypattern=keypattern))
