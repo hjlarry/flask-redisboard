@@ -33,3 +33,37 @@ $("[data-checkboxes]").each(function() {
     }
   });
 });
+
+function delete_key(keyname) {
+  $.ajax({
+    method: "delete",
+    url: '/api/' + keyname + '/del',
+    success: function(data) {
+      console.log(data)
+      Cookies.set("toast", "Success Delete!");
+      window.location.assign('/db/0');
+    },
+    error: function(data) {
+      console.log(data)
+      iziToast.error({
+        title: 'Error!',
+        message: data,
+        position: 'topRight'
+      });
+    }
+  });
+  $('#fire-modal-1').modal('hide');
+}
+
+$(function() {
+  var toast = Cookies.get('toast');
+  if (toast) {
+    iziToast.success({
+      title: toast,
+      position: 'topRight',
+      timeout: 3000
+    });
+    Cookies.remove('toast')
+  }
+
+});

@@ -2,13 +2,26 @@
 {% block keydetail %}
 
 <div class="card-body">
-    <div class="form-group">
-        <label>Value</label>
-        <textarea class="form-control">{{key_details.data}}</textarea>
-    </div>
+
 
 </div>
 <div class="card-footer text-right">
-    <button class="btn btn-primary mr-1" type="submit">Submit</button>
+    <table class="table table-striped">
+        <tr>
+            <th class="text-center" style="width: 10%">Index</th>
+            <th class="text-center" style="width: 70%">Value</th>
+            <th class="text-center">Action</th>
+        </tr>
+        {% for index, value in key_details.data %}
+        <tr>
+            <td class="text-center">{{index}}</td>
+            <td class="text-center">{{value}}</td>
+            <td class="text-center">
+                <a href="#" class="btn btn-primary"><i class="fas fa-edit"></i></a>
+                <a href="#" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 </div>
 {% endblock %}

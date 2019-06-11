@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, abort, redirect, url_for
+from flask import Flask, render_template, request, abort, redirect, url_for, jsonify
 import re
 import redis
 import datetime
@@ -251,6 +251,11 @@ def key_detail(id, key):
     return render_template(
         f"keydetail/{key_details['type']}.html", key_details=key_details, db=id
     )
+
+
+@app.route("/api/<key>/del", methods=["DELETE"])
+def key_delete(key):
+    return jsonify({"data": "ok"})
 
 
 if __name__ == "__main__":
