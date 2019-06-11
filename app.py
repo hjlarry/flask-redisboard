@@ -248,7 +248,7 @@ def key_detail(id, key):
     conn = server.connection
     key = parse.unquote_plus(key)
     key_details = _get_key_details(conn, id, key)
-    return render_template("key.html", key_details=key_details)
+    return render_template("keydetail.html", key_details=key_details, db=id)
 
 
 if __name__ == "__main__":

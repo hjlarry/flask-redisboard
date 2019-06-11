@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="section">
+    <div class="section-header">
+        <h1>{{ key_details.name }}</h1>
+        <div class="section-header-button">
+            <a href="#" class="btn btn-primary">Rename</a>
+            <a href="#" class="btn btn-danger">Delete</a>
+        </div>
+        <div class="section-header-breadcrumb">
+            <div class="breadcrumb-item"><a href="{{url_for('db_detail', id=db)}}">DB{{db}}</a></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="card card-statistic-2">
+                <div class="card-icon bg-primary">
+                    <i class="far fa-building"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header">
+                        <h4>Type</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ key_details.type }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="card card-statistic-2">
+                <div class="card-icon bg-danger">
+                    <i class="far fa-clock"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header">
+                        <h4>TTL <a href="#"><i class="far fa-edit"></i></a></h4>
+                    </div>
+                    <div class="card-body">
+                        {{ key_details.ttl }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="card card-statistic-2">
+                <div class="card-icon bg-warning">
+                    <i class="far fa-newspaper"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header">
+                        <h4>Encoding</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ key_details.encoding }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="card card-statistic-2">
+                <div class="card-icon bg-success">
+                    <i class="fas fa-circle"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header">
+                        <h4>Size</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ key_details.length }}
+                        {% if key_details.type == 'string' %}charcters{% else %}items{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Value</label>
+                            <textarea class="form-control">{{key_details.data}}</textarea>
+                        </div>
+
+                    </div>
+                    <div class="card-footer text-right">
+                        <button class="btn btn-primary mr-1" type="submit">Submit</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    </div>
+</section>
+{% endblock %}

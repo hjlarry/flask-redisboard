@@ -170,7 +170,7 @@ select.form-control:not([size]):not([multiple]),
   height: 42px; }
 
 textarea.form-control {
-  height: 64px !important; }
+  height: 400px !important; }
 
 .custom-control {
   line-height: 1.6rem; }
@@ -772,7 +772,7 @@ select.form-control:not([size]):not([multiple]) {
   .card.card-statistic-1 .card-body, .card.card-statistic-2 .card-body {
     padding-top: 0; }
   .card.card-statistic-1 .card-body, .card.card-statistic-2 .card-body {
-    font-size: 26px;
+    font-size: 16px;
     font-weight: 700;
     color: #34395e;
     padding-bottom: 0; }
