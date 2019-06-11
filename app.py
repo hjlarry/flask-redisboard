@@ -57,7 +57,7 @@ def hash_getter(conn, key):
 
 VALUE_GETTERS = {
     "list": list_getter,
-    "string": lambda conn, key, *args: [("", _decode_bytes(conn.get(key)))],
+    "string": lambda conn, key, *args: _decode_bytes(conn.get(key)),
     "set": set_getter,
     "zset": zset_getter,
     "hash": hash_getter,
@@ -248,7 +248,9 @@ def key_detail(id, key):
     conn = server.connection
     key = parse.unquote_plus(key)
     key_details = _get_key_details(conn, id, key)
-    return render_template("keydetail.html", key_details=key_details, db=id)
+    return render_template(
+        f"keydetail/{key_details['type']}.html", key_details=key_details, db=id
+    )
 
 
 if __name__ == "__main__":

@@ -79,17 +79,9 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
+                    {% block keydetail %}
 
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label>Value</label>
-                            <textarea class="form-control">{{key_details.data}}</textarea>
-                        </div>
-
-                    </div>
-                    <div class="card-footer text-right">
-                        <button class="btn btn-primary mr-1" type="submit">Submit</button>
-                    </div>
+                    {% endblock keydetail %}
                 </div>
 
             </div>
