@@ -32,7 +32,7 @@
                                     class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>Connection</span></a>
                                 <ul class="dropdown-menu">
                                     {% for db_id in databases %}
-                                    <li class="nav-item"><a href="{{url_for('db_detail', id=db_id)}}"
+                                    <li class="nav-item"><a href="{{url_for('db_detail', db=db_id)}}"
                                             class="nav-link">DB
                                             {{db_id}}</a>
                                     </li>

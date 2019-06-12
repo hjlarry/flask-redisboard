@@ -34,10 +34,10 @@ $("[data-checkboxes]").each(function() {
   });
 });
 
-function delete_key(keyname) {
+function delete_key(keyname, db) {
   $.ajax({
     method: "delete",
-    url: '/api/' + keyname + '/del',
+    url: '/api/' + db + '/' + keyname + '/del',
     success: function(data) {
       console.log(data)
       Cookies.set("toast", "Success Delete!");
@@ -66,4 +66,72 @@ $(function() {
     Cookies.remove('toast')
   }
 
+});
+
+$("#rename_button").fireModal({
+  title: 'Rename',
+  body: $("#rename-panel"),
+  footerClass: 'bg-whitesmoke',
+  autoFocus: false,
+  onFormSubmit: function(modal, e, form) {
+    // Form Data
+    let form_data = $(e.target).serialize();
+    console.log(form_data)
+
+    // DO AJAX HERE
+    let fake_ajax = setTimeout(function() {
+      form.stopProgress();
+      modal.find('.modal-body').prepend('<div class="alert alert-info">Please check your browser console</div>')
+
+      clearInterval(fake_ajax);
+    }, 1500);
+
+    e.preventDefault();
+  },
+  shown: function(modal, form) {
+    console.log(form)
+  },
+  buttons: [
+    {
+      text: 'Save',
+      submit: true,
+      class: 'btn btn-primary btn-shadow',
+      handler: function(modal) {
+      }
+    }
+  ]
+});
+
+$("#ttl_button").fireModal({
+  title: 'Set TTL',
+  body: $("#ttl-panel"),
+  footerClass: 'bg-whitesmoke',
+  autoFocus: false,
+  onFormSubmit: function(modal, e, form) {
+    // Form Data
+    let form_data = $(e.target).serialize();
+    console.log(form_data)
+
+    // DO AJAX HERE
+    let fake_ajax = setTimeout(function() {
+      form.stopProgress();
+      modal.find('.modal-body').prepend('<div class="alert alert-info">Please check your browser console</div>')
+
+      clearInterval(fake_ajax);
+    }, 1500);
+
+    e.preventDefault();
+  },
+  shown: function(modal, form) {
+    console.log(form)
+  },
+  buttons: [
+    {
+      text: 'Save',
+      submit: true,
+      class: 'btn btn-primary btn-shadow',
+      handler: function(modal) {
+      }
+    }
+  ]
 });

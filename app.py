@@ -225,36 +225,36 @@ def info():
 
 
 @app.route("/db/")
-@app.route("/db/<id>/")
-def db_detail(id=0):
-    db_detail = server.info.get("Keyspace").get(f"db{id}") or dict()
+@app.route("/db/<db>/")
+def db_detail(db=0):
+    db_detail = server.info.get("Keyspace").get(f"db{db}") or dict()
     if "keys" in db_detail:
         # 避免和dict.keys()重名
         db_detail["_keys"] = db_detail["keys"]
     cursor = request.args.get("cursor", type=int, default=0)
     keypattern = request.args.get("keypattern", default="")
-    db_detail.update(_get_db_details(id, cursor=cursor, keypattern=keypattern))
+    db_detail.update(_get_db_details(db, cursor=cursor, keypattern=keypattern))
     return render_template(
         "database.html",
         db_detail=db_detail,
-        db=id,
+        db=db,
         badge_class=BADGE_CLASS,
         keypattern=keypattern,
     )
 
 
-@app.route("/db/<id>/<key>")
-def key_detail(id, key):
+@app.route("/db/<db>/<key>")
+def key_detail(db, key):
     conn = server.connection
     key = parse.unquote_plus(key)
-    key_details = _get_key_details(conn, id, key)
+    key_details = _get_key_details(conn, db, key)
     return render_template(
-        f"keydetail/{key_details['type']}.html", key_details=key_details, db=id
+        f"keydetail/{key_details['type']}.html", key_details=key_details, db=db
     )
 
 
-@app.route("/api/<key>/del", methods=["DELETE"])
-def key_delete(key):
+@app.route("/api/<db>/<key>/del", methods=["DELETE"])
+def key_delete(db, key):
     return jsonify({"data": "ok"})
 
 

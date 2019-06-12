@@ -4,9 +4,9 @@
     <div class="section-header">
         <h1>{{ key_details.name }}</h1>
         <div class="section-header-button">
-            <a href="#" class="btn btn-primary">Rename</a>
+            <a href="#" class="btn btn-primary" id="rename_button">Rename</a>
             <a href="#" class="btn btn-danger" data-confirm="Really?|Do you want to delete {{ key_details.name }}?"
-                data-confirm-yes="delete_key('{{ key_details.name|quote_plus }}')">Delete</a>
+                data-confirm-yes="delete_key('{{ key_details.name|quote_plus }}', '{{db}}')">Delete</a>
         </div>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item"><a href="{{url_for('db_detail', id=db)}}">DB{{db}}</a></div>
@@ -35,7 +35,7 @@
                 </div>
                 <div class="card-wrap">
                     <div class="card-header">
-                        <h4>TTL <a href="#"><i class="far fa-edit"></i></a></h4>
+                        <h4>TTL <a href="#"><i class="far fa-edit" id="ttl_button"></i></a></h4>
                     </div>
                     <div class="card-body">
                         {{ key_details.ttl }}
@@ -91,4 +91,28 @@
 
     </div>
 </section>
+
+<form class="modal-part" id="rename-panel">
+    <div class="form-group">
+        <label>Key</label>
+        <div class="input-group">
+            <input type="text" class="form-control" name="keyname" value="{{ key_details.name }}">
+        </div>
+    </div>
+</form>
+
+<form class="modal-part" id="ttl-panel">
+    <p>Set <code>-1</code> for not expired forever</p>
+    <div class="form-group">
+        <label>Expires</label>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+            <input type="text" class="form-control" name="ttl" placeholder="after * seconds">
+        </div>
+    </div>
+</form>
 {% endblock %}
