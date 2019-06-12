@@ -157,11 +157,7 @@ def _get_db_details(db, cursor=0, keypattern=None, count=20):
     conn.execute_command("SELECT", db)
     keypattern = f"*{keypattern}*" if keypattern else None
     cursor, keys = conn.scan(cursor=cursor, match=keypattern, count=count)
-    key_details = {}
-    for key in keys:
-        key = key.decode()
-        key_details[key] = _get_key_info(conn, key)
-
+    key_details = [_get_key_info(conn, key.decode()) for key in keys]
     return dict(key_details=key_details, cursor=cursor)
 
 
@@ -233,11 +229,16 @@ def db_detail(db=0):
         db_detail["_keys"] = db_detail["keys"]
     cursor = request.args.get("cursor", type=int, default=0)
     keypattern = request.args.get("keypattern", default="")
-    db_detail.update(_get_db_details(db, cursor=cursor, keypattern=keypattern))
+    # 当搜索时使用更大的分页值
+    count = 1000 if keypattern else 20
+    db_detail.update(
+        _get_db_details(db, cursor=cursor, keypattern=keypattern, count=count)
+    )
     return render_template(
         "database.html",
         db_detail=db_detail,
         db=db,
+        count=count,
         badge_class=BADGE_CLASS,
         keypattern=keypattern,
     )

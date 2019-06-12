@@ -41,7 +41,7 @@ function delete_key(keyname, db) {
     success: function(data) {
       console.log(data)
       Cookies.set("toast", "Success Delete!");
-      window.location.assign('/db/0');
+      window.location.assign('/db/' + db);
     },
     error: function(data) {
       console.log(data)

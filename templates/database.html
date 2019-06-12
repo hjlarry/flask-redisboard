@@ -59,7 +59,7 @@
                                     <th class="text-center">Size</th>
                                     <th>Action</th>
                                 </tr>
-                                {% for key, key_detail in db_detail['key_details'].items() %}
+                                {% for key_detail in db_detail['key_details'] %}
                                 <tr>
                                     <td class="p-0 text-center">
                                         <div class="custom-checkbox custom-control">
@@ -68,9 +68,10 @@
                                             <label for="checkbox-1" class="custom-control-label">&nbsp;</label>
                                         </div>
                                     </td>
-                                    <td><a href="{{url_for('key_detail',db=db, key=key|quote_plus)}}"
+                                    <td><a href="{{url_for('key_detail',db=db, key=key_detail.name|quote_plus)}}"
                                             data-toggle="tooltip"
-                                            data-original-title="{{ key }}">{{ key|truncate(20) }}</a></td>
+                                            data-original-title="{{ key_detail.name }}">{{ key_detail.name|truncate(20) }}</a>
+                                    </td>
                                     {% if key_detail.error %}
                                     <td class="error" colspan="6">
                                         ERROR: {{ key_detail.error }}
@@ -83,13 +84,16 @@
                                     <td class="text-center">{{ key_detail.encoding }}</td>
                                     <td class="text-center">{{ key_detail.ttl }}</td>
                                     <td class="text-center">{{ key_detail.length }}</td>
-                                    <td><a href="#" class="btn btn-danger"><i class="fas fa-trash"></i></a></td>
+                                    <td><a href="#" class="btn btn-danger"
+                                            data-confirm="Really?|Do you want to delete {{ key_detail.name }}?"
+                                            data-confirm-yes="delete_key('{{ key_detail.name|quote_plus }}', '{{db}}')"><i
+                                                class="fas fa-trash"></i></a></td>
                                     {% endif %}
                                 </tr>
                                 {% endfor %}
                             </table>
                         </div>
-                        {% if db_detail._keys > 20 %}
+                        {% if db_detail._keys > count %}
                         <div class="card-footer">
                             <ul class="pagination float-right">
                                 <li class="page-item">
