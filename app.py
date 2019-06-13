@@ -211,6 +211,11 @@ def inject_param():
     return {"databases": server.databases}
 
 
+@app.errorhandler(Exception)
+def handle_exception(error):
+    return jsonify({"code": 999, "error": str(error)})
+
+
 @app.route("/")
 def home():
     return redirect(url_for("info"))
@@ -283,9 +288,15 @@ def key_rename(db, key):
     )
 
 
-@app.route("/api/<db>/key/<key>/ttl", methods=["POST"])
+@app.route("/db/<db>/<key>/ttl", methods=["POST"])
 def key_set_ttl(db, key):
-    return jsonify({"data": "ok"})
+    conn.execute_command("SELECT", db)
+    ori_key = parse.unquote_plus(key)
+    if int(request.form["ttl"]) <= 0:
+        conn.persist(ori_key)
+    else:
+        conn.expire(ori_key, request.form["ttl"])
+    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 
 if __name__ == "__main__":

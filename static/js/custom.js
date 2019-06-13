@@ -134,15 +134,27 @@ $("#ttl_button").fireModal({
   footerClass: 'bg-whitesmoke',
   autoFocus: false,
   onFormSubmit: function(modal, e, form) {
-    // Form Data
     let form_data = $(e.target).serialize();
     console.log(form_data)
-
-    // DO AJAX HERE
+    $.ajax({
+      method: "post",
+      url: e.target.baseURI + '/ttl',
+      data: form_data,
+      success: function(data) {
+        if (data.code == 0) {
+          Cookies.set("toast", "Set TTL Success!");
+          window.location.assign(data.data);
+        } else {
+          iziToast.error({
+            title: 'Error!',
+            message: data.error,
+            position: 'topRight'
+          });
+        }
+      }
+    });
     let fake_ajax = setTimeout(function() {
       form.stopProgress();
-      modal.find('.modal-body').prepend('<div class="alert alert-info">Please check your browser console</div>')
-
       clearInterval(fake_ajax);
     }, 1500);
 
