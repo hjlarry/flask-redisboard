@@ -225,9 +225,8 @@ def info():
 @app.route("/db/<db>/")
 def db_detail(db=0):
     db_detail = server.info.get("Keyspace").get(f"db{db}") or dict()
-    if "keys" in db_detail:
-        # 避免和dict.keys()重名
-        db_detail["_keys"] = db_detail["keys"]
+    # 避免和dict.keys()重名
+    db_detail["_keys"] = db_detail["keys"] if "keys" in db_detail else 0
     cursor = request.args.get("cursor", type=int, default=0)
     keypattern = request.args.get("keypattern", default="")
     # 当搜索时使用更大的分页值
@@ -270,12 +269,18 @@ def key_delete(db, key):
     return jsonify({"data": "ok"})
 
 
-@app.route("/api/<db>/key/<key>/rename", methods=["POST"])
+@app.route("/db/<db>/<key>/rename", methods=["POST"])
 def key_rename(db, key):
     conn.execute_command("SELECT", db)
     key = parse.unquote_plus(key)
-    print(request.form)
-    return jsonify({"data": "ok"})
+    new_name = request.form["keyname"]
+    conn.rename(key, new_name)
+    return jsonify(
+        {
+            "code": 0,
+            "data": url_for("key_detail", db=db, key=parse.quote_plus(new_name)),
+        }
+    )
 
 
 @app.route("/api/<db>/key/<key>/ttl", methods=["POST"])

@@ -95,19 +95,24 @@ $("#rename_button").fireModal({
   footerClass: 'bg-whitesmoke',
   autoFocus: false,
   onFormSubmit: function(modal, e, form) {
-    // Form Data
     let form_data = $(e.target).serialize();
-    console.log(form_data)
-
-    // DO AJAX HERE
-    let fake_ajax = setTimeout(function() {
-      form.stopProgress();
-      modal.find('.modal-body').prepend('<div class="alert alert-info">Please check your browser console</div>')
-
-      clearInterval(fake_ajax);
-    }, 1500);
-
-    e.preventDefault();
+    $.ajax({
+      method: "post",
+      url: e.target.baseURI + '/rename',
+      data: form_data,
+      success: function(data) {
+        Cookies.set("toast", "Rename Success!");
+        window.location.assign(data.data);
+      },
+      error: function(data) {
+        console.log(data)
+        iziToast.error({
+          title: 'Error!',
+          message: data,
+          position: 'topRight'
+        });
+      }
+    });
   },
   shown: function(modal, form) {
     console.log(form)
