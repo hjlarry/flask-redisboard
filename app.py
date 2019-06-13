@@ -150,6 +150,7 @@ class RedisServer:
 
 
 server = RedisServer()
+conn = server.connection
 
 
 def _get_db_details(db, cursor=0, keypattern=None, count=20):
@@ -254,8 +255,31 @@ def key_detail(db, key):
     )
 
 
-@app.route("/api/<db>/<key>/del", methods=["DELETE"])
+@app.route("/api/<db>/flush", methods=["DELETE"])
+def db_flush(db):
+    conn.execute_command("SELECT", db)
+    conn.flushdb()
+    return jsonify({"data": "ok"})
+
+
+@app.route("/api/<db>/key/<key>/del", methods=["DELETE"])
 def key_delete(db, key):
+    conn.execute_command("SELECT", db)
+    key = parse.unquote_plus(key)
+    conn.delete(key)
+    return jsonify({"data": "ok"})
+
+
+@app.route("/api/<db>/key/<key>/rename", methods=["POST"])
+def key_rename(db, key):
+    conn.execute_command("SELECT", db)
+    key = parse.unquote_plus(key)
+    print(request.form)
+    return jsonify({"data": "ok"})
+
+
+@app.route("/api/<db>/key/<key>/ttl", methods=["POST"])
+def key_set_ttl(db, key):
     return jsonify({"data": "ok"})
 
 

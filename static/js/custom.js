@@ -37,10 +37,31 @@ $("[data-checkboxes]").each(function() {
 function delete_key(keyname, db) {
   $.ajax({
     method: "delete",
-    url: '/api/' + db + '/' + keyname + '/del',
+    url: '/api/' + db + '/key/' + keyname + '/del',
     success: function(data) {
       console.log(data)
-      Cookies.set("toast", "Success Delete!");
+      Cookies.set("toast", "Delete Success!");
+      window.location.assign('/db/' + db);
+    },
+    error: function(data) {
+      console.log(data)
+      iziToast.error({
+        title: 'Error!',
+        message: data,
+        position: 'topRight'
+      });
+    }
+  });
+  $('#fire-modal-1').modal('hide');
+}
+
+function flush_db(db) {
+  $.ajax({
+    method: "delete",
+    url: '/api/' + db + '/flush',
+    success: function(data) {
+      console.log(data)
+      Cookies.set("toast", "Flush DB Success!");
       window.location.assign('/db/' + db);
     },
     error: function(data) {
