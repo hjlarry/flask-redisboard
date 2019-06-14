@@ -249,6 +249,21 @@ def db_detail(db=0):
     )
 
 
+@app.route("/db/<db>/batchttl", methods=["POST"])
+def batch_set_ttl(db):
+    conn.execute_command("SELECT", db)
+    pipe = server.connection.pipeline()
+    keys = request.json.get("keys", [])
+    ttl = int(request.json.get("ttl", -1))
+    for key in keys:
+        if ttl <= 0:
+            pipe.persist(key)
+        else:
+            pipe.expire(key, ttl)
+    pipe.execute()
+    return jsonify({"code": 0, "data": url_for("db_detail", db=db)})
+
+
 @app.route("/db/<db>/<key>", methods=["GET", "POST"])
 def key_detail(db, key):
     conn = server.connection

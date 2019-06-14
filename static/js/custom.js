@@ -175,12 +175,7 @@ $("#ttl_button").fireModal({
 });
 
 $('.selectric').selectric().on('change', function() {
-  console.log($(this).val());
   var operation = $(this).val();
-  var keyname = new Array();
-  $('input[name="id"]:checked').each(function() {
-    keyname.push($(this).data("keyname"));
-  });
   if (operation == "expire") {
     $("#batchTTL").modal('show');
   } else if (operation == "delete") {
@@ -188,3 +183,32 @@ $('.selectric').selectric().on('change', function() {
   }
 });
 
+$('#batch-ttl-btn').click(function() {
+  var keyname = new Array();
+  $('input[name="id"]:checked').each(function() {
+    keyname.push($(this).data("keyname"));
+  });
+  var ttl = $('input[name="batchttl"]').val();
+  var data = {
+    'keys': keyname,
+    'ttl': ttl,
+  };
+  $.ajax({
+    method: "post",
+    contentType: 'application/json',
+    url: 'batchttl',
+    data: JSON.stringify(data),
+    success: function(data) {
+      if (data.code == 0) {
+        Cookies.set("toast", "Set TTL Success!");
+        window.location.assign(data.data);
+      } else {
+        iziToast.error({
+          title: 'Error!',
+          message: data.error,
+          position: 'topRight'
+        });
+      }
+    }
+  });
+});
