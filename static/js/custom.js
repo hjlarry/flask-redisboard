@@ -173,3 +173,18 @@ $("#ttl_button").fireModal({
     }
   ]
 });
+
+$('.selectric').selectric().on('change', function() {
+  console.log($(this).val());
+  var operation = $(this).val();
+  var keyname = new Array();
+  $('input[name="id"]:checked').each(function() {
+    keyname.push($(this).data("keyname"));
+  });
+  if (operation == "expire") {
+    $("#batchTTL").modal('show');
+  } else if (operation == "delete") {
+    $("#batchDel").modal('show');
+  }
+});
+

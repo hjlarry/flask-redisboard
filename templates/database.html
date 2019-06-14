@@ -23,8 +23,8 @@
                             <div class="float-left">
                                 <select class="form-control selectric">
                                     <option>Action For Selected</option>
-                                    <option>Expire</option>
-                                    <option>Delete</option>
+                                    <option value="expire">Expire</option>
+                                    <option value="delete">Delete</option>
                                 </select>
                             </div>
                         </h4>
@@ -65,8 +65,10 @@
                                     <td class="p-0 text-center">
                                         <div class="custom-checkbox custom-control">
                                             <input type="checkbox" data-checkboxes="mygroup"
-                                                class="custom-control-input" id="checkbox-1">
-                                            <label for="checkbox-1" class="custom-control-label">&nbsp;</label>
+                                                class="custom-control-input" id="checkbox-{{loop.index}}" name="id"
+                                                data-keyname="{{key_detail.name}}">
+                                            <label for="checkbox-{{loop.index}}"
+                                                class="custom-control-label">&nbsp;</label>
                                         </div>
                                     </td>
                                     <td><a href="{{url_for('key_detail',db=db, key=key_detail.name|quote_plus)}}"
@@ -117,4 +119,55 @@
 
     </div>
 </section>
+<div class="modal fade" tabindex="-1" role="dialog" id="batchTTL">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Set TTL For These Keys</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <p>Set <code>-1</code> for not expired forever</p>
+                    <div class="form-group">
+                        <label>Expires</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                            <input type="text" class="form-control" name="ttl" placeholder="after * seconds">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-whitesmoke br">
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="batchDel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Are you sure to delete these keys</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer br">
+                <button type="button" class="btn btn-danger">Yes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
