@@ -249,10 +249,12 @@ def db_detail(db=0):
     )
 
 
-@app.route("/db/<db>/<key>")
+@app.route("/db/<db>/<key>", methods=["GET", "POST"])
 def key_detail(db, key):
     conn = server.connection
     key = parse.unquote_plus(key)
+    if request.method == "POST":
+        conn.set(key, request.form["value"])
     key_details = _get_key_details(conn, db, key)
     return render_template(
         f"keydetail/{key_details['type']}.html", key_details=key_details, db=db
