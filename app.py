@@ -264,6 +264,14 @@ def batch_set_ttl(db):
     return jsonify({"code": 0, "data": url_for("db_detail", db=db)})
 
 
+@app.route("/db/<db>/batchdel", methods=["POST"])
+def batch_delete_keys(db):
+    conn.execute_command("SELECT", db)
+    keys = request.json.get("keys", [])
+    conn.delete(*keys)
+    return jsonify({"code": 0, "data": url_for("db_detail", db=db)})
+
+
 @app.route("/db/<db>/<key>", methods=["GET", "POST"])
 def key_detail(db, key):
     conn = server.connection

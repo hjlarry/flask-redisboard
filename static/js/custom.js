@@ -176,7 +176,17 @@ $("#ttl_button").fireModal({
 
 $('.selectric').selectric().on('change', function() {
   var operation = $(this).val();
-  if (operation == "expire") {
+  var keyname = new Array();
+  $('input[name="id"]:checked').each(function() {
+    keyname.push($(this).data("keyname"));
+  });
+  if (Array.isArray(keyname) && keyname.length === 0) {
+    iziToast.error({
+      title: 'Error!',
+      message: 'Please choose at least an item',
+      position: 'topRight'
+    });
+  } else if (operation == "expire") {
     $("#batchTTL").modal('show');
   } else if (operation == "delete") {
     $("#batchDel").modal('show');
@@ -201,6 +211,34 @@ $('#batch-ttl-btn').click(function() {
     success: function(data) {
       if (data.code == 0) {
         Cookies.set("toast", "Set TTL Success!");
+        window.location.assign(data.data);
+      } else {
+        iziToast.error({
+          title: 'Error!',
+          message: data.error,
+          position: 'topRight'
+        });
+      }
+    }
+  });
+});
+
+$('#batch-del-btn').click(function() {
+  var keyname = new Array();
+  $('input[name="id"]:checked').each(function() {
+    keyname.push($(this).data("keyname"));
+  });
+  var data = {
+    'keys': keyname
+  };
+  $.ajax({
+    method: "post",
+    contentType: 'application/json',
+    url: 'batchdel',
+    data: JSON.stringify(data),
+    success: function(data) {
+      if (data.code == 0) {
+        Cookies.set("toast", "Delete Keys Success!");
         window.location.assign(data.data);
       } else {
         iziToast.error({

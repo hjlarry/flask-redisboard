@@ -129,20 +129,18 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
-                    <p>Set <code>-1</code> for not expired forever</p>
-                    <div class="form-group">
-                        <label>Expires</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">
-                                    <i class="fas fa-clock"></i>
-                                </div>
+                <p>Set <code>-1</code> for not expired forever</p>
+                <div class="form-group">
+                    <label>Expires</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <i class="fas fa-clock"></i>
                             </div>
-                            <input type="text" class="form-control" name="batchttl" placeholder="after * seconds">
                         </div>
+                        <input type="text" class="form-control" name="batchttl" placeholder="after * seconds">
                     </div>
-                </form>
+                </div>
             </div>
             <div class="modal-footer bg-whitesmoke br">
                 <button type="button" class="btn btn-primary" id="batch-ttl-btn">Save</button>
@@ -164,7 +162,7 @@
 
             </div>
             <div class="modal-footer br">
-                <button type="button" class="btn btn-danger">Yes</button>
+                <button type="button" class="btn btn-danger" id="batch-del-btn">Yes</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
         </div>
