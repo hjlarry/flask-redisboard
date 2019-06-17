@@ -47,7 +47,7 @@ def set_getter(conn, key):
 def list_getter(conn, key):
     return [
         (index, _decode_bytes(value))
-        for index, value in enumerate(conn.lrange(key, start=0, end=-1))
+        for index, value in enumerate(conn.lrange(key, start=0, end=1000))
     ]
 
 
@@ -305,10 +305,11 @@ def key_rename(db, key):
 def key_set_ttl(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
-    if int(request.form["ttl"]) <= 0:
+    ttl = request.form.get("ttl", type=int)
+    if ttl <= 0:
         conn.persist(ori_key)
     else:
-        conn.expire(ori_key, request.form["ttl"])
+        conn.expire(ori_key, ttl)
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 
@@ -316,9 +317,10 @@ def key_set_ttl(db, key):
 def list_add_value(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
-    if int(request.form["position"]) == 0:
+    position = request.form.get("position", type=int)
+    if position == 0:
         conn.lpush(ori_key, request.form["value"])
-    elif int(request.form["position"]) == -1:
+    elif position == -1:
         conn.rpush(ori_key, request.form["value"])
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
@@ -330,6 +332,15 @@ def list_edit_value(db, key):
     index = request.args.get("index", type=int, default=0)
     conn.lset(ori_key, index, request.form["value"])
     return redirect(url_for("key_detail", db=db, key=key))
+
+
+@app.route("/db/<db>/<key>/list_rem", methods=["POST"])
+def list_rem_value(db, key):
+    conn.execute_command("SELECT", db)
+    ori_key = parse.unquote_plus(key)
+    count = request.form.get("count", type=int, default=1)
+    conn.lrem(ori_key, count, request.form["value"])
+    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 
 @app.route("/db/<db>/<key>", methods=["GET", "POST"])

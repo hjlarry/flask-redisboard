@@ -4,15 +4,15 @@
     <h4></h4>
     <div class="card-header-action">
         <a href="#" class="btn btn-primary" id="list-add-btn"><i class="fas fa-plus"></i>Add</a>
-        <a href="#" class="btn btn-danger" id="list-del-btn"><i class="fas fa-trash"></i>Del</a>
+        <a href="#" class="btn btn-danger" id="list-del-btn"><i class="fas fa-trash"></i>Remove</a>
     </div>
 </div>
 <div class="card-body">
     <table class="table table-striped">
         <tr>
-            <th class="text-center" style="width: 10%">Index</th>
-            <th class="text-center" style="width: 70%">Value</th>
-            <!-- <th class="text-center">Action</th> -->
+            <th class="text-center" style="width: 10%" data-toggle="tooltip"
+                title="To view list values is an O(n) operation, only can priview front 1000 data">Index</th>
+            <th class="text-center" style="width: 90%">Value</th>
         </tr>
         {% for index, value in key_details.data %}
         <tr>
@@ -57,4 +57,25 @@
         </div>
     </div>
 </form>
-{% endblock %}
+
+<form class="modal-part" id="list-del-value">
+    <div class="form-group">
+        <label>Value</label>
+        <div class="input-group">
+            <!-- TODO 没有验证值为空 -->
+            <input type="text" class="form-control" name="value" placeholder="del which value?">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="d-block">Count</label>
+        <div class="input-group">
+            <input type="text" class="form-control" name="count" placeholder="del how many value?">
+        </div>
+        <small class="form-text text-muted">
+            count > 0: Remove elements equal to value moving from head to tail.<br />
+            count
+            < 0: Remove elements equal to value moving from tail to head.<br />
+            count = 0: Remove all elements equal to
+            value.</small>
+    </div>
+</form> {% endblock %}
