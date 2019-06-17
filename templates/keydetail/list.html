@@ -1,11 +1,13 @@
 {% extends "keydetail/base.html" %}
 {% block keydetail %}
-
-<div class="card-body">
-
-
+<div class="card-header">
+    <h4></h4>
+    <div class="card-header-action">
+        <a href="#" class="btn btn-primary" id="list-add-btn"><i class="fas fa-plus"></i>Add</a>
+        <a href="#" class="btn btn-danger" id="list-del-btn"><i class="fas fa-trash"></i>Del</a>
+    </div>
 </div>
-<div class="card-footer text-right">
+<div class="card-body">
     <table class="table table-striped">
         <tr>
             <th class="text-center" style="width: 10%">Index</th>
@@ -18,10 +20,32 @@
             <td class="text-center">{{value}}</td>
             <td class="text-center">
                 <a href="#" class="btn btn-primary"><i class="fas fa-edit"></i></a>
-                <a href="#" class="btn btn-danger"><i class="fas fa-trash"></i></a>
             </td>
         </tr>
         {% endfor %}
     </table>
 </div>
+<div class="card-footer text-right">
+
+</div>
+
+<form class="modal-part" id="list-add-value">
+    <div class="form-group">
+        <label class="d-block">Position</label>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="position" value="0" id="inlineradio1" checked>
+            <label class="form-check-label" for="inlineradio1">Head</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="position" value="-1" id="inlineradio2">
+            <label class="form-check-label" for="inlineradio2">Tail</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Value</label>
+        <div class="input-group">
+            <input type="text" class="form-control" name="value">
+        </div>
+    </div>
+</form>
 {% endblock %}

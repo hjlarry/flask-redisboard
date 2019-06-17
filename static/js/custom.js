@@ -173,6 +173,51 @@ $("#ttl_button").fireModal({
     }
   ]
 });
+$("#list-add-btn").fireModal({
+  title: 'Add value to current list',
+  body: $("#list-add-value"),
+  footerClass: 'bg-whitesmoke',
+  autoFocus: false,
+  onFormSubmit: function(modal, e, form) {
+    let form_data = $(e.target).serialize();
+    console.log(form_data)
+    $.ajax({
+      method: "post",
+      url: e.target.baseURI + '/list_add',
+      data: form_data,
+      success: function(data) {
+        if (data.code == 0) {
+          Cookies.set("toast", "Add Value Success!");
+          window.location.assign(data.data);
+        } else {
+          iziToast.error({
+            title: 'Error!',
+            message: data.error,
+            position: 'topRight'
+          });
+        }
+      }
+    });
+    let fake_ajax = setTimeout(function() {
+      form.stopProgress();
+      clearInterval(fake_ajax);
+    }, 1500);
+
+    e.preventDefault();
+  },
+  shown: function(modal, form) {
+    console.log(form)
+  },
+  buttons: [
+    {
+      text: 'Save',
+      submit: true,
+      class: 'btn btn-primary btn-shadow',
+      handler: function(modal) {
+      }
+    }
+  ]
+});
 
 $('.selectric').selectric().on('change', function() {
   var operation = $(this).val();

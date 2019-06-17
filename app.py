@@ -272,18 +272,6 @@ def batch_delete_keys(db):
     return jsonify({"code": 0, "data": url_for("db_detail", db=db)})
 
 
-@app.route("/db/<db>/<key>", methods=["GET", "POST"])
-def key_detail(db, key):
-    conn = server.connection
-    key = parse.unquote_plus(key)
-    if request.method == "POST":
-        conn.set(key, request.form["value"])
-    key_details = _get_key_details(conn, db, key)
-    return render_template(
-        f"keydetail/{key_details['type']}.html", key_details=key_details, db=db
-    )
-
-
 @app.route("/api/<db>/flush", methods=["DELETE"])
 def db_flush(db):
     conn.execute_command("SELECT", db)
@@ -322,6 +310,29 @@ def key_set_ttl(db, key):
     else:
         conn.expire(ori_key, request.form["ttl"])
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+
+
+@app.route("/db/<db>/<key>/list_add", methods=["POST"])
+def list_add_value(db, key):
+    conn.execute_command("SELECT", db)
+    ori_key = parse.unquote_plus(key)
+    if int(request.form["position"]) == 0:
+        conn.lpush(ori_key, request.form["value"])
+    elif int(request.form["position"]) == -1:
+        conn.rpush(ori_key, request.form["value"])
+    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+
+
+@app.route("/db/<db>/<key>", methods=["GET", "POST"])
+def key_detail(db, key):
+    conn = server.connection
+    key = parse.unquote_plus(key)
+    if request.method == "POST":
+        conn.set(key, request.form["value"])
+    key_details = _get_key_details(conn, db, key)
+    return render_template(
+        f"keydetail/{key_details['type']}.html", key_details=key_details, db=db
+    )
 
 
 if __name__ == "__main__":
