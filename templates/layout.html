@@ -60,7 +60,8 @@
         <script src="{{ url_for('static', filename='modules/izitoast/js/iziToast.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
         <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
-
+        {% block js %}
+        {% endblock js %}
     </body>
 
 </html>
