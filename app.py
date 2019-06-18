@@ -6,102 +6,11 @@ from urllib import parse
 from collections import OrderedDict
 from werkzeug import cached_property
 
+from config import INFO_GROUPS, REDISBOARD_SLOWLOG_LEN, BADGE_CLASS
+from utils import VALUE_GETTERS, LENGTH_GETTERS, _decode_bytes, ttl_formatter
+
 app = Flask(__name__)
 app.jinja_env.filters["quote_plus"] = parse.quote_plus
-
-
-REDISBOARD_DETAIL_TIMESTAMP_KEYS = ("last_save_time",)
-REDISBOARD_DETAIL_SECONDS_KEYS = ("uptime_in_seconds",)
-REDISBOARD_SLOWLOG_LEN = 10
-REDISBOARD_SOCKET_TIMEOUT = None
-REDISBOARD_SOCKET_CONNECT_TIMEOUT = None
-REDISBOARD_SOCKET_KEEPALIVE = None
-REDISBOARD_SOCKET_KEEPALIVE_OPTIONS = None
-INFO_GROUPS = [
-    "Server",
-    "Clients",
-    "Memory",
-    "Persistence",
-    "Stats",
-    "Replication",
-    "Cpu",
-    "Cluster",
-    "Keyspace",
-    "Commandstats",
-]
-
-
-def zset_getter(conn, key):
-    result = conn.zrange(key, start=0, end=-1, withscores=True)
-    result = [(_decode_bytes(item[0]), item[1]) for item in result]
-    return result
-
-
-def set_getter(conn, key):
-    return [
-        (index, _decode_bytes(value))
-        for index, value in enumerate(conn.smembers(key), 1)
-    ]
-
-
-def list_getter(conn, key):
-    return [
-        (index, _decode_bytes(value))
-        for index, value in enumerate(conn.lrange(key, start=0, end=1000))
-    ]
-
-
-def hash_getter(conn, key):
-    return [(_decode_bytes(k), _decode_bytes(v)) for k, v in conn.hgetall(key).items()]
-
-
-VALUE_GETTERS = {
-    "list": list_getter,
-    "string": lambda conn, key, *args: _decode_bytes(conn.get(key)),
-    "set": set_getter,
-    "zset": zset_getter,
-    "hash": hash_getter,
-    "n/a": lambda conn, key, *args: (),
-}
-
-LENGTH_GETTERS = {
-    b"list": lambda conn, key: conn.llen(key),
-    b"string": lambda conn, key: conn.strlen(key),
-    b"set": lambda conn, key: conn.scard(key),
-    b"zset": lambda conn, key: conn.zcount(key, "-inf", "+inf"),
-    b"hash": lambda conn, key: conn.hlen(key),
-}
-
-BADGE_CLASS = {
-    "string": "badge-info",
-    "list": "badge-success",
-    "set": "badge-warning",
-    "hash": "badge-dark",
-    "zset": "badge-light",
-}
-
-
-def _decode_bytes(value):
-    if isinstance(value, bytes):
-        try:
-            result = value.decode()
-        except UnicodeDecodeError:
-            result = value
-    else:
-        result = value
-    return result
-
-
-def ttl_formatter(seconds):
-    if seconds == -1:
-        return "forever"
-    ttl = datetime.timedelta(seconds=seconds)
-    mm, ss = divmod(ttl.seconds, 60)
-    hh, mm = divmod(mm, 60)
-    if ttl.days:
-        return f"{ttl.days}day,{hh}hour,{mm}min,{ss}seconds"
-    else:
-        return f"{hh}hour,{mm}min,{ss}seconds"
 
 
 class RedisServer:
@@ -229,7 +138,8 @@ def info():
 @app.route("/db/")
 @app.route("/db/<db>/")
 def db_detail(db=0):
-    db_detail = server.info.get("Keyspace").get(f"db{db}") or dict()
+    # 需要复制一下，以免影响到原info中的信息
+    db_detail = server.info.get("Keyspace").get(f"db{db}").copy() or dict()
     # 避免和dict.keys()重名
     db_detail["_keys"] = db_detail["keys"] if "keys" in db_detail else 0
     cursor = request.args.get("cursor", type=int, default=0)
