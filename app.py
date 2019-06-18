@@ -253,6 +253,36 @@ def list_rem_value(db, key):
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 
+@app.route("/db/<db>/<key>/hash_add", methods=["POST"])
+def hash_add_value(db, key):
+    conn.execute_command("SELECT", db)
+    ori_key = parse.unquote_plus(key)
+    index = request.form.get("index", "")
+    exists = conn.hexists(ori_key, index)
+    if exists:
+        return jsonify({"code": 1, "error": "can`t add value to an exist key!"})
+    else:
+        conn.hset(ori_key, index, request.form.get("value"))
+    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+
+
+@app.route("/db/<db>/<key>/hash_edit", methods=["POST"])
+def hash_edit_value(db, key):
+    conn.execute_command("SELECT", db)
+    ori_key = parse.unquote_plus(key)
+    index = request.args.get("index")
+    conn.hset(ori_key, index, request.form["value"])
+    return redirect(url_for("key_detail", db=db, key=key))
+
+
+@app.route("/db/<db>/<key>/hash_rem", methods=["POST"])
+def hash_rem_value(db, key):
+    conn.execute_command("SELECT", db)
+    ori_key = parse.unquote_plus(key)
+    conn.hdel(ori_key, request.form["index"])
+    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+
+
 @app.route("/db/<db>/<key>", methods=["GET", "POST"])
 def key_detail(db, key):
     conn = server.connection
