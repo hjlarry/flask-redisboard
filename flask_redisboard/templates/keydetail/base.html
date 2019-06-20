@@ -9,7 +9,7 @@
                 data-confirm-yes="delete_key('{{ key_details.name|quote_plus }}', '{{db}}')">Delete</a>
         </div>
         <div class="section-header-breadcrumb">
-            <div class="breadcrumb-item"><a href="{{url_for('db_detail', db=db)}}">DB{{db}}</a></div>
+            <div class="breadcrumb-item"><a href="{{url_for('redisboard.db_detail', db=db)}}">DB{{db}}</a></div>
         </div>
     </div>
     <div class="row">
@@ -119,5 +119,5 @@
 
 
 {% block js %}
-<script src="{{ url_for('static', filename='js/keydetail.js') }}"></script>
+<script src="{{ url_for('redisboard.static', filename='js/keydetail.js') }}"></script>
 {% endblock %}

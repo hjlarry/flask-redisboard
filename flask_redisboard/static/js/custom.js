@@ -22,11 +22,11 @@ $(function() {
 function delete_key(keyname, db) {
   $.ajax({
     method: "delete",
-    url: '/api/' + db + '/key/' + keyname + '/del',
+    url: '/redisboard/db/' + db + '/key/' + keyname + '/del',
     success: function(data) {
       console.log(data)
       Cookies.set("toast", "Delete Success!");
-      window.location.assign('/db/' + db);
+      window.location.assign('/redisboard/db/' + db);
     },
     error: function(data) {
       console.log(data)

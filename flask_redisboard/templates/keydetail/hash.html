@@ -17,7 +17,8 @@
         <tr>
             <td class="text-center">{{index}}</td>
             <td class="align-middle">
-                <form action="{{url_for('hash_edit_value', db=db, key=key_details.name|quote_plus, index=index)}}"
+                <form
+                    action="{{url_for('redisboard.hash_edit_value', db=db, key=key_details.name|quote_plus, index=index)}}"
                     method="POST">
                     <div class="input-group ">
                         <input type="text" class="form-control" value="{{value}}" aria-label="" name="value">

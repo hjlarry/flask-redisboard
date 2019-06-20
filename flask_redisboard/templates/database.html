@@ -2,7 +2,7 @@
 {% block content %}
 <section class="section">
     <div class="section-header">
-        <h1><a href="{{url_for('db_detail', db=db)}}">Database {{db}}</a></h1>
+        <h1><a href="{{url_for('redisboard.db_detail', db=db)}}">Database {{db}}</a></h1>
         <div class="section-header-button">
             <a href="#" class="btn btn-primary">Add New</a>
             <a href="#" class="btn btn-danger" data-confirm="Are you sure to flush DB{{db}}?"
@@ -72,7 +72,7 @@
                                                 class="custom-control-label">&nbsp;</label>
                                         </div>
                                     </td>
-                                    <td><a href="{{url_for('key_detail',db=db, key=key_detail.name|quote_plus)}}"
+                                    <td><a href="{{url_for('redisboard.key_detail',db=db, key=key_detail.name|quote_plus)}}"
                                             data-toggle="tooltip"
                                             data-original-title="{{ key_detail.name }}">{{ key_detail.name|truncate(20) }}</a>
                                     </td>
@@ -102,7 +102,7 @@
                             <ul class="pagination float-right">
                                 <li class="page-item">
                                     <a class="page-link"
-                                        href="{{url_for('db_detail', db=db, cursor=db_detail.cursor, keypattern=keypattern)}}">
+                                        href="{{url_for('redisboard.db_detail', db=db, cursor=db_detail.cursor, keypattern=keypattern)}}">
                                         {% if db_detail.cursor == 0 %}
                                         Index Page
                                         {% else %}
@@ -173,5 +173,5 @@
 
 
 {% block js %}
-<script src="{{ url_for('static', filename='js/database.js') }}"></script>
+<script src="{{ url_for('redisboard.static', filename='js/database.js') }}"></script>
 {% endblock %}

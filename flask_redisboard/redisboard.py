@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, abort, redirect, url_for, jsonify
-import re
+from flask import render_template, request, abort, redirect, url_for, jsonify, Blueprint
+
 import redis
 import datetime
 from urllib import parse
@@ -7,13 +7,16 @@ from collections import OrderedDict
 from werkzeug import cached_property
 
 
-from flask_redisboard import module
 from flask_redisboard.config import INFO_GROUPS, REDISBOARD_SLOWLOG_LEN, BADGE_CLASS
 from flask_redisboard.utils import (
     VALUE_GETTERS,
     LENGTH_GETTERS,
     _decode_bytes,
     ttl_formatter,
+)
+
+module = Blueprint(
+    "redisboard", __name__, template_folder="templates", static_folder="static"
 )
 
 
@@ -123,14 +126,14 @@ def inject_param():
     return {"databases": server.databases}
 
 
-@module.errorhandler(Exception)
-def handle_exception(error):
-    return jsonify({"code": 999, "error": str(error)})
+# @module.errorhandler(Exception)
+# def handle_exception(error):
+#     return jsonify({"code": 999, "error": str(error)})
 
 
 @module.route("/")
 def home():
-    return redirect(url_for("info"))
+    return redirect(url_for("redisboard.info"))
 
 
 @module.route("/info/")
@@ -174,7 +177,7 @@ def batch_set_ttl(db):
         else:
             pipe.expire(key, ttl)
     pipe.execute()
-    return jsonify({"code": 0, "data": url_for("db_detail", db=db)})
+    return jsonify({"code": 0, "data": url_for("redisboard.db_detail", db=db)})
 
 
 @module.route("/db/<db>/batchdel", methods=["POST"])
@@ -182,17 +185,17 @@ def batch_delete_keys(db):
     conn.execute_command("SELECT", db)
     keys = request.json.get("keys", [])
     conn.delete(*keys)
-    return jsonify({"code": 0, "data": url_for("db_detail", db=db)})
+    return jsonify({"code": 0, "data": url_for("redisboard.db_detail", db=db)})
 
 
-@module.route("/api/<db>/flush", methods=["DELETE"])
+@module.route("/db/<db>/flush", methods=["DELETE"])
 def db_flush(db):
     conn.execute_command("SELECT", db)
     conn.flushdb()
     return jsonify({"data": "ok"})
 
 
-@module.route("/api/<db>/key/<key>/del", methods=["DELETE"])
+@module.route("/db/<db>/key/<key>/del", methods=["DELETE"])
 def key_delete(db, key):
     conn.execute_command("SELECT", db)
     key = parse.unquote_plus(key)
@@ -209,7 +212,9 @@ def key_rename(db, key):
     return jsonify(
         {
             "code": 0,
-            "data": url_for("key_detail", db=db, key=parse.quote_plus(new_name)),
+            "data": url_for(
+                "redisboard.key_detail", db=db, key=parse.quote_plus(new_name)
+            ),
         }
     )
 
@@ -223,7 +228,9 @@ def key_set_ttl(db, key):
         conn.persist(ori_key)
     else:
         conn.expire(ori_key, ttl)
-    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+    return jsonify(
+        {"code": 0, "data": url_for("redisboard.key_detail", db=db, key=key)}
+    )
 
 
 @module.route("/db/<db>/<key>/list_add", methods=["POST"])
@@ -235,7 +242,9 @@ def list_add_value(db, key):
         conn.lpush(ori_key, request.form["value"])
     elif position == -1:
         conn.rpush(ori_key, request.form["value"])
-    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+    return jsonify(
+        {"code": 0, "data": url_for("redisboard.key_detail", db=db, key=key)}
+    )
 
 
 @module.route("/db/<db>/<key>/list_edit", methods=["POST"])
@@ -244,7 +253,7 @@ def list_edit_value(db, key):
     ori_key = parse.unquote_plus(key)
     index = request.args.get("index", type=int, default=0)
     conn.lset(ori_key, index, request.form["value"])
-    return redirect(url_for("key_detail", db=db, key=key))
+    return redirect(url_for("redisboard.key_detail", db=db, key=key))
 
 
 @module.route("/db/<db>/<key>/list_rem", methods=["POST"])
@@ -253,7 +262,9 @@ def list_rem_value(db, key):
     ori_key = parse.unquote_plus(key)
     count = request.form.get("count", type=int, default=1)
     conn.lrem(ori_key, count, request.form["value"])
-    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+    return jsonify(
+        {"code": 0, "data": url_for("redisboard.key_detail", db=db, key=key)}
+    )
 
 
 @module.route("/db/<db>/<key>/hash_add", methods=["POST"])
@@ -266,7 +277,9 @@ def hash_add_value(db, key):
         return jsonify({"code": 1, "error": "can`t add value to an exist key!"})
     else:
         conn.hset(ori_key, index, request.form.get("value"))
-    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+    return jsonify(
+        {"code": 0, "data": url_for("redisboard.key_detail", db=db, key=key)}
+    )
 
 
 @module.route("/db/<db>/<key>/hash_edit", methods=["POST"])
@@ -275,7 +288,7 @@ def hash_edit_value(db, key):
     ori_key = parse.unquote_plus(key)
     index = request.args.get("index")
     conn.hset(ori_key, index, request.form["value"])
-    return redirect(url_for("key_detail", db=db, key=key))
+    return redirect(url_for("redisboard.key_detail", db=db, key=key))
 
 
 @module.route("/db/<db>/<key>/hash_rem", methods=["POST"])
@@ -283,7 +296,9 @@ def hash_rem_value(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
     conn.hdel(ori_key, request.form["index"])
-    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+    return jsonify(
+        {"code": 0, "data": url_for("redisboard.key_detail", db=db, key=key)}
+    )
 
 
 @module.route("/db/<db>/<key>/set_add", methods=["POST"])
@@ -294,7 +309,9 @@ def set_add_value(db, key):
     value = [item.strip() for item in value.split(",")]
     result = conn.sadd(ori_key, *value)
     # TODO response how many successed operate
-    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+    return jsonify(
+        {"code": 0, "data": url_for("redisboard.key_detail", db=db, key=key)}
+    )
 
 
 @module.route("/db/<db>/<key>/set_rem", methods=["POST"])
@@ -304,7 +321,9 @@ def set_rem_value(db, key):
     value = request.form.get("value", "")
     value = [item.strip() for item in value.split(",")]
     conn.srem(ori_key, *value)
-    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+    return jsonify(
+        {"code": 0, "data": url_for("redisboard.key_detail", db=db, key=key)}
+    )
 
 
 @module.route("/db/<db>/<key>", methods=["GET", "POST"])

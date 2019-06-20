@@ -30,11 +30,11 @@ $("[data-checkboxes]").each(function() {
 function flush_db(db) {
   $.ajax({
     method: "delete",
-    url: '/api/' + db + '/flush',
+    url: '/redisboard/db/' + db + '/flush',
     success: function(data) {
       console.log(data)
       Cookies.set("toast", "Flush DB Success!");
-      window.location.assign('/db/' + db);
+      window.location.assign('/redisboard/db/' + db);
     },
     error: function(data) {
       console.log(data)
