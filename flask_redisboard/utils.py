@@ -1,5 +1,8 @@
 import datetime
 
+from flask import abort
+import redis
+
 
 def zset_getter(conn, key):
     result = conn.zrange(key, start=0, end=-1, withscores=True)
@@ -61,3 +64,54 @@ def ttl_formatter(seconds):
         return f"{ttl.days}day,{hh}hour,{mm}min,{ss}seconds"
     else:
         return f"{hh}hour,{mm}min,{ss}seconds"
+
+
+def _get_db_details(conn, db, cursor=0, keypattern=None, count=20):
+    conn.execute_command("SELECT", db)
+    keypattern = f"*{keypattern}*" if keypattern else None
+    cursor, keys = conn.scan(cursor=cursor, match=keypattern, count=count)
+    key_details = [_get_key_info(conn, key.decode()) for key in keys]
+    return dict(key_details=key_details, cursor=cursor)
+
+
+def _get_key_details(conn, db, key):
+    conn.execute_command("SELECT", db)
+    details = _get_key_info(conn, key)
+    details["db"] = db
+    details["data"] = VALUE_GETTERS[details["type"]](conn, key)
+    return details
+
+
+def _get_key_info(conn, key):
+    obj_type = conn.type(key)
+    if obj_type == b"none":
+        abort(404)
+    pipe = conn.pipeline()
+    try:
+        pipe.object("REFCOUNT", key)
+        pipe.object("ENCODING", key)
+        pipe.object("IDLETIME", key)
+        LENGTH_GETTERS[obj_type](pipe, key)
+        pipe.ttl(key)
+
+        refcount, encoding, idletime, obj_length, obj_ttl = pipe.execute()
+    except redis.exceptions.ResponseError as exc:
+        return {
+            "type": obj_type,
+            "name": key,
+            "length": "n/a",
+            "error": str(exc),
+            "ttl": "n/a",
+            "refcount": "n/a",
+            "encoding": "n/a",
+            "idletime": "n/a",
+        }
+    return {
+        "type": _decode_bytes(obj_type),
+        "name": key,
+        "length": obj_length,
+        "ttl": ttl_formatter(obj_ttl),
+        "refcount": refcount,
+        "encoding": _decode_bytes(encoding),
+        "idletime": idletime,
+    }

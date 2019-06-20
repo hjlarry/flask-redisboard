@@ -1,41 +1,70 @@
-from flask import render_template, request, abort, redirect, url_for, jsonify, Blueprint
+import datetime
+from collections import OrderedDict
 
 import redis
-import datetime
-from urllib import parse
-from collections import OrderedDict
-from werkzeug import cached_property
-
-
-from flask_redisboard.config import INFO_GROUPS, REDISBOARD_SLOWLOG_LEN, BADGE_CLASS
-from flask_redisboard.utils import (
-    VALUE_GETTERS,
-    LENGTH_GETTERS,
-    _decode_bytes,
-    ttl_formatter,
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
 )
+from werkzeug import cached_property, url_quote_plus, url_unquote_plus
+
+from flask_redisboard.utils import _get_db_details, _get_key_details, _get_key_info
 
 module = Blueprint(
-    "redisboard", __name__, template_folder="templates", static_folder="static"
+    "redisboard",
+    __name__,
+    template_folder="templates/redisboard",
+    static_folder="static",
 )
+BADGE_CLASS = {
+    "string": "badge-info",
+    "list": "badge-success",
+    "set": "badge-warning",
+    "hash": "badge-dark",
+    "zset": "badge-light",
+}
+
+INFO_GROUPS = [
+    "Server",
+    "Clients",
+    "Memory",
+    "Persistence",
+    "Stats",
+    "Replication",
+    "Cpu",
+    "Cluster",
+    "Keyspace",
+    "Commandstats",
+]
 
 
 class RedisServer:
     @cached_property
     def connection(self):
         return redis.Redis(
-            # host=hostname,
-            # port=self.port,
-            # password=self.password,
-            # socket_timeout=REDISBOARD_SOCKET_TIMEOUT,
-            # socket_connect_timeout=REDISBOARD_SOCKET_CONNECT_TIMEOUT,
-            # socket_keepalive=REDISBOARD_SOCKET_KEEPALIVE,
-            # socket_keepalive_options=REDISBOARD_SOCKET_KEEPALIVE_OPTIONS,
+            host=current_app.config["REDIS_HOST"],
+            port=current_app.config["REDIS_PORT"],
+            password=current_app.config["REDIS_PASSWORD"],
+            unix_socket_path=current_app.config["REDIS_UNIX_SOCKET_PATH"],
+            socket_timeout=current_app.config["REDISBOARD_SOCKET_TIMEOUT"],
+            socket_connect_timeout=current_app.config[
+                "REDISBOARD_SOCKET_CONNECT_TIMEOUT"
+            ],
+            socket_keepalive=current_app.config["REDISBOARD_SOCKET_KEEPALIVE"],
+            socket_keepalive_options=current_app.config[
+                "REDISBOARD_SOCKET_KEEPALIVE_OPTIONS"
+            ],
         )
 
     @cached_property
     def info(self):
-        pipe = server.connection.pipeline()
+        pipe = self.connection.pipeline()
         for part in INFO_GROUPS:
             pipe.info(part)
         results = pipe.execute()
@@ -51,9 +80,10 @@ class RedisServer:
         except redis.exceptions.ConnectionError:
             return 0
 
-    def slowlog_get(self, limit=REDISBOARD_SLOWLOG_LEN):
+    def slowlog_get(self, limit=None):
         try:
-            for slowlog in self.connection.slowlog_get(REDISBOARD_SLOWLOG_LEN):
+            count = limit if limit else current_app.config["REDISBOARD_SLOWLOG_LEN"]
+            for slowlog in self.connection.slowlog_get(count):
                 yield dict(
                     id=slowlog["id"],
                     ts=datetime.datetime.fromtimestamp(slowlog["start_time"]),
@@ -66,59 +96,6 @@ class RedisServer:
 
 
 server = RedisServer()
-conn = server.connection
-
-
-def _get_db_details(db, cursor=0, keypattern=None, count=20):
-    conn = server.connection
-    conn.execute_command("SELECT", db)
-    keypattern = f"*{keypattern}*" if keypattern else None
-    cursor, keys = conn.scan(cursor=cursor, match=keypattern, count=count)
-    key_details = [_get_key_info(conn, key.decode()) for key in keys]
-    return dict(key_details=key_details, cursor=cursor)
-
-
-def _get_key_details(conn, db, key):
-    conn.execute_command("SELECT", db)
-    details = _get_key_info(conn, key)
-    details["db"] = db
-    details["data"] = VALUE_GETTERS[details["type"]](conn, key)
-    return details
-
-
-def _get_key_info(conn, key):
-    obj_type = conn.type(key)
-    if obj_type == b"none":
-        abort(404)
-    pipe = conn.pipeline()
-    try:
-        pipe.object("REFCOUNT", key)
-        pipe.object("ENCODING", key)
-        pipe.object("IDLETIME", key)
-        LENGTH_GETTERS[obj_type](pipe, key)
-        pipe.ttl(key)
-
-        refcount, encoding, idletime, obj_length, obj_ttl = pipe.execute()
-    except redis.exceptions.ResponseError as exc:
-        return {
-            "type": obj_type,
-            "name": key,
-            "length": "n/a",
-            "error": str(exc),
-            "ttl": "n/a",
-            "refcount": "n/a",
-            "encoding": "n/a",
-            "idletime": "n/a",
-        }
-    return {
-        "type": _decode_bytes(obj_type),
-        "name": key,
-        "length": obj_length,
-        "ttl": ttl_formatter(obj_ttl),
-        "refcount": refcount,
-        "encoding": _decode_bytes(encoding),
-        "idletime": idletime,
-    }
 
 
 @module.context_processor
@@ -126,9 +103,9 @@ def inject_param():
     return {"databases": server.databases}
 
 
-# @module.errorhandler(Exception)
-# def handle_exception(error):
-#     return jsonify({"code": 999, "error": str(error)})
+@module.errorhandler(Exception)
+def handle_exception(error):
+    return jsonify({"code": 999, "error": str(error)})
 
 
 @module.route("/")
@@ -153,7 +130,9 @@ def db_detail(db=0):
     # 当搜索时使用更大的分页值
     count = 1000 if keypattern else 20
     db_detail.update(
-        _get_db_details(db, cursor=cursor, keypattern=keypattern, count=count)
+        _get_db_details(
+            server.connection, db, cursor=cursor, keypattern=keypattern, count=count
+        )
     )
     return render_template(
         "database.html",
@@ -167,8 +146,9 @@ def db_detail(db=0):
 
 @module.route("/db/<db>/batchttl", methods=["POST"])
 def batch_set_ttl(db):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    pipe = server.connection.pipeline()
+    pipe = conn.pipeline()
     keys = request.json.get("keys", [])
     ttl = int(request.json.get("ttl", -1))
     for key in keys:
@@ -182,6 +162,7 @@ def batch_set_ttl(db):
 
 @module.route("/db/<db>/batchdel", methods=["POST"])
 def batch_delete_keys(db):
+    conn = server.connection
     conn.execute_command("SELECT", db)
     keys = request.json.get("keys", [])
     conn.delete(*keys)
@@ -190,6 +171,7 @@ def batch_delete_keys(db):
 
 @module.route("/db/<db>/flush", methods=["DELETE"])
 def db_flush(db):
+    conn = server.connection
     conn.execute_command("SELECT", db)
     conn.flushdb()
     return jsonify({"data": "ok"})
@@ -197,23 +179,25 @@ def db_flush(db):
 
 @module.route("/db/<db>/key/<key>/del", methods=["DELETE"])
 def key_delete(db, key):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    key = parse.unquote_plus(key)
+    key = url_unquote_plus(key)
     conn.delete(key)
     return jsonify({"data": "ok"})
 
 
 @module.route("/db/<db>/<key>/rename", methods=["POST"])
 def key_rename(db, key):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    key = parse.unquote_plus(key)
+    key = url_unquote_plus(key)
     new_name = request.form["keyname"]
     conn.rename(key, new_name)
     return jsonify(
         {
             "code": 0,
             "data": url_for(
-                "redisboard.key_detail", db=db, key=parse.quote_plus(new_name)
+                "redisboard.key_detail", db=db, key=url_quote_plus(new_name)
             ),
         }
     )
@@ -221,8 +205,9 @@ def key_rename(db, key):
 
 @module.route("/db/<db>/<key>/ttl", methods=["POST"])
 def key_set_ttl(db, key):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    ori_key = parse.unquote_plus(key)
+    ori_key = url_unquote_plus(key)
     ttl = request.form.get("ttl", type=int)
     if ttl <= 0:
         conn.persist(ori_key)
@@ -235,8 +220,9 @@ def key_set_ttl(db, key):
 
 @module.route("/db/<db>/<key>/list_add", methods=["POST"])
 def list_add_value(db, key):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    ori_key = parse.unquote_plus(key)
+    ori_key = url_unquote_plus(key)
     position = request.form.get("position", type=int)
     if position == 0:
         conn.lpush(ori_key, request.form["value"])
@@ -249,8 +235,9 @@ def list_add_value(db, key):
 
 @module.route("/db/<db>/<key>/list_edit", methods=["POST"])
 def list_edit_value(db, key):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    ori_key = parse.unquote_plus(key)
+    ori_key = url_unquote_plus(key)
     index = request.args.get("index", type=int, default=0)
     conn.lset(ori_key, index, request.form["value"])
     return redirect(url_for("redisboard.key_detail", db=db, key=key))
@@ -258,8 +245,9 @@ def list_edit_value(db, key):
 
 @module.route("/db/<db>/<key>/list_rem", methods=["POST"])
 def list_rem_value(db, key):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    ori_key = parse.unquote_plus(key)
+    ori_key = url_unquote_plus(key)
     count = request.form.get("count", type=int, default=1)
     conn.lrem(ori_key, count, request.form["value"])
     return jsonify(
@@ -269,8 +257,9 @@ def list_rem_value(db, key):
 
 @module.route("/db/<db>/<key>/hash_add", methods=["POST"])
 def hash_add_value(db, key):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    ori_key = parse.unquote_plus(key)
+    ori_key = url_unquote_plus(key)
     index = request.form.get("index", "")
     exists = conn.hexists(ori_key, index)
     if exists:
@@ -284,8 +273,9 @@ def hash_add_value(db, key):
 
 @module.route("/db/<db>/<key>/hash_edit", methods=["POST"])
 def hash_edit_value(db, key):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    ori_key = parse.unquote_plus(key)
+    ori_key = url_unquote_plus(key)
     index = request.args.get("index")
     conn.hset(ori_key, index, request.form["value"])
     return redirect(url_for("redisboard.key_detail", db=db, key=key))
@@ -293,8 +283,9 @@ def hash_edit_value(db, key):
 
 @module.route("/db/<db>/<key>/hash_rem", methods=["POST"])
 def hash_rem_value(db, key):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    ori_key = parse.unquote_plus(key)
+    ori_key = url_unquote_plus(key)
     conn.hdel(ori_key, request.form["index"])
     return jsonify(
         {"code": 0, "data": url_for("redisboard.key_detail", db=db, key=key)}
@@ -303,8 +294,9 @@ def hash_rem_value(db, key):
 
 @module.route("/db/<db>/<key>/set_add", methods=["POST"])
 def set_add_value(db, key):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    ori_key = parse.unquote_plus(key)
+    ori_key = url_unquote_plus(key)
     value = request.form.get("value", "")
     value = [item.strip() for item in value.split(",")]
     result = conn.sadd(ori_key, *value)
@@ -316,8 +308,9 @@ def set_add_value(db, key):
 
 @module.route("/db/<db>/<key>/set_rem", methods=["POST"])
 def set_rem_value(db, key):
+    conn = server.connection
     conn.execute_command("SELECT", db)
-    ori_key = parse.unquote_plus(key)
+    ori_key = url_unquote_plus(key)
     value = request.form.get("value", "")
     value = [item.strip() for item in value.split(",")]
     conn.srem(ori_key, *value)
@@ -329,11 +322,10 @@ def set_rem_value(db, key):
 @module.route("/db/<db>/<key>", methods=["GET", "POST"])
 def key_detail(db, key):
     conn = server.connection
-    key = parse.unquote_plus(key)
+    key = url_unquote_plus(key)
     if request.method == "POST":
         conn.set(key, request.form["value"])
     key_details = _get_key_details(conn, db, key)
     return render_template(
         f"keydetail/{key_details['type']}.html", key_details=key_details, db=db
     )
-
