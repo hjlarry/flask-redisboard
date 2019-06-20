@@ -8,10 +8,7 @@ def zset_getter(conn, key):
 
 
 def set_getter(conn, key):
-    return [
-        (index, _decode_bytes(value))
-        for index, value in enumerate(conn.smembers(key), 1)
-    ]
+    return ",   ".join([_decode_bytes(value) for value in conn.smembers(key)])
 
 
 def list_getter(conn, key):

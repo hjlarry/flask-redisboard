@@ -75,7 +75,6 @@ def _get_key_details(conn, db, key):
     conn.execute_command("SELECT", db)
     details = _get_key_info(conn, key)
     details["db"] = db
-    # TODO paginator for some datatype
     details["data"] = VALUE_GETTERS[details["type"]](conn, key)
     return details
 
@@ -280,6 +279,27 @@ def hash_rem_value(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
     conn.hdel(ori_key, request.form["index"])
+    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+
+
+@app.route("/db/<db>/<key>/set_add", methods=["POST"])
+def set_add_value(db, key):
+    conn.execute_command("SELECT", db)
+    ori_key = parse.unquote_plus(key)
+    value = request.form.get("value", "")
+    value = [item.strip() for item in value.split(",")]
+    result = conn.sadd(ori_key, *value)
+    # TODO response how many successed operate
+    return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
+
+
+@app.route("/db/<db>/<key>/set_rem", methods=["POST"])
+def set_rem_value(db, key):
+    conn.execute_command("SELECT", db)
+    ori_key = parse.unquote_plus(key)
+    value = request.form.get("value", "")
+    value = [item.strip() for item in value.split(",")]
+    conn.srem(ori_key, *value)
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 

@@ -1,27 +1,35 @@
 {% extends "keydetail/base.html" %}
 {% block keydetail %}
-
+<div class="card-header">
+    <h4></h4>
+    <div class="card-header-action">
+        <a href="#" class="btn btn-primary" id="set-add-btn"><i class="fas fa-plus"></i>Add</a>
+        <a href="#" class="btn btn-danger" id="set-del-btn"><i class="fas fa-trash"></i>Remove</a>
+    </div>
+</div>
 <div class="card-body">
+    {{key_details.data}}
+</div>
 
 
-</div>
-<div class="card-footer text-right">
-    <table class="table table-striped">
-        <tr>
-            <th class="text-center" style="width: 10%">Index</th>
-            <th class="text-center" style="width: 70%">Value</th>
-            <th class="text-center">Action</th>
-        </tr>
-        {% for index, value in key_details.data %}
-        <tr>
-            <td class="text-center">{{index}}</td>
-            <td class="text-center">{{value}}</td>
-            <td class="text-center">
-                <a href="#" class="btn btn-primary"><i class="fas fa-edit"></i></a>
-                <a href="#" class="btn btn-danger"><i class="fas fa-trash"></i></a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
+<form class="modal-part" id="set-add-value">
+    <div class="form-group">
+        <label>Value</label>
+        <div class="input-group">
+            <input type="text" class="form-control" name="value" required>
+        </div>
+        <small class="form-text text-muted">Separate multiple values with ","</small>
+    </div>
+</form>
+
+<form class="modal-part" id="set-del-value">
+    <div class="form-group">
+        <label>Value</label>
+        <div class="input-group">
+            <input type="text" class="form-control" name="value" required>
+        </div>
+        <small class="form-text text-muted">Separate multiple values with ","</small>
+    </div>
+</form>
+
 {% endblock %}
