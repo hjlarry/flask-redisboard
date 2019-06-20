@@ -6,11 +6,15 @@ from urllib import parse
 from collections import OrderedDict
 from werkzeug import cached_property
 
-from config import INFO_GROUPS, REDISBOARD_SLOWLOG_LEN, BADGE_CLASS
-from utils import VALUE_GETTERS, LENGTH_GETTERS, _decode_bytes, ttl_formatter
 
-app = Flask(__name__)
-app.jinja_env.filters["quote_plus"] = parse.quote_plus
+from flask_redisboard import module
+from flask_redisboard.config import INFO_GROUPS, REDISBOARD_SLOWLOG_LEN, BADGE_CLASS
+from flask_redisboard.utils import (
+    VALUE_GETTERS,
+    LENGTH_GETTERS,
+    _decode_bytes,
+    ttl_formatter,
+)
 
 
 class RedisServer:
@@ -114,28 +118,28 @@ def _get_key_info(conn, key):
     }
 
 
-@app.context_processor
+@module.context_processor
 def inject_param():
     return {"databases": server.databases}
 
 
-@app.errorhandler(Exception)
+@module.errorhandler(Exception)
 def handle_exception(error):
     return jsonify({"code": 999, "error": str(error)})
 
 
-@app.route("/")
+@module.route("/")
 def home():
     return redirect(url_for("info"))
 
 
-@app.route("/info/")
+@module.route("/info/")
 def info():
     return render_template("serverinfo.html", info=server.info)
 
 
-@app.route("/db/")
-@app.route("/db/<db>/")
+@module.route("/db/")
+@module.route("/db/<db>/")
 def db_detail(db=0):
     # 需要复制一下，以免影响到原info中的信息
     db_detail = server.info.get("Keyspace").get(f"db{db}").copy() or dict()
@@ -158,7 +162,7 @@ def db_detail(db=0):
     )
 
 
-@app.route("/db/<db>/batchttl", methods=["POST"])
+@module.route("/db/<db>/batchttl", methods=["POST"])
 def batch_set_ttl(db):
     conn.execute_command("SELECT", db)
     pipe = server.connection.pipeline()
@@ -173,7 +177,7 @@ def batch_set_ttl(db):
     return jsonify({"code": 0, "data": url_for("db_detail", db=db)})
 
 
-@app.route("/db/<db>/batchdel", methods=["POST"])
+@module.route("/db/<db>/batchdel", methods=["POST"])
 def batch_delete_keys(db):
     conn.execute_command("SELECT", db)
     keys = request.json.get("keys", [])
@@ -181,14 +185,14 @@ def batch_delete_keys(db):
     return jsonify({"code": 0, "data": url_for("db_detail", db=db)})
 
 
-@app.route("/api/<db>/flush", methods=["DELETE"])
+@module.route("/api/<db>/flush", methods=["DELETE"])
 def db_flush(db):
     conn.execute_command("SELECT", db)
     conn.flushdb()
     return jsonify({"data": "ok"})
 
 
-@app.route("/api/<db>/key/<key>/del", methods=["DELETE"])
+@module.route("/api/<db>/key/<key>/del", methods=["DELETE"])
 def key_delete(db, key):
     conn.execute_command("SELECT", db)
     key = parse.unquote_plus(key)
@@ -196,7 +200,7 @@ def key_delete(db, key):
     return jsonify({"data": "ok"})
 
 
-@app.route("/db/<db>/<key>/rename", methods=["POST"])
+@module.route("/db/<db>/<key>/rename", methods=["POST"])
 def key_rename(db, key):
     conn.execute_command("SELECT", db)
     key = parse.unquote_plus(key)
@@ -210,7 +214,7 @@ def key_rename(db, key):
     )
 
 
-@app.route("/db/<db>/<key>/ttl", methods=["POST"])
+@module.route("/db/<db>/<key>/ttl", methods=["POST"])
 def key_set_ttl(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
@@ -222,7 +226,7 @@ def key_set_ttl(db, key):
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 
-@app.route("/db/<db>/<key>/list_add", methods=["POST"])
+@module.route("/db/<db>/<key>/list_add", methods=["POST"])
 def list_add_value(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
@@ -234,7 +238,7 @@ def list_add_value(db, key):
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 
-@app.route("/db/<db>/<key>/list_edit", methods=["POST"])
+@module.route("/db/<db>/<key>/list_edit", methods=["POST"])
 def list_edit_value(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
@@ -243,7 +247,7 @@ def list_edit_value(db, key):
     return redirect(url_for("key_detail", db=db, key=key))
 
 
-@app.route("/db/<db>/<key>/list_rem", methods=["POST"])
+@module.route("/db/<db>/<key>/list_rem", methods=["POST"])
 def list_rem_value(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
@@ -252,7 +256,7 @@ def list_rem_value(db, key):
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 
-@app.route("/db/<db>/<key>/hash_add", methods=["POST"])
+@module.route("/db/<db>/<key>/hash_add", methods=["POST"])
 def hash_add_value(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
@@ -265,7 +269,7 @@ def hash_add_value(db, key):
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 
-@app.route("/db/<db>/<key>/hash_edit", methods=["POST"])
+@module.route("/db/<db>/<key>/hash_edit", methods=["POST"])
 def hash_edit_value(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
@@ -274,7 +278,7 @@ def hash_edit_value(db, key):
     return redirect(url_for("key_detail", db=db, key=key))
 
 
-@app.route("/db/<db>/<key>/hash_rem", methods=["POST"])
+@module.route("/db/<db>/<key>/hash_rem", methods=["POST"])
 def hash_rem_value(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
@@ -282,7 +286,7 @@ def hash_rem_value(db, key):
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 
-@app.route("/db/<db>/<key>/set_add", methods=["POST"])
+@module.route("/db/<db>/<key>/set_add", methods=["POST"])
 def set_add_value(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
@@ -293,7 +297,7 @@ def set_add_value(db, key):
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 
-@app.route("/db/<db>/<key>/set_rem", methods=["POST"])
+@module.route("/db/<db>/<key>/set_rem", methods=["POST"])
 def set_rem_value(db, key):
     conn.execute_command("SELECT", db)
     ori_key = parse.unquote_plus(key)
@@ -303,7 +307,7 @@ def set_rem_value(db, key):
     return jsonify({"code": 0, "data": url_for("key_detail", db=db, key=key)})
 
 
-@app.route("/db/<db>/<key>", methods=["GET", "POST"])
+@module.route("/db/<db>/<key>", methods=["GET", "POST"])
 def key_detail(db, key):
     conn = server.connection
     key = parse.unquote_plus(key)
@@ -314,6 +318,3 @@ def key_detail(db, key):
         f"keydetail/{key_details['type']}.html", key_details=key_details, db=db
     )
 
-
-if __name__ == "__main__":
-    app.run(debug=True)
