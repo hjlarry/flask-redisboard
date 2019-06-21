@@ -1,11 +1,13 @@
 {% extends "keydetail/base.html" %}
 {% block keydetail %}
-
-<div class="card-body">
-
-
+<div class="card-header">
+    <h4></h4>
+    <div class="card-header-action">
+        <a href="#" class="btn btn-primary" id="zset-add-btn"><i class="fas fa-plus"></i>Add</a>
+        <a href="#" class="btn btn-danger" id="zset-del-btn"><i class="fas fa-trash"></i>Remove</a>
+    </div>
 </div>
-<div class="card-footer text-right">
+<div class="card-body">
     <table class="table table-striped">
         <tr>
             <th class="text-center" style="width: 50%">Member</th>
@@ -15,13 +17,66 @@
         {% for member, score in key_details.data %}
         <tr>
             <td class="text-center">{{member}}</td>
-            <td class="text-center">{{score}}</td>
+            <td class="align-middle">
+                <form
+                    action="{{url_for('redisboard.zset_edit_score', db=db, key=key_details.name|quote_plus, member=member)}}"
+                    method="POST">
+                    <div class="input-group ">
+                        <input type="text" class="form-control" value="{{score}}" aria-label="" name="score">
+                        <div class="input-group-append">
+                            <!-- TODO 修改成功后没有提示 -->
+                            <button class="btn btn-primary" type="submit"><i class="fas fa-edit"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </td>
             <td class="text-center">
-                <a href="#" class="btn btn-primary"><i class="fas fa-edit"></i></a>
-                <a href="#" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                <a href="#" onclick="zset_del('{{member}}')" class="btn btn-danger"><i class="fas fa-trash"></i></a>
             </td>
         </tr>
         {% endfor %}
     </table>
+
 </div>
+<div class="card-footer text-right">
+
+</div>
+
+<form class="modal-part" id="zset-add-value">
+    <div class="form-group">
+        <label>Member</label>
+        <input type="text" class="form-control" name="member">
+    </div>
+    <div class="form-group">
+        <label>Score</label>
+        <input type="text" class="form-control" name="score">
+    </div>
+</form>
+
+<form class="modal-part" id="zset-del-value">
+    <ul class="nav nav-tabs" id="myTab2" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="home-tab2" data-toggle="tab" href="#bymember" role="tab">By Member</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="profile-tab2" data-toggle="tab" href="#byscore" role="tab">By Score Range</a>
+        </li>
+    </ul>
+    <div class="tab-content tab-bordered" id="myTab3Content">
+        <div class="tab-pane fade show active" id="bymember" role="tabpanel">
+            <div class="form-group">
+                <label>Members</label>
+                <input type="text" class="form-control" name="member">
+                <small class="form-text text-muted">Separate multiple members with ","</small>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="byscore" role="tabpanel">
+            <div class="form-inline">
+                <input type="text" class="form-control mr-sm-2" placeholder="Min Value" name="min">
+                <input type="text" class="form-control" placeholder="Max Value" name="max">
+            </div>
+        </div>
+
+    </div>
+</form>
 {% endblock %}

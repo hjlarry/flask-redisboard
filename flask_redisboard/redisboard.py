@@ -104,9 +104,9 @@ def inject_param():
     return {"databases": server.databases}
 
 
-@module.errorhandler(Exception)
-def handle_exception(error):
-    return jsonify({"code": 999, "error": str(error)})
+# @module.errorhandler(Exception)
+# def handle_exception(error):
+#     return jsonify({"code": 999, "error": str(error)})
 
 
 @module.route("/")
@@ -315,6 +315,49 @@ def set_rem_value(db, key):
     value = request.form.get("value", "")
     value = [item.strip() for item in value.split(",")]
     conn.srem(ori_key, *value)
+    return jsonify(
+        {"code": 0, "data": url_for("redisboard.key_detail", db=db, key=key)}
+    )
+
+
+@module.route("/db/<db>/<key>/zset_edit", methods=["POST"])
+def zset_edit_score(db, key):
+    conn = server.connection
+    conn.execute_command("SELECT", db)
+    ori_key = url_unquote_plus(key)
+    maps = {request.args.get("member"): request.form.get("score", type=float)}
+    conn.zadd(ori_key, maps)
+    return redirect(url_for("redisboard.key_detail", db=db, key=key))
+
+
+@module.route("/db/<db>/<key>/zset_add", methods=["POST"])
+def zset_add_value(db, key):
+    conn = server.connection
+    conn.execute_command("SELECT", db)
+    ori_key = url_unquote_plus(key)
+    conn.zadd(
+        ori_key, {request.form.get("member"): request.form.get("score", type=float)}
+    )
+    return jsonify(
+        {"code": 0, "data": url_for("redisboard.key_detail", db=db, key=key)}
+    )
+
+
+@module.route("/db/<db>/<key>/zset_rem", methods=["POST"])
+def zset_rem_member(db, key):
+    conn = server.connection
+    conn.execute_command("SELECT", db)
+    ori_key = url_unquote_plus(key)
+    member = request.form.get("member", "")
+    if member:
+        members = [item.strip() for item in member.split(",")]
+        conn.zrem(ori_key, *members)
+    else:
+        score_min, score_max = (
+            request.form.get("min", type=float),
+            request.form.get("max", type=float),
+        )
+        conn.zremrangebyscore(ori_key, score_min, score_max)
     return jsonify(
         {"code": 0, "data": url_for("redisboard.key_detail", db=db, key=key)}
     )
