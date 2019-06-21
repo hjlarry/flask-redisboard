@@ -14,7 +14,7 @@ from flask import (
 )
 from werkzeug import cached_property, url_quote_plus, url_unquote_plus
 
-from flask_redisboard.utils import _get_db_details, _get_key_details, _get_key_info
+from .utils import _get_db_details, _get_key_details, _get_key_info
 
 module = Blueprint(
     "redisboard",
@@ -22,6 +22,7 @@ module = Blueprint(
     template_folder="templates/redisboard",
     static_folder="static",
 )
+
 BADGE_CLASS = {
     "string": "badge-info",
     "list": "badge-success",

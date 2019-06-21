@@ -1,8 +1,4 @@
-import os
-from flask import Blueprint, send_from_directory
-from jinja2 import Environment, PackageLoader
 from werkzeug import url_quote_plus
-
 
 from .redisboard import module
 
@@ -32,4 +28,3 @@ class RedisBoardExtension:
             "REDISBOARD_SOCKET_KEEPALIVE_OPTIONS": None,
             "REDISBOARD_SLOWLOG_LEN": 10,
         }
-
