@@ -14,7 +14,7 @@ from flask import (
 )
 from werkzeug import cached_property, url_quote_plus, url_unquote_plus
 
-from .utils import _get_db_details, _get_key_details, _get_key_info
+from .utils import _get_db_details, _get_key_details, _get_key_info, VALUE_SETTERS
 
 module = Blueprint(
     "redisboard",
@@ -143,6 +143,19 @@ def db_detail(db=0):
         badge_class=BADGE_CLASS,
         keypattern=keypattern,
     )
+
+
+@module.route("/db/<db>/addkey", methods=["POST"])
+def add_key(db):
+    conn = server.connection
+    conn.execute_command("SELECT", db)
+    keyname = request.form.get("keyname")
+    typex = request.form.get("type")
+    index = request.form.get("index")
+    value = request.form.get("value")
+    set_method = VALUE_SETTERS.get(typex)
+    set_method(conn, keyname, index, value)
+    return redirect(url_for("redisboard.db_detail", db=db))
 
 
 @module.route("/db/<db>/batchttl", methods=["POST"])

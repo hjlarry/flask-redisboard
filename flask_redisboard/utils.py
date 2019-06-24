@@ -43,6 +43,25 @@ LENGTH_GETTERS = {
 }
 
 
+def list_setter(conn, key, index, value):
+    value = [item.strip() for item in value.split(",")]
+    conn.lpush(key, *value)
+
+
+def set_setter(conn, key, index, value):
+    value = [item.strip() for item in value.split(",")]
+    conn.sadd(key, *value)
+
+
+VALUE_SETTERS = {
+    "list": list_setter,
+    "string": lambda conn, key, index, value: conn.set(key, value),
+    "set": set_setter,
+    "zset": lambda conn, key, score, member: conn.zadd(key, {member: float(score)}),
+    "hash": lambda conn, key, index, value: conn.hset(key, index, value),
+}
+
+
 def _decode_bytes(value):
     if isinstance(value, bytes):
         try:

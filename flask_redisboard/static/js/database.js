@@ -125,3 +125,36 @@ $('#batch-del-btn').click(function() {
     }
   });
 });
+
+$('#new-key-btn').click(function() {
+  $("#addKey").modal('show');
+});
+
+$('.selectgroup-input').change(function() {
+  var v = $(this).val()
+  switch (v) {
+    case 'string':
+      $('#index').hide();
+      $('#value-label').hide();
+      break;
+    case 'list':
+      $('#index').hide();
+      $('#value-label').show();
+      break;
+    case 'hash':
+      $('#index').show();
+      $('#value-label').hide();
+      $('#index label').text('Index');
+      break;
+    case 'set':
+      $('#index').hide();
+      $('#value-label').show();
+      break;
+    case 'zset':
+      $('#index').show();
+      $('#value-label').hide();
+      $('#index label').text('Score');
+      break;
+
+  }
+})

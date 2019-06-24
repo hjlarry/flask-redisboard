@@ -4,7 +4,7 @@
     <div class="section-header">
         <h1><a href="{{url_for('redisboard.db_detail', db=db)}}">Database {{db}}</a></h1>
         <div class="section-header-button">
-            <a href="#" class="btn btn-primary">Add New</a>
+            <a href="#" class="btn btn-primary" id="new-key-btn">Add New</a>
             <a href="#" class="btn btn-danger" data-confirm="Are you sure to flush DB{{db}}?"
                 data-confirm-yes="flush_db('{{db}}')">Flush DB</a>
         </div>
@@ -166,6 +166,71 @@
                 <button type="button" class="btn btn-danger" id="batch-del-btn">Yes</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="addKey">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add A Key</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{{url_for('redisboard.add_key', db=db)}}">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Keyname</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="keyname" placeholder="" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <div class="selectgroup w-100">
+                            <label class="selectgroup-item">
+                                <input type="radio" name="type" value="string" class="selectgroup-input" checked="">
+                                <span class="selectgroup-button">String</span>
+                            </label>
+                            <label class="selectgroup-item">
+                                <input type="radio" name="type" value="list" class="selectgroup-input">
+                                <span class="selectgroup-button">List</span>
+                            </label>
+                            <label class="selectgroup-item">
+                                <input type="radio" name="type" value="hash" class="selectgroup-input">
+                                <span class="selectgroup-button">Hash</span>
+                            </label>
+                            <label class="selectgroup-item">
+                                <input type="radio" name="type" value="set" class="selectgroup-input">
+                                <span class="selectgroup-button">Set</span>
+                            </label>
+                            <label class="selectgroup-item">
+                                <input type="radio" name="type" value="zset" class="selectgroup-input">
+                                <span class="selectgroup-button">Zset</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="index" style="display: none">
+                        <label>Index</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="index" placeholder="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Value</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="value" required>
+                        </div>
+                        <small class="form-text text-muted" id="value-label" style="display: none">Separate multiple
+                            values with ","</small>
+                    </div>
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="submit" class="btn btn-primary" id="add-key-btn">Save</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

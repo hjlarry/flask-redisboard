@@ -11,7 +11,7 @@ A flask extension to support user view and manage redis with beautiful interface
 - [ ] Dashboard
 - [ ] Config edit and view
 - [ ] Slowlog
-- [ ] Add a key
+- [x] Add a key
 - [x] Zset CRUD
 - [ ] Validate empty input in frontend
 - [ ] some submit need success msg
