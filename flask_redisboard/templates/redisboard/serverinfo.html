@@ -4,8 +4,8 @@
     <div class="section-header">
         <h1>Server Information</h1>
         <div class="section-header-breadcrumb">
-            <div class="breadcrumb-item">Host: 127.0.0.1</div>
-            <div class="breadcrumb-item">Port: 6739</div>
+            <div class="breadcrumb-item">Host: {{config.REDIS_HOST}}</div>
+            <div class="breadcrumb-item">Port: {{config.REDIS_PORT}}</div>
         </div>
     </div>
 
@@ -15,7 +15,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-12 col-sm-12 col-md-4">
+                            <div class="col-12 col-sm-12 col-md-3">
                                 <ul class="nav nav-pills flex-column" id="myTab4" role="tablist">
                                     {% for key in info.keys() %}
                                     <li class="nav-item">
@@ -25,7 +25,7 @@
                                     {% endfor %}
                                 </ul>
                             </div>
-                            <div class="col-12 col-sm-12 col-md-8">
+                            <div class="col-12 col-sm-12 col-md-9">
                                 <div class="tab-content no-padding" id="myTab2Content">
                                     {% for group, items in info.items() %}
                                     <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="{{group}}"
