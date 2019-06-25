@@ -110,9 +110,9 @@ def inject_param():
     return {"databases": server.databases}
 
 
-# @module.errorhandler(Exception)
-# def handle_exception(error):
-#     return jsonify({"code": 999, "error": str(error)})
+@module.errorhandler(Exception)
+def handle_exception(error):
+    return jsonify({"code": 999, "error": str(error)})
 
 
 @module.route("/")
@@ -134,7 +134,7 @@ def info():
 @module.route("/db/<db>/")
 def db_detail(db=0):
     # 需要复制一下，以免影响到原info中的信息
-    db_detail = server.info.get("Keyspace").get(f"db{db}").copy() or dict()
+    db_detail = server.keyspace.get(f"db{db}").copy() or dict()
     # 避免和dict.keys()重名
     db_detail["_keys"] = db_detail["keys"] if "keys" in db_detail else 0
     cursor = request.args.get("cursor", type=int, default=0)
