@@ -38,7 +38,16 @@ function delete_key(keyname, db) {
     }
   });
   $('#fire-modal-1').modal('hide');
-}
+};
+
+$("#CmdTable").dataTable({
+  "columnDefs": [
+    { "sortable": true, "targets": '_all' }
+  ],
+  "paging": false,
+  "searching": false,
+  "info": false,
+});
 
 
 

@@ -16,18 +16,26 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12 col-sm-12 col-md-3">
-                                <ul class="nav nav-pills flex-column" id="myTab4" role="tablist">
-                                    {% for key in info.keys() %}
+                                <ul class="nav nav-pills flex-column" role="tablist">
+                                    {% for key in basic_info.keys() %}
                                     <li class="nav-item">
                                         <a class="nav-link {% if loop.first %}active{% endif %}" id="{{key}}-tab"
                                             data-toggle="tab" href="#{{key}}" role="tab">{{key}}</a>
                                     </li>
                                     {% endfor %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="Keyspace-tab" data-toggle="tab" href="#Keyspace"
+                                            role="tab">Keyspace</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="Commandstats-tab" data-toggle="tab" href="#Commandstats"
+                                            role="tab">Commandstats</a>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="col-12 col-sm-12 col-md-9">
-                                <div class="tab-content no-padding" id="myTab2Content">
-                                    {% for group, items in info.items() %}
+                                <div class="tab-content no-padding">
+                                    {% for group, items in basic_info.items() %}
                                     <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="{{group}}"
                                         role="tabpanel">
                                         <table class="table table-striped">
@@ -40,6 +48,47 @@
                                         </table>
                                     </div>
                                     {% endfor %}
+                                    <div class="tab-pane fade" id="Keyspace" role="tabpanel">
+                                        <table class="table table-striped">
+                                            <tr>
+                                                <th class="text-center">DB</th>
+                                                <th class="text-center">Keys</th>
+                                                <th class="text-center">Expires</th>
+                                                <th class="text-center">Avg ttl</th>
+                                            </tr>
+                                            {% for k,v in keyspace.items() %}
+                                            <tr>
+                                                <td class="text-center">{{k}}</td>
+                                                <td class="text-center">{{v['keys']}}</td>
+                                                <td class="text-center">{{v.expires}}</td>
+                                                <td class="text-center">{{v.avg_ttl}}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </div>
+                                    <div class="tab-pane fade" id="Commandstats" role="tabpanel">
+                                        <table class="table table-striped" id="CmdTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">Cmd</th>
+                                                    <th class="text-center">Calls</th>
+                                                    <th class="text-center">Usec</th>
+                                                    <th class="text-center">Usec per call</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for k,v in cmd_stats.items() %}
+                                                <tr>
+                                                    <td class="text-center">{{k}}</td>
+                                                    <td class="text-center">{{v.calls}}</td>
+                                                    <td class="text-center">{{v.usec}}</td>
+                                                    <td class="text-center">{{v.usec_per_call}}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

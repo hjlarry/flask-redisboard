@@ -47,7 +47,7 @@ Now, you can go to 127.0.0.1:5000/redisboard
 - [ ] Validate empty input in frontend
 - [ ] some submit need success msg
 - [ ] scroll to next page, not click a button
-- [ ] better keyspace and cmdstats view for server info 
+- [x] better keyspace and cmdstats view for server info 
 - [ ] can add multi values for hash/zset/list etc.
 - [ ] unittest
 - [ ] documents

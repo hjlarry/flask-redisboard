@@ -40,8 +40,6 @@ INFO_GROUPS = [
     "Replication",
     "Cpu",
     "Cluster",
-    "Keyspace",
-    "Commandstats",
 ]
 
 
@@ -71,9 +69,17 @@ class RedisServer:
         results = pipe.execute()
         return dict(zip(INFO_GROUPS, results))
 
-    @cached_property
+    @property
+    def keyspace(self):
+        return self.connection.info("Keyspace")
+
+    @property
+    def commandstats(self):
+        return self.connection.info("Commandstats")
+
+    @property
     def databases(self):
-        return [item[2:] for item in self.info["Keyspace"].keys()]
+        return [item[2:] for item in self.keyspace.keys()]
 
     def slowlog_len(self):
         try:
@@ -116,7 +122,12 @@ def home():
 
 @module.route("/info/")
 def info():
-    return render_template("serverinfo.html", info=server.info)
+    return render_template(
+        "serverinfo.html",
+        basic_info=server.info,
+        keyspace=server.keyspace,
+        cmd_stats=server.commandstats,
+    )
 
 
 @module.route("/db/")
