@@ -74,7 +74,8 @@ def _decode_bytes(value):
 
 
 def ttl_formatter(seconds):
-    if seconds == -1:
+    # redis-py under 3.0, if not set expired, the ttl return none.
+    if seconds == -1 or seconds is None:
         return "forever"
     ttl = datetime.timedelta(seconds=seconds)
     mm, ss = divmod(ttl.seconds, 60)

@@ -133,13 +133,12 @@ def info():
 @module.route("/db/")
 @module.route("/db/<db>/")
 def db_detail(db=0):
-    # 需要复制一下，以免影响到原info中的信息
-    db_detail = server.keyspace.get(f"db{db}").copy() or dict()
-    # 避免和dict.keys()重名
+    db_detail = server.keyspace.get(f"db{db}", dict())
+    # avoid same name with dict.keys()
     db_detail["_keys"] = db_detail["keys"] if "keys" in db_detail else 0
     cursor = request.args.get("cursor", type=int, default=0)
     keypattern = request.args.get("keypattern", default="")
-    # 当搜索时使用更大的分页值
+    # when search, use big paginate number
     count = 1000 if keypattern else 20
     db_detail.update(
         _get_db_details(
