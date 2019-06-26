@@ -16,6 +16,8 @@
             href="{{ url_for('redisboard.static', filename='modules/izitoast/css/iziToast.min.css') }}">
         <link rel="stylesheet"
             href="{{ url_for('redisboard.static', filename='modules/datatable/dataTables.bootstrap4.min.css') }}">
+        <link rel="stylesheet"
+            href="{{ url_for('redisboard.static', filename='modules/bootstrap4-editable/css/bootstrap-editable.css') }}">
         <!-- Template CSS -->
         <link rel="stylesheet" href="{{ url_for('redisboard.static', filename='css/style.css') }}">
         <link rel="stylesheet" href="{{ url_for('redisboard.static', filename='css/components.css') }}">
@@ -69,6 +71,9 @@
         <script
             src="{{ url_for('redisboard.static', filename='modules/jquery-selectric/jquery.selectric.min.js') }}"></script>
         <script src="{{ url_for('redisboard.static', filename='modules/izitoast/js/iziToast.min.js') }}"></script>
+        <script
+            src="{{ url_for('redisboard.static', filename='modules/bootstrap4-editable/js/bootstrap-editable.min.js') }}"></script>
+
         <script src="{{ url_for('redisboard.static', filename='js/scripts.js') }}"></script>
         <script src="{{ url_for('redisboard.static', filename='js/custom.js') }}"></script>
         {% block js %}

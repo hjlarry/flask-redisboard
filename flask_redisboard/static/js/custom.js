@@ -56,8 +56,5 @@ $("#SlowlogTable").dataTable({
   "searching": false,
   "info": false,
 });
-
-
-
-
-
+$.fn.editable.defaults.mode = 'inline';
+$('#username').editable();

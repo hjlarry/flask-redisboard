@@ -131,6 +131,13 @@ def info():
     )
 
 
+@module.route("/config/")
+def config():
+    conn = server.connection
+    redis_config = conn.config_get()
+    return render_template("config.html", redis_config=redis_config)
+
+
 @module.route("/db/")
 @module.route("/db/<db>/")
 def db_detail(db=0):

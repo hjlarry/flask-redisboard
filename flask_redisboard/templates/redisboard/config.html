@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<section class="section">
+    <div class="section-header">
+        <a href="#" id="username" data-type="text" data-placement="right" data-title="Enter username">superuser</a>
+        <div class="section-header-breadcrumb">
+            <div class="breadcrumb-item">Host: {{config.REDIS_HOST}}</div>
+            <div class="breadcrumb-item">Port: {{config.REDIS_PORT}}</div>
+        </div>
+    </div>
+
+    <div class="section-body">
+        <table class="table table-striped" id="">
+            <thead>
+                <tr>
+                    <th class="text-center">ID</th>
+                    <th class="text-center">Start time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for k,v in redis_config.items() %}
+                <tr>
+                    <td class="text-center">{{k}}</td>
+                    <td class="text-center">{{v}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}
