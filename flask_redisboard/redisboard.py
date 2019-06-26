@@ -14,7 +14,13 @@ from flask import (
 )
 from werkzeug import cached_property, url_quote_plus, url_unquote_plus
 
-from .utils import _get_db_details, _get_key_details, _get_key_info, VALUE_SETTERS
+from .utils import (
+    _get_db_details,
+    _get_key_details,
+    _get_key_info,
+    VALUE_SETTERS,
+    _decode_bytes,
+)
 
 module = Blueprint(
     "redisboard",
@@ -81,12 +87,6 @@ class RedisServer:
     def databases(self):
         return [item[2:] for item in self.keyspace.keys()]
 
-    def slowlog_len(self):
-        try:
-            return self.connection.slowlog_len()
-        except redis.exceptions.ConnectionError:
-            return 0
-
     def slowlog_get(self, limit=None):
         try:
             count = limit if limit else current_app.config["REDISBOARD_SLOWLOG_LEN"]
@@ -95,7 +95,7 @@ class RedisServer:
                     id=slowlog["id"],
                     ts=datetime.datetime.fromtimestamp(slowlog["start_time"]),
                     duration=slowlog["duration"],
-                    command=slowlog["command"],
+                    command=_decode_bytes(slowlog["command"]),
                 )
 
         except redis.exceptions.ConnectionError:
@@ -126,7 +126,8 @@ def info():
         "serverinfo.html",
         basic_info=server.info,
         keyspace=server.keyspace,
-        cmd_stats=server.commandstats,
+        cmdstats=server.commandstats,
+        slowlog=server.slowlog_get(),
     )
 
 

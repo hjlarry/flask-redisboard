@@ -49,6 +49,14 @@ $("#CmdTable").dataTable({
   "info": false,
 });
 
+$("#SlowlogTable").dataTable({
+  "columnDefs": [
+    { "sortable": true, "targets": '_all' }
+  ],
+  "searching": false,
+  "info": false,
+});
+
 
 
 

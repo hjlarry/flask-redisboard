@@ -31,6 +31,10 @@
                                         <a class="nav-link" id="Commandstats-tab" data-toggle="tab" href="#Commandstats"
                                             role="tab">Commandstats</a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="Slowlog-tab" data-toggle="tab" href="#Slowlog"
+                                            role="tab">Slowlog</a>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="col-12 col-sm-12 col-md-9">
@@ -77,12 +81,35 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for k,v in cmd_stats.items() %}
+                                                {% for k,v in cmdstats.items() %}
                                                 <tr>
                                                     <td class="text-center">{{k}}</td>
                                                     <td class="text-center">{{v.calls}}</td>
                                                     <td class="text-center">{{v.usec}}</td>
                                                     <td class="text-center">{{v.usec_per_call}}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                    <div class="tab-pane fade" id="Slowlog" role="tabpanel">
+                                        <table class="table table-striped" id="SlowlogTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">ID</th>
+                                                    <th class="text-center">Start time</th>
+                                                    <th class="text-center">Duration(μs)</th>
+                                                    <th class="text-center">Command</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in slowlog %}
+                                                <tr>
+                                                    <td class="text-center">{{item.id}}</td>
+                                                    <td class="text-center">{{item.ts}}</td>
+                                                    <td class="text-center">{{item.duration}}</td>
+                                                    <td class="text-center">{{item.command}}</td>
                                                 </tr>
                                                 {% endfor %}
                                             </tbody>

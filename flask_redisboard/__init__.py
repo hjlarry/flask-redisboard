@@ -26,5 +26,5 @@ class RedisBoardExtension:
             "REDISBOARD_SOCKET_CONNECT_TIMEOUT": None,
             "REDISBOARD_SOCKET_KEEPALIVE": None,
             "REDISBOARD_SOCKET_KEEPALIVE_OPTIONS": None,
-            "REDISBOARD_SLOWLOG_LEN": 10,
+            "REDISBOARD_SLOWLOG_LEN": 100,
         }
