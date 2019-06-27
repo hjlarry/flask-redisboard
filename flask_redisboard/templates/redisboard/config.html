@@ -4,31 +4,57 @@
 
 <section class="section">
     <div class="section-header">
-        <a href="#" id="username" data-type="text" data-placement="right" data-title="Enter username">superuser</a>
+        <h1>Current Config</h1>
         <div class="section-header-breadcrumb">
-            <div class="breadcrumb-item">Host: {{config.REDIS_HOST}}</div>
-            <div class="breadcrumb-item">Port: {{config.REDIS_PORT}}</div>
+            <div class="breadcrumb-item">conf file: </div>
         </div>
     </div>
 
     <div class="section-body">
-        <table class="table table-striped" id="">
-            <thead>
-                <tr>
-                    <th class="text-center">ID</th>
-                    <th class="text-center">Start time</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for k,v in redis_config.items() %}
-                <tr>
-                    <td class="text-center">{{k}}</td>
-                    <td class="text-center">{{v}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h6>GENERAL</h6>
+                        <table class="table table-bordered table-md" id="">
+                            <tbody>
+                                {% for k,v in general_config.items() %}
+                                <tr>
+                                    <td class="" width="30%">{{k}}</td>
+                                    <td class="text-center"><a href="#" id="username" data-name="hello" data-type="text"
+                                            data-placement="right">{{v.value}}</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
-        </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h6>NETWORK</h6>
+                        <table class="table table-bordered table-md" id="">
+                            <tbody>
+                                {% for k,v in network_config.items() %}
+                                <tr>
+                                    <td class="" width="30%">{{k}}</td>
+                                    <td class="text-center"><a href="#" class="myeditable" data-name="hello"
+                                            data-type="text" data-placement="right">{{v.value}}</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 {% endblock %}

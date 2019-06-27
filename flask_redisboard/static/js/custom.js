@@ -57,4 +57,8 @@ $("#SlowlogTable").dataTable({
   "info": false,
 });
 $.fn.editable.defaults.mode = 'inline';
-$('#username').editable();
+$('.myeditable').editable({
+  pk: 1,
+  url: '/redisboard/config',
+  title: 'Enter username'
+});

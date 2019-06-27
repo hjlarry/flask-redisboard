@@ -1,5 +1,4 @@
 import datetime
-from collections import OrderedDict
 
 import redis
 from flask import (
@@ -21,6 +20,7 @@ from .utils import (
     VALUE_SETTERS,
     _decode_bytes,
 )
+from .constant import GENERAL_CONFIG_ITEM, NETWORK_CONFIG_ITEM
 
 module = Blueprint(
     "redisboard",
@@ -135,7 +135,15 @@ def info():
 def config():
     conn = server.connection
     redis_config = conn.config_get()
-    return render_template("config.html", redis_config=redis_config)
+    for k, v in GENERAL_CONFIG_ITEM.items():
+        GENERAL_CONFIG_ITEM[k]["value"] = redis_config.get(k)
+    for k, v in NETWORK_CONFIG_ITEM.items():
+        NETWORK_CONFIG_ITEM[k]["value"] = redis_config.get(k)
+    return render_template(
+        "config.html",
+        general_config=GENERAL_CONFIG_ITEM,
+        network_config=NETWORK_CONFIG_ITEM,
+    )
 
 
 @module.route("/db/")
@@ -404,3 +412,10 @@ def key_detail(db, key):
     return render_template(
         f"keydetail/{key_details['type']}.html", key_details=key_details, db=db
     )
+
+
+@module.route("/config", methods=["POST"])
+def config_set():
+    print(request.form)
+    return jsonify({"code": 0, "data": "121"})
+
