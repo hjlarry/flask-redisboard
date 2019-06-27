@@ -6,7 +6,9 @@
     <div class="section-header">
         <h1>Current Config</h1>
         <div class="section-header-breadcrumb">
-            <div class="breadcrumb-item">conf file: </div>
+            <div class="breadcrumb-item">{% if config_file %}config file: {{config_file}}{% else %} running without a
+                config file
+                {% endif %}</div>
         </div>
     </div>
 
@@ -16,13 +18,21 @@
                 <div class="card">
                     <div class="card-body">
                         <h6>GENERAL</h6>
-                        <table class="table table-bordered table-md" id="">
+                        <table class="table table-bordered table-md">
                             <tbody>
                                 {% for k,v in general_config.items() %}
                                 <tr>
-                                    <td class="" width="30%">{{k}}</td>
-                                    <td class="text-center"><a href="#" id="username" data-name="hello" data-type="text"
-                                            data-placement="right">{{v.value}}</a></td>
+                                    <td width="30%">{{k}} <span class="float-right"><i class="far fa-question-circle"
+                                                data-toggle="tooltip" data-original-title="{{ v.des }}"></i></span>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if v.can_edit %}
+                                        <a href="#" id="{{k}}" class="myeditable" data-name="{{k}}"
+                                            data-pk="{{loop.index}}" data-type="{{v.type}}"
+                                            data-url="/redisboard/config" data-placement="right">{{v.value}}</a></td>
+                                    {% else %}
+                                    {{v.value}}
+                                    {% endif %}
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -43,7 +53,7 @@
                                 {% for k,v in network_config.items() %}
                                 <tr>
                                     <td class="" width="30%">{{k}}</td>
-                                    <td class="text-center"><a href="#" class="myeditable" data-name="hello"
+                                    <td class="text-center"><a href="#" class="myeditable" data-name="{{k}}"
                                             data-type="text" data-placement="right">{{v.value}}</a></td>
                                 </tr>
                                 {% endfor %}
@@ -57,8 +67,4 @@
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block js %}
-
 {% endblock %}

@@ -20,7 +20,7 @@ from .utils import (
     VALUE_SETTERS,
     _decode_bytes,
 )
-from .constant import GENERAL_CONFIG_ITEM, NETWORK_CONFIG_ITEM
+from .constant import GENERAL_CONFIG, NETWORK_CONFIG_ITEM, BADGE_CLASS, INFO_GROUPS
 
 module = Blueprint(
     "redisboard",
@@ -28,25 +28,6 @@ module = Blueprint(
     template_folder="templates/redisboard",
     static_folder="static",
 )
-
-BADGE_CLASS = {
-    "string": "badge-info",
-    "list": "badge-success",
-    "set": "badge-warning",
-    "hash": "badge-dark",
-    "zset": "badge-light",
-}
-
-INFO_GROUPS = [
-    "Server",
-    "Clients",
-    "Memory",
-    "Persistence",
-    "Stats",
-    "Replication",
-    "Cpu",
-    "Cluster",
-]
 
 
 class RedisServer:
@@ -135,13 +116,15 @@ def info():
 def config():
     conn = server.connection
     redis_config = conn.config_get()
-    for k, v in GENERAL_CONFIG_ITEM.items():
-        GENERAL_CONFIG_ITEM[k]["value"] = redis_config.get(k)
+    config_file = server.info["Server"].get("config_file")
+    for k, v in GENERAL_CONFIG.items():
+        GENERAL_CONFIG[k]["value"] = redis_config.get(k)
     for k, v in NETWORK_CONFIG_ITEM.items():
         NETWORK_CONFIG_ITEM[k]["value"] = redis_config.get(k)
     return render_template(
         "config.html",
-        general_config=GENERAL_CONFIG_ITEM,
+        config_file=config_file,
+        general_config=GENERAL_CONFIG,
         network_config=NETWORK_CONFIG_ITEM,
     )
 

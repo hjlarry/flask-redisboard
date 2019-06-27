@@ -56,9 +56,17 @@ $("#SlowlogTable").dataTable({
   "searching": false,
   "info": false,
 });
+
 $.fn.editable.defaults.mode = 'inline';
-$('.myeditable').editable({
-  pk: 1,
-  url: '/redisboard/config',
-  title: 'Enter username'
+
+
+
+$("#loglevel").editable({
+  source: [
+    { value: 1, text: 'Active' },
+    { value: 2, text: 'Blocked' },
+    { value: 3, text: 'Deleted' }
+  ]
 });
+
+$('.myeditable').editable();

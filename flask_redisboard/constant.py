@@ -1,17 +1,23 @@
 from collections import OrderedDict
 
+BADGE_CLASS = {
+    "string": "badge-info",
+    "list": "badge-success",
+    "set": "badge-warning",
+    "hash": "badge-dark",
+    "zset": "badge-light",
+}
 
-GENERAL_CONFIG_ITEM = OrderedDict(
-    {
-        "pidfile": {"des": "abbss", "can_edit": True},
-        "logfile": {"des": "abbss", "can_edit": True},
-        "loglevel": {"des": "abbss", "can_edit": True},
-        "databases": {"des": "abbss", "can_edit": True},
-        "daemonize": {"des": "abbss", "can_edit": True},
-        "supervised": {"des": "abbss", "can_edit": True},
-        "syslog-facility": {"des": "abbss", "can_edit": True},
-    }
-)
+INFO_GROUPS = [
+    "Server",
+    "Clients",
+    "Memory",
+    "Persistence",
+    "Stats",
+    "Replication",
+    "Cpu",
+    "Cluster",
+]
 
 NETWORK_CONFIG_ITEM = OrderedDict(
     {
@@ -23,6 +29,29 @@ NETWORK_CONFIG_ITEM = OrderedDict(
         "protected-mode": {"des": "abbss", "can_edit": True},
         "unixsocketperm ": {"des": "abbss", "can_edit": True},
         "bind ": {"des": "abbss", "can_edit": True},
+    }
+)
+
+logfile_desc = "You can specify the log file name.An empty string can be used to force Redis to log on the standard output. Note that if you use standard output for logging but daemonize, logs will be sent to /dev/null."
+pidfile_desc = "When redis is running as daemon it creates a pid file. Redis writes it where specified at startup and removes it at exit. You can set the path for pid file."
+databases_desc = "Set the number of databases.The default database is DB 0, you can select a different one on a per-connection basis using SELECT <dbid> where dbid is a number between 0 and 'databases'-1."
+daemonize_desc = "Use 'yes' if you want Redis to run as a daemon. By default Redis does not run as a daemon. Redis will write a pid file in /var/run/redis.pid when daemonized."
+loglevel_desc = "This config specifies the verbosity level.Debug is useful for development and testing as a lot of information is given.Verbose is selected to logs many rarely used info.Notice is used in production because it is moderately verbose.Warning as the name specifies logs only the very important messages"
+supervised_desc = "If you run Redis from upstart or systemd, Redis can interact with your supervision tree.If 'no' is selected then there will be no supervision interaction.If upstart is selected - signal upstart by putting Redis into SIGSTOP mode.If systemd is selected -signal systemd by writing READY=1 to $NOTIFY_SOCKET and If it is set to auto-detect upstart or systemd method based on UPSTART_JOB or NOTIFY_SOCKET environment variables."
+syslog_fac_desc = (
+    "Specifies the syslog facility. Must be USER or between LOCAL0-LOCAL7."
+)
+
+
+GENERAL_CONFIG = OrderedDict(
+    {
+        "pidfile": {"des": pidfile_desc, "type": "text", "can_edit": True},
+        "logfile": {"des": logfile_desc, "type": "text", "can_edit": True},
+        "loglevel": {"des": loglevel_desc, "type": "select", "can_edit": True},
+        "databases": {"des": databases_desc, "type": "number", "can_edit": True},
+        "daemonize": {"des": daemonize_desc, "type": "text", "can_edit": False},
+        "supervised": {"des": supervised_desc, "type": "text", "can_edit": False},
+        "syslog-facility": {"des": syslog_fac_desc, "type": "text", "can_edit": True},
     }
 )
 """
