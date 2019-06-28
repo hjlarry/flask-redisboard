@@ -102,151 +102,266 @@ SNAPSHOTTING_CONFIG = OrderedDict(
     }
 )
 
+wait_to_add = "wait to add"
+
+
+REPLICATION_CONFIG = OrderedDict(
+    {
+        "masterauth": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "slave-announce-ip ": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "repl-ping-slave-period ": {
+            "desc": wait_to_add,
+            "type": "select",
+            "can_edit": True,
+        },
+        "repl-timeout": {"desc": wait_to_add, "can_edit": False},
+        "repl-backlog-size": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "repl-backlog-ttl": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "slave-priority": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "slave-announce-port": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "min-slaves-to-write": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "min-slaves-max-lag": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "repl-diskless-sync-delay": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "slave-serve-stale-data": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "slave-read-only": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "repl-disable-tcp-nodelay": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "repl-diskless-sync": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "slaveof": {"desc": wait_to_add, "type": "text", "can_edit": True},
+    }
+)
+
+SECURITY_CONFIG = OrderedDict(
+    {"requirepass": {"desc": wait_to_add, "type": "text", "can_edit": True}}
+)
+
+CLIENTS_CONFIG = OrderedDict(
+    {"maxclients": {"desc": wait_to_add, "type": "text", "can_edit": True}}
+)
+
+MEMORY_CONFIG = OrderedDict(
+    {
+        "maxmemory": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "maxmemory-samples": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "maxmemory-policy": {"desc": wait_to_add, "type": "text", "can_edit": True},
+    }
+)
+
+LAZY_FREEING_CONFIG = OrderedDict(
+    {
+        "lazyfree-lazy-eviction": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "lazyfree-lazy-expire": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "lazyfree-lazy-server-del": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "slave-lazy-flush": {"desc": wait_to_add, "type": "text", "can_edit": True},
+    }
+)
+
+APPEND_ONLY_MODE_CONFIG = OrderedDict(
+    {
+        "auto-aof-rewrite-percentage": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "auto-aof-rewrite-min-size": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "no-appendfsync-on-rewrite": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "aof-load-truncated": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "aof-use-rdb-preamble": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "appendfsync": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "appendonly": {"desc": wait_to_add, "type": "text", "can_edit": True},
+    }
+)
+
+LUA_SCRIPTING_CONFIG = OrderedDict(
+    {"lua-time-limit": {"desc": wait_to_add, "type": "text", "can_edit": True}}
+)
+
+REDIS_CLUSTER_CONFIG = OrderedDict(
+    {
+        "cluster-node-timeout": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "cluster-migration-barrier": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "cluster-slave-validity-factor": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "cluster-require-full-coverage": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+    }
+)
+
+CLUSTER_DOCKER_NAT_CONFIG = OrderedDict(
+    {
+        "cluster-announce-ip": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "cluster-announce-port": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "cluster-announce-bus-port ": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+    }
+)
+
+SLOWLOG_CONFIG = OrderedDict(
+    {
+        "slowlog-log-slower-than": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "slowlog-max-len": {"desc": wait_to_add, "type": "text", "can_edit": True},
+    }
+)
+
+LATENCY_MONITOR_CONFIG = OrderedDict(
+    {
+        "latency-monitor-threshold": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        }
+    }
+)
+
+EVENT_NOTIFICATION_CONFIG = OrderedDict(
+    {"notify-keyspace-events ": {"desc": wait_to_add, "type": "text", "can_edit": True}}
+)
+
+DEFRAGMENTATION_CONFIG = OrderedDict(
+    {
+        "active-defrag-threshold-lower": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "active-defrag-threshold-upper": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "active-defrag-ignore-bytes": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "active-defrag-cycle-min": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "active-defrag-cycle-max": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "activedefrag": {"desc": wait_to_add, "type": "text", "can_edit": True},
+    }
+)
+
+ADVANCED_CONFIG = OrderedDict(
+    {
+        "hash-max-ziplist-entries": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "hash-max-ziplist-value": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "list-max-ziplist-size": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "list-compress-depth": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "set-max-intset-entries": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "zset-max-ziplist-entries": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "zset-max-ziplist-value": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "hll-sparse-max-bytes": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "hz": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "activerehashing": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "aof-rewrite-incremental-fsync": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+        "client-output-buffer-limit": {
+            "desc": wait_to_add,
+            "type": "text",
+            "can_edit": True,
+        },
+    }
+)
+
 
 CONFIG = (
     (NETWORK_CONFIG, "NETWORK"),
     (GENERAL_CONFIG, "GENERAL"),
     (SNAPSHOTTING_CONFIG, "SNAPSHOTTING"),
+    (REPLICATION_CONFIG, "REPLICATION"),
+    (SECURITY_CONFIG, "SECURITY"),
+    (CLIENTS_CONFIG, "CLIENTS"),
+    (MEMORY_CONFIG, "MEMORY MANAGEMENT"),
+    (LAZY_FREEING_CONFIG, "LAZY FREEING"),
+    (APPEND_ONLY_MODE_CONFIG, "APPEND ONLY MODE"),
+    (LUA_SCRIPTING_CONFIG, "LUA SCRIPTING"),
+    (REDIS_CLUSTER_CONFIG, "REDIS CLUSTER"),
+    (CLUSTER_DOCKER_NAT_CONFIG, "CLUSTER DOCKER/NAT"),
+    (SLOWLOG_CONFIG, "SLOWLOG"),
+    (LATENCY_MONITOR_CONFIG, "LATENCY MONITOR"),
+    (EVENT_NOTIFICATION_CONFIG, "EVENT NOTIFICATION"),
+    (DEFRAGMENTATION_CONFIG, "DEFRAGMENTATION"),
+    (ADVANCED_CONFIG, "ADVANCED CONFIG"),
 )
-"""
-
-
-
-REPLICATION
-masterauth 
--
-slave-announce-ip 
--
-repl-ping-slave-period 
-10
-repl-timeout 
-60
-repl-backlog-size 
-1048576
-repl-backlog-ttl 
-3600
-slave-priority 
-100
-slave-announce-port 
-0
-min-slaves-to-write 
-0
-min-slaves-max-lag 
-10
-repl-diskless-sync-delay 
-5
-slave-serve-stale-data 
-yes
-slave-read-only 
-yes
-repl-disable-tcp-nodelay 
-no
-repl-diskless-sync 
-no
-slaveof 
--
-SECURITY
-requirepass 
--
-CLIENTS
-maxclients 
-10000
-MEMORY MANAGEMENT
-maxmemory 
-0
-maxmemory-samples 
-5
-maxmemory-policy 
-noeviction
-LAZY FREEING
-lazyfree-lazy-eviction 
-no
-lazyfree-lazy-expire 
-no
-lazyfree-lazy-server-del 
-no
-slave-lazy-flush 
-no
-APPEND ONLY MODE
-auto-aof-rewrite-percentage 
-100
-auto-aof-rewrite-min-size 
-67108864
-no-appendfsync-on-rewrite 
-no
-aof-load-truncated 
-yes
-aof-use-rdb-preamble 
-no
-appendfsync 
-everysec
-appendonly 
-no
-LUA SCRIPTING
-lua-time-limit 
-5000
-REDIS CLUSTER
-cluster-node-timeout 
-15000
-cluster-migration-barrier 
-1
-cluster-slave-validity-factor 
-10
-cluster-require-full-coverage 
-yes
-CLUSTER DOCKER/NAT
-cluster-announce-ip 
--
-cluster-announce-port 
-0
-cluster-announce-bus-port 
-0
-SLOWLOG
-slowlog-log-slower-than 
-10000
-slowlog-max-len 
-128
-LATENCY MONITOR
-latency-monitor-threshold 
-0
-EVENT NOTIFICATION
-notify-keyspace-events 
--
-DEFRAGMENTATION
-active-defrag-threshold-lower 
-10
-active-defrag-threshold-upper 
-100
-active-defrag-ignore-bytes 
-104857600
-active-defrag-cycle-min 
-25
-active-defrag-cycle-max 
-75
-activedefrag 
-no
-ADVANCED CONFIG
-hash-max-ziplist-entries 
-512
-hash-max-ziplist-value 
-64
-list-max-ziplist-size 
--2
-list-compress-depth 
-0
-set-max-intset-entries 
-512
-zset-max-ziplist-entries 
-128
-zset-max-ziplist-value 
-64
-hll-sparse-max-bytes 
-3000
-hz 
-10
-activerehashing 
-yes
-aof-rewrite-incremental-fsync 
-yes
-client-output-buffer-limit
-"""
