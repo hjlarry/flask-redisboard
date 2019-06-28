@@ -298,9 +298,8 @@ def hash_edit_value(db, key):
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
-    index = request.args.get("index")
-    conn.hset(ori_key, index, request.form["value"])
-    return redirect(url_for("redisboard.key_detail", db=db, key=key))
+    conn.hset(ori_key, request.form.get("name"), request.form.get("value"))
+    return jsonify({"code": 0})
 
 
 @module.route("/db/<db>/<key>/hash_rem", methods=["POST"])
@@ -346,9 +345,9 @@ def zset_edit_score(db, key):
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
-    maps = {request.args.get("member"): request.form.get("score", type=float)}
+    maps = {request.form.get("name"): request.form.get("value", type=float)}
     conn.zadd(ori_key, maps)
-    return redirect(url_for("redisboard.key_detail", db=db, key=key))
+    return jsonify({"code": 0})
 
 
 @module.route("/db/<db>/<key>/zset_add", methods=["POST"])
