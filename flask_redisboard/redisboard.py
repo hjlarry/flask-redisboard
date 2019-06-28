@@ -19,8 +19,9 @@ from .utils import (
     _get_key_info,
     VALUE_SETTERS,
     _decode_bytes,
+    _update_config,
 )
-from .constant import GENERAL_CONFIG, NETWORK_CONFIG, BADGE_CLASS, INFO_GROUPS
+from .constant import BADGE_CLASS, INFO_GROUPS, CONFIG
 
 module = Blueprint(
     "redisboard",
@@ -115,18 +116,10 @@ def info():
 @module.route("/config/")
 def config():
     conn = server.connection
-    redis_config = conn.config_get()
+    config_value = conn.config_get()
     config_file = server.info["Server"].get("config_file")
-    for k, v in GENERAL_CONFIG.items():
-        GENERAL_CONFIG[k]["value"] = redis_config.get(k)
-    for k, v in NETWORK_CONFIG.items():
-        NETWORK_CONFIG[k]["value"] = redis_config.get(k)
-    return render_template(
-        "config.html",
-        config_file=config_file,
-        general_config=GENERAL_CONFIG,
-        network_config=NETWORK_CONFIG,
-    )
+    _update_config(CONFIG, config_value)
+    return render_template("config.html", config_file=config_file, config=CONFIG)
 
 
 @module.route("/db/")
@@ -137,7 +130,7 @@ def db_detail(db=0):
     db_detail["_keys"] = db_detail["keys"] if "keys" in db_detail else 0
     cursor = request.args.get("cursor", type=int, default=0)
     keypattern = request.args.get("keypattern", default="")
-    # when search, use big paginate number
+    # when search, use bigger paginate number
     count = 1000 if keypattern else 20
     db_detail.update(
         _get_db_details(

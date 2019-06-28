@@ -75,6 +75,8 @@ NETWORK_CONFIG = OrderedDict(
         "bind ": {"desc": bind_desc, "can_edit": False},
     }
 )
+
+CONFIG = ((NETWORK_CONFIG, "NETWORK"), (GENERAL_CONFIG, "GENERAL"))
 """
 
 SNAPSHOTTING

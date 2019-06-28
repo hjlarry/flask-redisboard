@@ -135,3 +135,10 @@ def _get_key_info(conn, key):
         "encoding": _decode_bytes(encoding),
         "idletime": idletime,
     }
+
+
+def _update_config(config_constants, config_value):
+    for config_part, name in config_constants:
+        for k, v in config_part.items():
+            config_part[k]["value"] = config_value.get(k)
+
