@@ -113,9 +113,15 @@ def info():
     )
 
 
-@module.route("/config/")
+@module.route("/config/", methods=["GET", "POST"])
 def config():
     conn = server.connection
+    if request.method == "POST":
+        try:
+            conn.config_set(request.form.get("name"), request.form.get("value"))
+        except Exception as e:
+            return jsonify({"code": 999, "error": str(e)})
+        return jsonify({"code": 0})
     config_value = conn.config_get()
     config_file = server.info["Server"].get("config_file")
     _update_config(CONFIG, config_value)
@@ -254,9 +260,9 @@ def list_edit_value(db, key):
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
-    index = request.args.get("index", type=int, default=0)
-    conn.lset(ori_key, index, request.form["value"])
-    return redirect(url_for("redisboard.key_detail", db=db, key=key))
+    index = request.form.get("name", type=int)
+    conn.lset(ori_key, index, request.form.get("value"))
+    return jsonify({"code": 0})
 
 
 @module.route("/db/<db>/<key>/list_rem", methods=["POST"])
@@ -388,14 +394,4 @@ def key_detail(db, key):
     return render_template(
         f"keydetail/{key_details['type']}.html", key_details=key_details, db=db
     )
-
-
-@module.route("/config", methods=["POST"])
-def config_set():
-    conn = server.connection
-    try:
-        conn.config_set(request.form.get("name"), request.form.get("value"))
-    except Exception as e:
-        return jsonify({"code": 999, "error": str(e)})
-    return jsonify({"code": 0})
 

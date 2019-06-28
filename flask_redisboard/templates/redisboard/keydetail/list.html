@@ -17,18 +17,9 @@
         {% for index, value in key_details.data %}
         <tr>
             <td class="text-center">{{index}}</td>
-            <td class="align-middle">
-                <form
-                    action="{{url_for('redisboard.list_edit_value', db=db, key=key_details.name|quote_plus, index=index)}}"
-                    method="POST">
-                    <div class="input-group ">
-                        <input type="text" class="form-control" value="{{value}}" aria-label="" name="value">
-                        <div class="input-group-append">
-                            <!-- TODO 修改成功后没有提示 -->
-                            <button class="btn btn-primary" type="submit"><i class="fas fa-edit"></i></button>
-                        </div>
-                    </div>
-                </form>
+            <td class="text-center">
+                {% set url=url_for('redisboard.list_edit_value', db=db, key=key_details.name|quote_plus) %}
+                <a href="#" class="myeditable" data-name="{{index}}" data-type="text" data-url="{{url}}">{{value}}</a>
             </td>
         </tr>
         {% endfor %}
