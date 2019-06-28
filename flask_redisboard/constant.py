@@ -76,22 +76,42 @@ NETWORK_CONFIG = OrderedDict(
     }
 )
 
-CONFIG = ((NETWORK_CONFIG, "NETWORK"), (GENERAL_CONFIG, "GENERAL"))
+dbfilename_desc = "The filename where to dump the database."
+stop_writes_on_bgsave_error_desc = "By default Redis will stop accepting writes if RDB snapshots are enabled and the latest background save failed. This will make you aware that data is not persisting on disk properly, otherwise chances are that no one will notice and some disaster will happen.If the background saving process will start working again Redis will automatically allow writes again.You can disable this so that Redis continue to work as usual even if there are problems with the disk."
+rdbcompression_desc = "This Compresses string objects using LZF when dump .rdb databases.By default it is set to yes.If you want to save some CPU then set it to no."
+rdbchecksum_desc = "Since version 5 of RDB a CRC64 checksum is placed at the end of the file. This makes the format more resistant to corruption but there is a performance hit to pay (around 10%) when saving and loading RDB files, so you can disable it for maximum performances.RDB files created with checksum disabled have a checksum of zero that will tell the loading code to skip the check."
+dir_desc = "The working directory.The DB will be written inside this directory, with the filename specified above using the 'dbfilename' configuration directive.The Append Only File will also be created inside this directory."
+save_desc = "Used for saving db on disk. The format is 'save <seconds><changes>'.Will save the DB if both the given number of seconds and the given number of write operations against the DB occurred."
+
+SNAPSHOTTING_CONFIG = OrderedDict(
+    {
+        "dbfilename": {"desc": dbfilename_desc, "type": "text", "can_edit": True},
+        "stop-writes-on-bgsave-error": {
+            "desc": stop_writes_on_bgsave_error_desc,
+            "type": "select",
+            "can_edit": True,
+        },
+        "rdbcompression": {
+            "desc": rdbcompression_desc,
+            "type": "select",
+            "can_edit": True,
+        },
+        "rdbchecksum": {"desc": rdbchecksum_desc, "can_edit": False},
+        "dir": {"desc": dir_desc, "type": "text", "can_edit": True},
+        "save": {"desc": save_desc, "type": "text", "can_edit": True},
+    }
+)
+
+
+CONFIG = (
+    (NETWORK_CONFIG, "NETWORK"),
+    (GENERAL_CONFIG, "GENERAL"),
+    (SNAPSHOTTING_CONFIG, "SNAPSHOTTING"),
+)
 """
 
-SNAPSHOTTING
-dbfilename 
-dump.rdb
-stop-writes-on-bgsave-error 
-yes
-rdbcompression 
-yes
-rdbchecksum 
-yes
-dir 
-/Users/hejl
-save 
-3600 1 300 100 60 10000
+
+
 REPLICATION
 masterauth 
 -

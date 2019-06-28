@@ -70,4 +70,14 @@ $("#loglevel").editable({
   ]
 });
 
-$('.myeditable').editable();
+$("#protected-mode,#stop-writes-on-bgsave-error,#rdbcompression").editable({
+  source: [
+    { value: "yes", text: 'Yes' },
+    { value: "no", text: 'No' },
+  ]
+});
+$('.myeditable').editable({
+  "emptytext": "not set",
+  "send": "always",
+  "placement": "right"
+});
