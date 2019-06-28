@@ -17,48 +17,43 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h6>GENERAL</h6>
                         <table class="table table-bordered table-md">
-                            <tbody>
-                                {% for k,v in general_config.items() %}
-                                <tr>
-                                    <td width="30%">{{k}} <span class="float-right"><i class="far fa-question-circle"
-                                                data-toggle="tooltip" data-original-title="{{ v.des }}"></i></span>
-                                    </td>
-                                    <td class="text-center">
-                                        {% if v.can_edit %}
-                                        <a href="#" id="{{k}}" class="myeditable" data-name="{{k}}"
-                                            data-pk="{{loop.index}}" data-type="{{v.type}}"
-                                            data-url="/redisboard/config" data-placement="right">{{v.value}}</a></td>
-                                    {% else %}
-                                    {{v.value}}
-                                    {% endif %}
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h6>NETWORK</h6>
-                        <table class="table table-bordered table-md" id="">
-                            <tbody>
-                                {% for k,v in network_config.items() %}
-                                <tr>
-                                    <td class="" width="30%">{{k}}</td>
-                                    <td class="text-center"><a href="#" class="myeditable" data-name="{{k}}"
-                                            data-type="text" data-placement="right">{{v.value}}</a></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-
+                            <tr>
+                                <th colspan="2">GENERAL</th>
+                            </tr>
+                            {% for k,v in general_config.items() %}
+                            <tr>
+                                <td width="30%">{{k}} <span class="float-right"><i class="far fa-question-circle"
+                                            data-toggle="tooltip" data-original-title="{{ v.desc }}"></i></span>
+                                </td>
+                                <td class="text-center">
+                                    {% if v.can_edit %}
+                                    <a href="#" id="{{k}}" class="myeditable" data-name="{{k}}" data-pk="{{loop.index}}"
+                                        data-type="{{v.type}}" data-url="/redisboard/config"
+                                        data-placement="right">{{v.value}}</a></td>
+                                {% else %}
+                                {{v.value}}
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <th colspan="2">NETWORK</th>
+                            </tr>
+                            {% for k,v in network_config.items() %}
+                            <tr>
+                                <td width="30%">{{k}} <span class="float-right"><i class="far fa-question-circle"
+                                            data-toggle="tooltip" data-original-title="{{ v.desc }}"></i></span>
+                                </td>
+                                <td class="text-center">
+                                    {% if v.can_edit %}
+                                    <a href="#" id="{{k}}" class="myeditable" data-name="{{k}}" data-pk="{{loop.index}}"
+                                        data-type="{{v.type}}" data-url="/redisboard/config"
+                                        data-placement="right">{{v.value}}</a></td>
+                                {% else %}
+                                {{v.value}}
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
                         </table>
                     </div>
 

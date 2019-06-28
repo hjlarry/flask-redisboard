@@ -19,18 +19,6 @@ INFO_GROUPS = [
     "Cluster",
 ]
 
-NETWORK_CONFIG_ITEM = OrderedDict(
-    {
-        "unixsocket": {"des": "abbss", "can_edit": True},
-        "timeout": {"des": "abbss", "can_edit": True},
-        "port": {"des": "abbss", "can_edit": True},
-        "tcp-backlog": {"des": "abbss", "can_edit": True},
-        "tcp-keepalive": {"des": "abbss", "can_edit": True},
-        "protected-mode": {"des": "abbss", "can_edit": True},
-        "unixsocketperm ": {"des": "abbss", "can_edit": True},
-        "bind ": {"des": "abbss", "can_edit": True},
-    }
-)
 
 logfile_desc = "You can specify the log file name.An empty string can be used to force Redis to log on the standard output. Note that if you use standard output for logging but daemonize, logs will be sent to /dev/null."
 pidfile_desc = "When redis is running as daemon it creates a pid file. Redis writes it where specified at startup and removes it at exit. You can set the path for pid file."
@@ -45,13 +33,46 @@ syslog_fac_desc = (
 
 GENERAL_CONFIG = OrderedDict(
     {
-        "pidfile": {"des": pidfile_desc, "type": "text", "can_edit": True},
-        "logfile": {"des": logfile_desc, "type": "text", "can_edit": True},
-        "loglevel": {"des": loglevel_desc, "type": "select", "can_edit": True},
-        "databases": {"des": databases_desc, "type": "number", "can_edit": True},
-        "daemonize": {"des": daemonize_desc, "type": "text", "can_edit": False},
-        "supervised": {"des": supervised_desc, "type": "text", "can_edit": False},
-        "syslog-facility": {"des": syslog_fac_desc, "type": "text", "can_edit": True},
+        "pidfile": {"desc": pidfile_desc, "type": "text", "can_edit": True},
+        "logfile": {"desc": logfile_desc, "type": "text", "can_edit": True},
+        "loglevel": {"desc": loglevel_desc, "type": "select", "can_edit": True},
+        "databases": {"desc": databases_desc, "type": "number", "can_edit": True},
+        "daemonize": {"desc": daemonize_desc, "type": "text", "can_edit": False},
+        "supervised": {"desc": supervised_desc, "type": "text", "can_edit": False},
+        "syslog-facility": {"desc": syslog_fac_desc, "type": "text", "can_edit": True},
+    }
+)
+
+
+unixsocket_desc = "Specify the path for the Unix socket that will be used to listen for incoming connections.There is no default, so Redis will not listen on a unix socket when not specified."
+timeout_desc = (
+    "Close the connection after a client is idle for N seconds (0 to disable)."
+)
+port_desc = "Accept connections on the specified port, default is 6379 (IANA #815344). If port 0 is specified Redis will not listen on a TCP socket."
+tcp_backlog_desc = "In high requests-per-second environments you need an high backlog in order to avoid slow clients connections issues. Note that the Linux kernel will silently truncate it to the value of /proc/sys/net/core/somaxconn so make sure to raise both the value of somaxconn and tcp_max_syn_backlog in order to get the desired effect."
+tcp_keepalive_desc = "In absence of communication redis sends ACKs to clients to check for dead peers.This config specifies the time period used to send ACKs. To close the connection double the specified time is needed.Default is set to 300."
+protected_mode_desc = "Protected mode is a layer of security protection.By default protected mode is enabled.You should disable it only if you are sure you want clients from other hosts to connect to Redis even if no authentication is configured, nor a specific set of interfaces are explicitly listed using the bind directive."
+unixsocketperm_desc = "Specify the path for the Unix socket that will be used to listen for incoming connections. There is no default, so Redis will not listen on a unix socket when not specified."
+bind_desc = "By default, if no bind configuration directive is specified, Redis listens for connections from all the network interfaces available on the server.It is possible to listen to just one or multiple selected interfaces using the bind configuration directive, followed by one or more IP addresses."
+
+NETWORK_CONFIG = OrderedDict(
+    {
+        "unixsocket": {"desc": unixsocket_desc, "can_edit": False},
+        "timeout": {"desc": timeout_desc, "type": "number", "can_edit": True},
+        "port": {"desc": port_desc, "can_edit": False},
+        "tcp-backlog": {"desc": tcp_backlog_desc, "can_edit": False},
+        "tcp-keepalive": {
+            "desc": tcp_keepalive_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+        "protected-mode": {
+            "desc": protected_mode_desc,
+            "type": "select",
+            "can_edit": True,
+        },
+        "unixsocketperm ": {"desc": unixsocketperm_desc, "can_edit": False},
+        "bind ": {"desc": bind_desc, "can_edit": False},
     }
 )
 """

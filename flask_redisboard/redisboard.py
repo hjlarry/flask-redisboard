@@ -20,7 +20,7 @@ from .utils import (
     VALUE_SETTERS,
     _decode_bytes,
 )
-from .constant import GENERAL_CONFIG, NETWORK_CONFIG_ITEM, BADGE_CLASS, INFO_GROUPS
+from .constant import GENERAL_CONFIG, NETWORK_CONFIG, BADGE_CLASS, INFO_GROUPS
 
 module = Blueprint(
     "redisboard",
@@ -75,7 +75,7 @@ class RedisServer:
                 yield dict(
                     id=slowlog["id"],
                     ts=datetime.datetime.fromtimestamp(slowlog["start_time"]),
-                    duration=slowlog["duration"],
+                    duration=slowlog["duration"] // 1000,
                     command=_decode_bytes(slowlog["command"]),
                 )
 
@@ -119,13 +119,13 @@ def config():
     config_file = server.info["Server"].get("config_file")
     for k, v in GENERAL_CONFIG.items():
         GENERAL_CONFIG[k]["value"] = redis_config.get(k)
-    for k, v in NETWORK_CONFIG_ITEM.items():
-        NETWORK_CONFIG_ITEM[k]["value"] = redis_config.get(k)
+    for k, v in NETWORK_CONFIG.items():
+        NETWORK_CONFIG[k]["value"] = redis_config.get(k)
     return render_template(
         "config.html",
         config_file=config_file,
         general_config=GENERAL_CONFIG,
-        network_config=NETWORK_CONFIG_ITEM,
+        network_config=NETWORK_CONFIG,
     )
 
 

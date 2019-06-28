@@ -63,9 +63,10 @@ $.fn.editable.defaults.mode = 'inline';
 
 $("#loglevel").editable({
   source: [
-    { value: 1, text: 'Active' },
-    { value: 2, text: 'Blocked' },
-    { value: 3, text: 'Deleted' }
+    { value: 'debug', text: 'Debug' },
+    { value: 'verbose', text: 'Verbose' },
+    { value: 'notice', text: 'Notice' },
+    { value: 'warning', text: 'Warning' }
   ]
 });
 
