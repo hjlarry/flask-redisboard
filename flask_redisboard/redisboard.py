@@ -392,6 +392,10 @@ def key_detail(db, key):
 
 @module.route("/config", methods=["POST"])
 def config_set():
-    print(request.form)
-    return jsonify({"code": 0, "data": "121"})
+    conn = server.connection
+    try:
+        conn.config_set(request.form.get("name"), request.form.get("value"))
+    except Exception as e:
+        return jsonify({"code": 999, "error": str(e)})
+    return jsonify({"code": 0})
 

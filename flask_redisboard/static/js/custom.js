@@ -62,6 +62,7 @@ $.fn.editable.defaults.mode = 'inline';
 
 
 $("#loglevel").editable({
+  "send": "always",
   source: [
     { value: 'debug', text: 'Debug' },
     { value: 'verbose', text: 'Verbose' },
@@ -71,13 +72,30 @@ $("#loglevel").editable({
 });
 
 $("#protected-mode,#stop-writes-on-bgsave-error,#rdbcompression").editable({
+  "send": "always",
   source: [
     { value: "yes", text: 'Yes' },
     { value: "no", text: 'No' },
   ]
 });
+
 $('.myeditable').editable({
   "emptytext": "not set",
   "send": "always",
-  "placement": "right"
+  "placement": "right",
+  success: function(data) {
+    if (data.code == 0) {
+      iziToast.success({
+        title: "Modify Success",
+        position: 'topRight',
+        timeout: 3000
+      });
+    } else {
+      iziToast.error({
+        title: "Error!",
+        position: 'topRight',
+        message: data.error,
+      });
+    }
+  }
 });
