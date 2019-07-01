@@ -78,7 +78,7 @@ var success_func = function(data) {
 
 
 $("#loglevel").editable({
-  "send": "always",
+  send: "always",
   source: [
     { value: 'debug', text: 'Debug' },
     { value: 'verbose', text: 'Verbose' },
@@ -89,7 +89,7 @@ $("#loglevel").editable({
 });
 
 $("#maxmemory-policy").editable({
-  "send": "always",
+  send: "always",
   source: [
     { value: 'allkeys-lfu', text: 'allkeys-lfu' },
     { value: 'allkeys-lru', text: 'allkeys-lru' },
@@ -103,12 +103,42 @@ $("#maxmemory-policy").editable({
   success: success_func
 });
 
+$("#appendfsync").editable({
+  send: "always",
+  source: [
+    { value: 'always', text: 'always' },
+    { value: 'everysec', text: 'everysec' },
+    { value: 'no', text: 'no' }
+  ],
+  success: success_func
+});
+
+$("#notify-keyspace-events").editable({
+  send: "always",
+  source: [
+    { value: 'K', text: 'K-Keyspace events' },
+    { value: 'E', text: 'E-Keyevent events' },
+    { value: 'g', text: 'Generic commands' },
+    { value: '$', text: '$-String commands' },
+    { value: 'l', text: 'List commands' },
+    { value: 's', text: 'Set commands' },
+    { value: 'h', text: 'Hash commands' },
+    { value: 'z', text: 'Sorted set commands' },
+    { value: 'x', text: 'Expired events' },
+    { value: 'e', text: 'Evicted commands' },
+    { value: 'A', text: 'Alias for g$lshzxe' },
+  ],
+  success: success_func
+});
+
 var yes_or_no_option = "#protected-mode,#stop-writes-on-bgsave-error,#rdbcompression," +
   "#slave-serve-stale-data,#slave-read-only, #repl-disable-tcp-nodelay, #repl-diskless-sync," +
-  "#lazyfree-lazy-eviction,#lazyfree-lazy-expire,#lazyfree-lazy-server-del,#slave-lazy-flush";
+  "#lazyfree-lazy-eviction,#lazyfree-lazy-expire,#lazyfree-lazy-server-del,#slave-lazy-flush," +
+  "#no-appendfsync-on-rewrite,#aof-load-truncated,#aof-use-rdb-preamble,#appendonly," +
+  "#cluster-require-full-coverage,#activedefrag, #activerehashing,#aof-rewrite-incremental-fsync";
 
 $(yes_or_no_option).editable({
-  "send": "always",
+  send: "always",
   source: [
     { value: "yes", text: 'Yes' },
     { value: "no", text: 'No' },
@@ -117,8 +147,8 @@ $(yes_or_no_option).editable({
 });
 
 $('.myeditable').editable({
-  "emptytext": "not set",
-  "send": "always",
-  "placement": "right",
+  emptytext: "not set",
+  send: "always",
+  placement: "right",
   success: success_func
 });

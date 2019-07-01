@@ -189,46 +189,54 @@ APPEND_ONLY_MODE_CONFIG = OrderedDict(
     {
         "auto-aof-rewrite-percentage": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "auto-aof-rewrite-min-size": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "no-appendfsync-on-rewrite": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "select",
             "can_edit": True,
         },
-        "aof-load-truncated": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "aof-use-rdb-preamble": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "appendfsync": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "appendonly": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "aof-load-truncated": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "aof-use-rdb-preamble": {
+            "desc": wait_to_add,
+            "type": "select",
+            "can_edit": True,
+        },
+        "appendfsync": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "appendonly": {"desc": wait_to_add, "type": "select", "can_edit": True},
     }
 )
 
 LUA_SCRIPTING_CONFIG = OrderedDict(
-    {"lua-time-limit": {"desc": wait_to_add, "type": "text", "can_edit": True}}
+    {"lua-time-limit": {"desc": wait_to_add, "type": "number", "can_edit": True}}
 )
 
 REDIS_CLUSTER_CONFIG = OrderedDict(
     {
-        "cluster-node-timeout": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "cluster-node-timeout": {
+            "desc": wait_to_add,
+            "type": "number",
+            "can_edit": True,
+        },
         "cluster-migration-barrier": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "cluster-slave-validity-factor": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "cluster-require-full-coverage": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "select",
             "can_edit": True,
         },
     }
@@ -239,12 +247,12 @@ CLUSTER_DOCKER_NAT_CONFIG = OrderedDict(
         "cluster-announce-ip": {"desc": wait_to_add, "type": "text", "can_edit": True},
         "cluster-announce-port": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "cluster-announce-bus-port ": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
     }
@@ -254,10 +262,10 @@ SLOWLOG_CONFIG = OrderedDict(
     {
         "slowlog-log-slower-than": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
-        "slowlog-max-len": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "slowlog-max-len": {"desc": wait_to_add, "type": "number", "can_edit": True},
     }
 )
 
@@ -265,44 +273,50 @@ LATENCY_MONITOR_CONFIG = OrderedDict(
     {
         "latency-monitor-threshold": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         }
     }
 )
 
 EVENT_NOTIFICATION_CONFIG = OrderedDict(
-    {"notify-keyspace-events ": {"desc": wait_to_add, "type": "text", "can_edit": True}}
+    {
+        "notify-keyspace-events": {
+            "desc": wait_to_add,
+            "type": "checklist",
+            "can_edit": True,
+        }
+    }
 )
 
 DEFRAGMENTATION_CONFIG = OrderedDict(
     {
         "active-defrag-threshold-lower": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "active-defrag-threshold-upper": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "active-defrag-ignore-bytes": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "active-defrag-cycle-min": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "active-defrag-cycle-max": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
-        "activedefrag": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "activedefrag": {"desc": wait_to_add, "type": "select", "can_edit": True},
     }
 )
 
@@ -310,41 +324,49 @@ ADVANCED_CONFIG = OrderedDict(
     {
         "hash-max-ziplist-entries": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "hash-max-ziplist-value": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "list-max-ziplist-size": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
-        "list-compress-depth": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "list-compress-depth": {
+            "desc": wait_to_add,
+            "type": "number",
+            "can_edit": True,
+        },
         "set-max-intset-entries": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "zset-max-ziplist-entries": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "zset-max-ziplist-value": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
-        "hll-sparse-max-bytes": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "hz": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "activerehashing": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "hll-sparse-max-bytes": {
+            "desc": wait_to_add,
+            "type": "number",
+            "can_edit": True,
+        },
+        "hz": {"desc": wait_to_add, "type": "number", "can_edit": True},
+        "activerehashing": {"desc": wait_to_add, "type": "select", "can_edit": True},
         "aof-rewrite-incremental-fsync": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "select",
             "can_edit": True,
         },
         "client-output-buffer-limit": {

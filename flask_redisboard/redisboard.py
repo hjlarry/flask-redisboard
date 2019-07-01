@@ -117,8 +117,13 @@ def info():
 def config():
     conn = server.connection
     if request.method == "POST":
+        value = ""
+        if "value" in request.form:
+            value = request.form.get("value")
+        elif "value[]" in request.form:
+            value = "".join(request.form.getlist("value[]"))
         try:
-            conn.config_set(request.form.get("name"), request.form.get("value"))
+            conn.config_set(request.form.get("name"), value)
         except Exception as e:
             return jsonify({"code": 999, "error": str(e)})
         return jsonify({"code": 0})

@@ -40,7 +40,7 @@ Now, you can go to 127.0.0.1:5000/redisboard
 ## Todo
 - [ ] Command mode
 - [ ] Dashboard
-- [ ] Config edit and view
+- [x] Config edit and view
 - [x] Slowlog
 - [x] Add a key
 - [x] Zset CRUD
