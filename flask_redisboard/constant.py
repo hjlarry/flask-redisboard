@@ -33,12 +33,12 @@ syslog_fac_desc = (
 
 GENERAL_CONFIG = OrderedDict(
     {
-        "pidfile": {"desc": pidfile_desc, "type": "text", "can_edit": True},
         "logfile": {"desc": logfile_desc, "type": "text", "can_edit": True},
+        "pidfile": {"desc": pidfile_desc, "type": "text", "can_edit": True},
+        "databases": {"desc": databases_desc, "can_edit": False},
+        "daemonize": {"desc": daemonize_desc, "can_edit": False},
         "loglevel": {"desc": loglevel_desc, "type": "select", "can_edit": True},
-        "databases": {"desc": databases_desc, "type": "number", "can_edit": True},
-        "daemonize": {"desc": daemonize_desc, "type": "text", "can_edit": False},
-        "supervised": {"desc": supervised_desc, "type": "text", "can_edit": False},
+        "supervised": {"desc": supervised_desc, "can_edit": False},
         "syslog-facility": {"desc": syslog_fac_desc, "type": "text", "can_edit": True},
     }
 )
@@ -107,54 +107,60 @@ wait_to_add = "wait to add"
 
 REPLICATION_CONFIG = OrderedDict(
     {
-        "masterauth": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "slave-announce-ip ": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "masterauth": {"desc": wait_to_add, "can_edit": False},
+        "slave-announce-ip ": {"desc": wait_to_add, "type": "text", "can_edit": True},
         "repl-ping-slave-period ": {
             "desc": wait_to_add,
-            "type": "select",
+            "type": "number",
             "can_edit": True,
         },
-        "repl-timeout": {"desc": wait_to_add, "can_edit": False},
-        "repl-backlog-size": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "repl-backlog-ttl": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "slave-priority": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "slave-announce-port": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "min-slaves-to-write": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "min-slaves-max-lag": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "repl-timeout": {"desc": wait_to_add, "type": "number", "can_edit": True},
+        "repl-backlog-size": {"desc": wait_to_add, "type": "number", "can_edit": True},
+        "repl-backlog-ttl": {"desc": wait_to_add, "type": "number", "can_edit": True},
+        "slave-priority": {"desc": wait_to_add, "type": "number", "can_edit": True},
+        "slave-announce-port": {
+            "desc": wait_to_add,
+            "type": "number",
+            "can_edit": True,
+        },
+        "min-slaves-to-write": {
+            "desc": wait_to_add,
+            "type": "number",
+            "can_edit": True,
+        },
+        "min-slaves-max-lag": {"desc": wait_to_add, "type": "number", "can_edit": True},
         "repl-diskless-sync-delay": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "number",
             "can_edit": True,
         },
         "slave-serve-stale-data": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "select",
             "can_edit": True,
         },
-        "slave-read-only": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "slave-read-only": {"desc": wait_to_add, "type": "select", "can_edit": True},
         "repl-disable-tcp-nodelay": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "select",
             "can_edit": True,
         },
-        "repl-diskless-sync": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "slaveof": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "repl-diskless-sync": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "slaveof": {"desc": wait_to_add, "can_edit": False},
     }
 )
 
-SECURITY_CONFIG = OrderedDict(
-    {"requirepass": {"desc": wait_to_add, "type": "text", "can_edit": True}}
-)
+SECURITY_CONFIG = OrderedDict({"requirepass": {"desc": wait_to_add, "can_edit": False}})
 
 CLIENTS_CONFIG = OrderedDict(
-    {"maxclients": {"desc": wait_to_add, "type": "text", "can_edit": True}}
+    {"maxclients": {"desc": wait_to_add, "type": "number", "can_edit": True}}
 )
 
 MEMORY_CONFIG = OrderedDict(
     {
-        "maxmemory": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "maxmemory-samples": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "maxmemory-policy": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "maxmemory": {"desc": wait_to_add, "type": "number", "can_edit": True},
+        "maxmemory-samples": {"desc": wait_to_add, "type": "number", "can_edit": True},
+        "maxmemory-policy": {"desc": wait_to_add, "type": "select", "can_edit": True},
     }
 )
 
@@ -162,16 +168,20 @@ LAZY_FREEING_CONFIG = OrderedDict(
     {
         "lazyfree-lazy-eviction": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "select",
             "can_edit": True,
         },
-        "lazyfree-lazy-expire": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "lazyfree-lazy-expire": {
+            "desc": wait_to_add,
+            "type": "select",
+            "can_edit": True,
+        },
         "lazyfree-lazy-server-del": {
             "desc": wait_to_add,
-            "type": "text",
+            "type": "select",
             "can_edit": True,
         },
-        "slave-lazy-flush": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "slave-lazy-flush": {"desc": wait_to_add, "type": "select", "can_edit": True},
     }
 )
 

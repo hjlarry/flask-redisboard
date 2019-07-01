@@ -60,6 +60,22 @@ $("#SlowlogTable").dataTable({
 $.fn.editable.defaults.mode = 'inline';
 
 
+var success_func = function(data) {
+  if (data.code == 0) {
+    iziToast.success({
+      title: "Modify Success",
+      position: 'topRight',
+      timeout: 3000
+    });
+  } else {
+    iziToast.error({
+      title: "Error!",
+      position: 'topRight',
+      message: data.error,
+    });
+  }
+};
+
 
 $("#loglevel").editable({
   "send": "always",
@@ -68,34 +84,41 @@ $("#loglevel").editable({
     { value: 'verbose', text: 'Verbose' },
     { value: 'notice', text: 'Notice' },
     { value: 'warning', text: 'Warning' }
-  ]
+  ],
+  success: success_func
 });
 
-$("#protected-mode,#stop-writes-on-bgsave-error,#rdbcompression").editable({
+$("#maxmemory-policy").editable({
+  "send": "always",
+  source: [
+    { value: 'allkeys-lfu', text: 'allkeys-lfu' },
+    { value: 'allkeys-lru', text: 'allkeys-lru' },
+    { value: 'allkeys-random', text: 'allkeys-random' },
+    { value: 'noeviction', text: 'noeviction' },
+    { value: 'volatile-lfu', text: 'volatile-lfu' },
+    { value: 'volatile-lru', text: 'volatile-lru' },
+    { value: 'volatile-random', text: 'volatile-random' },
+    { value: 'volatile-ttl', text: 'volatile-ttl' }
+  ],
+  success: success_func
+});
+
+var yes_or_no_option = "#protected-mode,#stop-writes-on-bgsave-error,#rdbcompression," +
+  "#slave-serve-stale-data,#slave-read-only, #repl-disable-tcp-nodelay, #repl-diskless-sync," +
+  "#lazyfree-lazy-eviction,#lazyfree-lazy-expire,#lazyfree-lazy-server-del,#slave-lazy-flush";
+
+$(yes_or_no_option).editable({
   "send": "always",
   source: [
     { value: "yes", text: 'Yes' },
     { value: "no", text: 'No' },
-  ]
+  ],
+  success: success_func
 });
 
 $('.myeditable').editable({
   "emptytext": "not set",
   "send": "always",
   "placement": "right",
-  success: function(data) {
-    if (data.code == 0) {
-      iziToast.success({
-        title: "Modify Success",
-        position: 'topRight',
-        timeout: 3000
-      });
-    } else {
-      iziToast.error({
-        title: "Error!",
-        position: 'topRight',
-        message: data.error,
-      });
-    }
-  }
+  success: success_func
 });
