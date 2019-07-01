@@ -2804,3 +2804,14 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
     opacity: 0.0; } }
 
 /*# sourceMappingURL=style.css.map */
+
+
+.database_viewmore {
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+}
+
+.database_viewmore :hover{
+    cursor: pointer;
+}

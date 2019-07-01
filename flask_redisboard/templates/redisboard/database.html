@@ -1,3 +1,4 @@
+{% import 'macros.html' as macros %}
 {% extends "layout.html" %}
 {% block content %}
 <section class="section">
@@ -9,8 +10,8 @@
                 data-confirm-yes="flush_db('{{db}}')">Flush DB</a>
         </div>
         <div class="section-header-breadcrumb">
-            <div class="breadcrumb-item">Keys: {{ db_detail._keys}} </div>
-            <div class="breadcrumb-item">Expires: {{ db_detail.expires }}</div>
+            <div class="breadcrumb-item">Keys: {{ db_summary['keys']}} </div>
+            <div class="breadcrumb-item">Expires: {{ db_summary.expires }}</div>
         </div>
     </div>
 
@@ -46,72 +47,38 @@
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-striped">
-                                <tr>
-                                    <th>
-                                        <div class="custom-checkbox custom-control">
-                                            <input type="checkbox" data-checkboxes="mygroup" data-checkbox-role="dad"
-                                                class="custom-control-input" id="checkbox-all">
-                                            <label for="checkbox-all" class="custom-control-label">&nbsp;</label>
-                                        </div>
-                                    </th>
-                                    <th>Keys({{ db_detail['key_details']|length }})</th>
-                                    <th class="text-center">Type</th>
-                                    <th class="text-center">Encoding</th>
-                                    <th class="text-center">TTL</th>
-                                    <th class="text-center">Size</th>
-                                    <th>Action</th>
-                                </tr>
-                                {% for key_detail in db_detail['key_details'] %}
-                                <tr>
-                                    <td class="p-0 text-center">
-                                        <div class="custom-checkbox custom-control">
-                                            <input type="checkbox" data-checkboxes="mygroup"
-                                                class="custom-control-input" id="checkbox-{{loop.index}}" name="id"
-                                                data-keyname="{{key_detail.name}}">
-                                            <label for="checkbox-{{loop.index}}"
-                                                class="custom-control-label">&nbsp;</label>
-                                        </div>
-                                    </td>
-                                    <td><a href="{{url_for('redisboard.key_detail',db=db, key=key_detail.name|quote_plus)}}"
-                                            data-toggle="tooltip"
-                                            data-original-title="{{ key_detail.name }}">{{ key_detail.name|truncate(20) }}</a>
-                                    </td>
-                                    {% if key_detail.error %}
-                                    <td class="error" colspan="6">
-                                        ERROR: {{ key_detail.error }}
-                                    </td>
-                                    {% else %}
-                                    <td class="text-center">
-                                        <div class="badge {{badge_class.get(key_detail.type)}}">{{ key_detail.type }}
-                                        </div>
-                                    </td>
-                                    <td class="text-center">{{ key_detail.encoding }}</td>
-                                    <td class="text-center">{{ key_detail.ttl }}</td>
-                                    <td class="text-center">{{ key_detail.length }}</td>
-                                    <td><a href="#" class="btn btn-danger"
-                                            data-confirm="Really?|Do you want to delete {{ key_detail.name }}?"
-                                            data-confirm-yes="delete_key('{{ key_detail.name|quote_plus }}', '{{db}}')"><i
-                                                class="fas fa-trash"></i></a></td>
-                                    {% endif %}
-                                </tr>
-                                {% endfor %}
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="custom-checkbox custom-control">
+                                                <input type="checkbox" data-checkboxes="mygroup"
+                                                    data-checkbox-role="dad" class="custom-control-input"
+                                                    id="checkbox-all">
+                                                <label for="checkbox-all" class="custom-control-label">&nbsp;</label>
+                                            </div>
+                                        </th>
+                                        <th>Keys({{ key_details|length }})</th>
+                                        <th class="text-center">Type</th>
+                                        <th class="text-center">Encoding</th>
+                                        <th class="text-center">TTL</th>
+                                        <th class="text-center">Size</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="db_table">
+                                    {{macros.render_key_details(key_details, badge_class)}}
+                                </tbody>
+
                             </table>
                         </div>
-                        {% if db_detail._keys > count %}
+                        {% if cursor != 0 %}
                         <div class="card-footer">
-                            <ul class="pagination float-right">
-                                <li class="page-item">
-                                    <a class="page-link"
-                                        href="{{url_for('redisboard.db_detail', db=db, cursor=db_detail.cursor, keypattern=keypattern)}}">
-                                        {% if db_detail.cursor == 0 %}
-                                        Index Page
-                                        {% else %}
-                                        Next Page
-                                        {% endif %}
-                                    </a>
-                                </li>
-                            </ul>
+                            <div class="color bg-secondary database_viewmore" id="db_more"
+                                data-url="{{url_for('redisboard.db_detail', db=db, cursor=cursor, keypattern=keypattern)}}">
+                                <div>View More</div>
+                            </div>
                         </div>
+
                         {% endif %}
                     </div>
                 </div>

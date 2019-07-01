@@ -21,3 +21,38 @@
 </tr>
 {% endfor %}
 {% endmacro %}
+
+
+
+{% macro render_key_details(key_details, badge_class) %}
+{% for key_detail in key_details %}
+<tr>
+    <td class="p-0 text-center">
+        <div class="custom-checkbox custom-control">
+            <input type="checkbox" data-checkboxes="mygroup" class="custom-control-input" id="checkbox-{{loop.index}}"
+                name="id" data-keyname="{{key_detail.name}}">
+            <label for="checkbox-{{loop.index}}" class="custom-control-label">&nbsp;</label>
+        </div>
+    </td>
+    <td><a href="{{url_for('redisboard.key_detail',db=db, key=key_detail.name|quote_plus)}}" data-toggle="tooltip"
+            data-original-title="{{ key_detail.name }}">{{ key_detail.name|truncate(20) }}</a>
+    </td>
+    {% if key_detail.error %}
+    <td class="error" colspan="6">
+        ERROR: {{ key_detail.error }}
+    </td>
+    {% else %}
+    <td class="text-center">
+        <div class="badge {{badge_class.get(key_detail.type)}}">{{ key_detail.type }}
+        </div>
+    </td>
+    <td class="text-center">{{ key_detail.encoding }}</td>
+    <td class="text-center">{{ key_detail.ttl }}</td>
+    <td class="text-center">{{ key_detail.length }}</td>
+    <td><a href="#" class="btn btn-danger" data-confirm="Really?|Do you want to delete {{ key_detail.name }}?"
+            data-confirm-yes="delete_key('{{ key_detail.name|quote_plus }}', '{{db}}')"><i class="fas fa-trash"></i></a>
+    </td>
+    {% endif %}
+</tr>
+{% endfor %}
+{% endmacro %}

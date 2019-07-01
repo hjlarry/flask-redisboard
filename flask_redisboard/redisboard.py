@@ -10,6 +10,7 @@ from flask import (
     render_template,
     request,
     url_for,
+    get_template_attribute,
 )
 from werkzeug import cached_property, url_quote_plus, url_unquote_plus
 
@@ -136,26 +137,33 @@ def config():
 @module.route("/db/")
 @module.route("/db/<db>/")
 def db_detail(db=0):
-    db_detail = server.keyspace.get(f"db{db}", dict())
-    # avoid same name with dict.keys()
-    db_detail["_keys"] = db_detail["keys"] if "keys" in db_detail else 0
+    db_summary = server.keyspace.get(f"db{db}", dict())
     cursor = request.args.get("cursor", type=int, default=0)
     keypattern = request.args.get("keypattern", default="")
     # when search, use bigger paginate number
-    count = 1000 if keypattern else 20
-    db_detail.update(
-        _get_db_details(
-            server.connection, db, cursor=cursor, keypattern=keypattern, count=count
+    count = 1000 if keypattern else 30
+    key_details, next_cursor = _get_db_details(
+        server.connection, db, cursor=cursor, keypattern=keypattern, count=count
+    )
+    if cursor == 0:
+        # render index page
+        return render_template(
+            "database.html",
+            db_summary=db_summary,
+            key_details=key_details,
+            cursor=next_cursor,
+            db=db,
+            badge_class=BADGE_CLASS,
+            keypattern=keypattern,
         )
-    )
-    return render_template(
-        "database.html",
-        db_detail=db_detail,
-        db=db,
-        count=count,
-        badge_class=BADGE_CLASS,
-        keypattern=keypattern,
-    )
+    macro = get_template_attribute("macros.html", "render_key_details")
+    html = macro(key_details, BADGE_CLASS)
+    url = ""
+    if next_cursor != 0:
+        url = url_for(
+            "redisboard.db_detail", db=db, cursor=next_cursor, keypattern=keypattern
+        )
+    return jsonify({"code": 0, "html": html, "data": url})
 
 
 @module.route("/db/<db>/addkey", methods=["POST"])

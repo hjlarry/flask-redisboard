@@ -91,7 +91,7 @@ def _get_db_details(conn, db, cursor=0, keypattern=None, count=20):
     keypattern = f"*{keypattern}*" if keypattern else None
     cursor, keys = conn.scan(cursor=cursor, match=keypattern, count=count)
     key_details = [_get_key_info(conn, key.decode()) for key in keys]
-    return dict(key_details=key_details, cursor=cursor)
+    return key_details, cursor
 
 
 def _get_key_details(conn, db, key):

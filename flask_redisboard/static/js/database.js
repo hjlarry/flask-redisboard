@@ -157,4 +157,19 @@ $('.selectgroup-input').change(function() {
       break;
 
   }
-})
+});
+
+$('#db_more').click(function() {
+  $.ajax({
+    url: this.dataset.url,
+    type: 'get',
+    dataType: 'json',
+    success: function(rs) {
+      $('#db_table').append(rs.html);
+      $('#db_more').attr('data-url', rs.data)
+      if (rs.data == '') {
+        $('#db_more').text('No more data!');
+      }
+    }
+  })
+});
