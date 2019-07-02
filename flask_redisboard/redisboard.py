@@ -407,3 +407,8 @@ def key_detail(db, key):
         f"keydetail/{key_details['type']}.html", key_details=key_details, db=db
     )
 
+
+@module.route("/command")
+def command():
+    return render_template("command.html")
+

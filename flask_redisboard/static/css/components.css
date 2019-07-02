@@ -291,7 +291,7 @@
 /* 1.5 Chat */
 .chat-box .chat-content {
   background-color: #f9f9f9 !important;
-  height: 300px;
+  height: 600px;
   overflow: hidden;
   padding-top: 25px !important;
 }

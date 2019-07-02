@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="section">
+    <div class="section-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="card chat-box" id="mychatbox">
+                    <div class="card-header">
+                        <h4>Command Mode</h4>
+                    </div>
+                    <div class="card-body chat-content">
+                        <div class="alert alert-light">
+                            <div class="alert-title">Set aaa bbb</div>
+                            ok
+                        </div>
+
+                        <div class="alert alert-light">
+                            <div class="alert-title">Set ddd eee</div>
+                            ok
+                        </div>
+                    </div>
+                    <div class="card-footer chat-form">
+                        <form id="chat-form">
+                            <input type="text" class="form-control" placeholder="Send A Command">
+                            <button class="btn btn-primary">
+                                <i class="far fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

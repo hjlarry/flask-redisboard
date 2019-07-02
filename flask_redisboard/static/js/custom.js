@@ -151,3 +151,16 @@ $('.myeditable').editable({
   placement: "right",
   success: success_func
 });
+
+
+$("#chat-form").submit(function() {
+  var me = $(this);
+
+  if (me.find('input').val().trim().length > 0) {
+    $.chatCtrl('#mychatbox', {
+      text: me.find('input').val(),
+    });
+    me.find('input').val('');
+  }
+  return false;
+});
