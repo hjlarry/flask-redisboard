@@ -32,17 +32,16 @@ function flush_db(db) {
     method: "delete",
     url: '/redisboard/db/' + db + '/flush',
     success: function(data) {
-      console.log(data)
-      Cookies.set("toast", "Flush DB Success!");
-      window.location.assign('/redisboard/db/' + db);
-    },
-    error: function(data) {
-      console.log(data)
-      iziToast.error({
-        title: 'Error!',
-        message: data,
-        position: 'topRight'
-      });
+      if (data.code == 0) {
+        Cookies.set("toast", "Flush DB Success!");
+        window.location.assign(data.data);
+      } else {
+        iziToast.error({
+          title: 'Error!',
+          message: data.error,
+          position: 'topRight'
+        });
+      }
     }
   });
   $('#fire-modal-1').modal('hide');

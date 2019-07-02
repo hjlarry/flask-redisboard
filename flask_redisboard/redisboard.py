@@ -157,7 +157,7 @@ def db_detail(db=0):
             keypattern=keypattern,
         )
     macro = get_template_attribute("macros.html", "render_key_details")
-    html = macro(key_details, BADGE_CLASS)
+    html = macro(key_details, db, BADGE_CLASS)
     url = ""
     if next_cursor != 0:
         url = url_for(
@@ -209,7 +209,7 @@ def db_flush(db):
     conn = server.connection
     conn.execute_command("SELECT", db)
     conn.flushdb()
-    return jsonify({"data": "ok"})
+    return jsonify({"code": 0, "data": url_for("redisboard.db_detail", db=db)})
 
 
 @module.route("/db/<db>/key/<key>/del", methods=["DELETE"])
@@ -218,7 +218,7 @@ def key_delete(db, key):
     conn.execute_command("SELECT", db)
     key = url_unquote_plus(key)
     conn.delete(key)
-    return jsonify({"data": "ok"})
+    return jsonify({"code": 0, "data": url_for("redisboard.db_detail", db=db)})
 
 
 @module.route("/db/<db>/<key>/rename", methods=["POST"])

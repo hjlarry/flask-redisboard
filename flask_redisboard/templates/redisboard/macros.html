@@ -24,7 +24,7 @@
 
 
 
-{% macro render_key_details(key_details, badge_class) %}
+{% macro render_key_details(key_details,db, badge_class) %}
 {% for key_detail in key_details %}
 <tr>
     <td class="p-0 text-center">
@@ -49,8 +49,9 @@
     <td class="text-center">{{ key_detail.encoding }}</td>
     <td class="text-center">{{ key_detail.ttl }}</td>
     <td class="text-center">{{ key_detail.length }}</td>
+    {% set del_key_url = url_for('redisboard.key_delete', db=db, key=key_detail.name|quote_plus)%}
     <td><a href="#" class="btn btn-danger" data-confirm="Really?|Do you want to delete {{ key_detail.name }}?"
-            data-confirm-yes="delete_key('{{ key_detail.name|quote_plus }}', '{{db}}')"><i class="fas fa-trash"></i></a>
+            data-confirm-yes="delete_key('{{ del_key_url }}')"><i class="fas fa-trash"></i></a>
     </td>
     {% endif %}
 </tr>

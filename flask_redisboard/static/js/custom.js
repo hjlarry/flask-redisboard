@@ -19,22 +19,21 @@ $(function() {
 });
 
 
-function delete_key(keyname, db) {
+function delete_key(url) {
   $.ajax({
     method: "delete",
-    url: '/redisboard/db/' + db + '/key/' + keyname + '/del',
+    url: url,
     success: function(data) {
-      console.log(data)
-      Cookies.set("toast", "Delete Success!");
-      window.location.assign('/redisboard/db/' + db);
-    },
-    error: function(data) {
-      console.log(data)
-      iziToast.error({
-        title: 'Error!',
-        message: data,
-        position: 'topRight'
-      });
+      if (data.code == 0) {
+        Cookies.set("toast", "Delete Success!");
+        window.location.assign(data.data);
+      } else {
+        iziToast.error({
+          title: 'Error!',
+          message: data.error,
+          position: 'topRight'
+        });
+      }
     }
   });
   $('#fire-modal-1').modal('hide');
