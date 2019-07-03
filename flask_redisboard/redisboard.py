@@ -1,4 +1,6 @@
 import datetime
+import time
+from uuid import uuid4
 
 import redis
 from flask import (
@@ -11,6 +13,7 @@ from flask import (
     request,
     url_for,
     get_template_attribute,
+    session,
 )
 from werkzeug import cached_property, url_quote_plus, url_unquote_plus
 
@@ -32,23 +35,28 @@ module = Blueprint(
 )
 
 
+def get_redis_kwargs():
+    return dict(
+        host=current_app.config["REDIS_HOST"],
+        port=current_app.config["REDIS_PORT"],
+        password=current_app.config["REDIS_PASSWORD"],
+        unix_socket_path=current_app.config["REDIS_UNIX_SOCKET_PATH"],
+        socket_timeout=current_app.config["REDISBOARD_SOCKET_TIMEOUT"],
+        socket_connect_timeout=current_app.config["REDISBOARD_SOCKET_CONNECT_TIMEOUT"],
+        socket_keepalive=current_app.config["REDISBOARD_SOCKET_KEEPALIVE"],
+        socket_keepalive_options=current_app.config[
+            "REDISBOARD_SOCKET_KEEPALIVE_OPTIONS"
+        ],
+    )
+
+
+store_user_redis_cli = {}
+
+
 class RedisServer:
     @cached_property
     def connection(self):
-        return redis.Redis(
-            host=current_app.config["REDIS_HOST"],
-            port=current_app.config["REDIS_PORT"],
-            password=current_app.config["REDIS_PASSWORD"],
-            unix_socket_path=current_app.config["REDIS_UNIX_SOCKET_PATH"],
-            socket_timeout=current_app.config["REDISBOARD_SOCKET_TIMEOUT"],
-            socket_connect_timeout=current_app.config[
-                "REDISBOARD_SOCKET_CONNECT_TIMEOUT"
-            ],
-            socket_keepalive=current_app.config["REDISBOARD_SOCKET_KEEPALIVE"],
-            socket_keepalive_options=current_app.config[
-                "REDISBOARD_SOCKET_KEEPALIVE_OPTIONS"
-            ],
-        )
+        return redis.Redis(**get_redis_kwargs())
 
     @cached_property
     def info(self):
@@ -93,9 +101,9 @@ def inject_param():
     return {"databases": server.databases}
 
 
-@module.errorhandler(Exception)
-def handle_exception(error):
-    return jsonify({"code": 999, "error": str(error)})
+# @module.errorhandler(Exception)
+# def handle_exception(error):
+#     return jsonify({"code": 999, "error": str(error)})
 
 
 @module.route("/")
@@ -408,7 +416,26 @@ def key_detail(db, key):
     )
 
 
-@module.route("/command")
+@module.route("/command", methods=["GET", "POST"])
 def command():
-    return render_template("command.html")
+    if "redis_cli" in session:
+        client, last_connect_time = store_user_redis_cli.get(session["redis_cli"])
+        # update last conn time
+        store_user_redis_cli[session["redis_cli"]] = client, time.time()
+    else:
+        user_id = str(uuid4())
+        session["redis_cli"] = user_id
+        client = redis.Redis(**get_redis_kwargs())
+        store_user_redis_cli[user_id] = client, time.time()
+    if request.method == "GET":
+        return render_template("command.html")
+    command = request.form.get("command")
+    result = client.execute_command(command)
+    return jsonify({"code": 0, "data": result.decode()})
 
+
+def clear_redis_connect():
+    for k, v in store_user_redis_cli.items():
+        if time.time() - v[1] > 60 * 60:
+            v[0].connection_pool.disconnect()
+            del store_user_redis_cli[k]

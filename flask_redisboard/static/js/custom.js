@@ -153,14 +153,12 @@ $('.myeditable').editable({
 });
 
 
-$("#chat-form").submit(function() {
-  var me = $(this);
-
-  if (me.find('input').val().trim().length > 0) {
-    $.chatCtrl('#mychatbox', {
-      text: me.find('input').val(),
-    });
-    me.find('input').val('');
-  }
-  return false;
-});
+$('#send_cmd_btn').click(function() {
+  $.ajax({
+    method: "post",
+    data: { 'command': $('#cmd_val').val() },
+    success: function(data) {
+      console.log(data)
+    }
+  });
+})
