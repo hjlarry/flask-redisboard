@@ -1,6 +1,7 @@
 import datetime
 import time
 from uuid import uuid4
+from collections.abc import Iterable
 
 import redis
 from flask import (
@@ -101,9 +102,9 @@ def inject_param():
     return {"databases": server.databases}
 
 
-# @module.errorhandler(Exception)
-# def handle_exception(error):
-#     return jsonify({"code": 999, "error": str(error)})
+@module.errorhandler(Exception)
+def handle_exception(error):
+    return jsonify({"code": 999, "error": str(error)})
 
 
 @module.route("/")
@@ -431,7 +432,11 @@ def command():
         return render_template("command.html")
     command = request.form.get("command")
     result = client.execute_command(command)
-    return jsonify({"code": 0, "data": result.decode()})
+    if isinstance(result, bytes):
+        result = result.decode()
+    elif isinstance(result, Iterable):
+        result = [r.decode() for r in result]
+    return jsonify({"code": 0, "data": result})
 
 
 def clear_redis_connect():

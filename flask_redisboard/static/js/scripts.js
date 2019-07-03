@@ -328,13 +328,13 @@ $(function() {
     });
   });
 
-  // if($(".chat-content").length) { 
-  //   $(".chat-content").niceScroll({
-  //       cursoropacitymin: .3,
-  //       cursoropacitymax: .8,
-  //   });
-  //   $('.chat-content').getNiceScroll(0).doScrollTop($('.chat-content').height());
-  // }
+  if ($(".chat-content").length) {
+    $(".chat-content").niceScroll({
+      cursoropacitymin: .3,
+      cursoropacitymax: .8,
+    });
+    $('.chat-content').getNiceScroll(0).doScrollTop($('.chat-content').height());
+  }
 
   if (jQuery().summernote) {
     $(".summernote").summernote({

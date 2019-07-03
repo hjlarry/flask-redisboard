@@ -152,13 +152,3 @@ $('.myeditable').editable({
   success: success_func
 });
 
-
-$('#send_cmd_btn').click(function() {
-  $.ajax({
-    method: "post",
-    data: { 'command': $('#cmd_val').val() },
-    success: function(data) {
-      console.log(data)
-    }
-  });
-})

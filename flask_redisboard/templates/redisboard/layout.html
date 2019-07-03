@@ -48,6 +48,11 @@
                                     {% endfor %}
                                 </ul>
                             </li>
+
+                            <li class="nav-item {% if 'command' in request.path %} active {% endif%}">
+                                <a href="{{url_for('redisboard.command')}}" class="nav-link"><i
+                                        class="fas fa-terminal"></i><span>Command</span></a>
+                            </li>
                             <li class="nav-item {% if 'config' in request.path %} active {% endif%}">
                                 <a href="{{url_for('redisboard.config')}}" class="nav-link"><i
                                         class="fas fa-cogs"></i><span>Redis Config</span></a>
@@ -75,8 +80,9 @@
         <script src="{{ url_for('redisboard.static', filename='js/stisla.js') }}"></script>
         <script
             src="{{ url_for('redisboard.static', filename='modules/jquery-selectric/jquery.selectric.min.js') }}"></script>
+        <script src="{{ url_for('redisboard.static', filename='modules/jquery.nicescroll.min.js') }}"></script>
         <script src="{{ url_for('redisboard.static', filename='modules/izitoast/js/iziToast.min.js') }}"></script>
-        <!-- <script src="https://unpkg.com/xterm@3.14.4/dist/xterm.js"></script> -->
+
         <script
             src="{{ url_for('redisboard.static', filename='modules/bootstrap4-editable/js/bootstrap-editable.min.js') }}"></script>
 
