@@ -46,7 +46,7 @@ Now, you can go to 127.0.0.1:5000/redisboard
 
 setup(
     name="Flask-Redisboard",
-    version="0.1.3",
+    version="0.1.4",
     url="https://github.com/hjlarry/flask-redisboard",
     license="MIT",
     author="hjlarry",

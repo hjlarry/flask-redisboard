@@ -1,6 +1,5 @@
 import datetime
-import time
-from uuid import uuid4
+
 from collections.abc import Iterable
 
 import redis
@@ -14,8 +13,8 @@ from flask import (
     request,
     url_for,
     get_template_attribute,
-    session,
 )
+
 from werkzeug import cached_property, url_quote_plus, url_unquote_plus
 
 from .utils import (
@@ -25,6 +24,8 @@ from .utils import (
     VALUE_SETTERS,
     _decode_bytes,
     _update_config,
+    _get_redis_conn_kwargs,
+    _get_current_user_redis_cli,
 )
 from .constant import BADGE_CLASS, INFO_GROUPS, CONFIG
 
@@ -36,28 +37,10 @@ module = Blueprint(
 )
 
 
-def get_redis_kwargs():
-    return dict(
-        host=current_app.config["REDIS_HOST"],
-        port=current_app.config["REDIS_PORT"],
-        password=current_app.config["REDIS_PASSWORD"],
-        unix_socket_path=current_app.config["REDIS_UNIX_SOCKET_PATH"],
-        socket_timeout=current_app.config["REDISBOARD_SOCKET_TIMEOUT"],
-        socket_connect_timeout=current_app.config["REDISBOARD_SOCKET_CONNECT_TIMEOUT"],
-        socket_keepalive=current_app.config["REDISBOARD_SOCKET_KEEPALIVE"],
-        socket_keepalive_options=current_app.config[
-            "REDISBOARD_SOCKET_KEEPALIVE_OPTIONS"
-        ],
-    )
-
-
-store_user_redis_cli = {}
-
-
 class RedisServer:
     @cached_property
     def connection(self):
-        return redis.Redis(**get_redis_kwargs())
+        return redis.Redis(**_get_redis_conn_kwargs())
 
     @cached_property
     def info(self):
@@ -419,15 +402,7 @@ def key_detail(db, key):
 
 @module.route("/command", methods=["GET", "POST"])
 def command():
-    if "redis_cli" in session:
-        client, last_connect_time = store_user_redis_cli.get(session["redis_cli"])
-        # update last conn time
-        store_user_redis_cli[session["redis_cli"]] = client, time.time()
-    else:
-        user_id = str(uuid4())
-        session["redis_cli"] = user_id
-        client = redis.Redis(**get_redis_kwargs())
-        store_user_redis_cli[user_id] = client, time.time()
+    client = _get_current_user_redis_cli()
     if request.method == "GET":
         return render_template("command.html")
     command = request.form.get("command")
@@ -438,9 +413,3 @@ def command():
         result = [r.decode() for r in result]
     return jsonify({"code": 0, "data": result})
 
-
-def clear_redis_connect():
-    for k, v in store_user_redis_cli.items():
-        if time.time() - v[1] > 60 * 60:
-            v[0].connection_pool.disconnect()
-            del store_user_redis_cli[k]

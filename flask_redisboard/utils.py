@@ -1,6 +1,8 @@
 import datetime
+import time
+from uuid import uuid4
 
-from flask import abort
+from flask import abort, current_app, session
 import redis
 
 
@@ -142,3 +144,53 @@ def _update_config(config_constants, config_value):
         for k, v in config_part.items():
             config_part[k]["value"] = config_value.get(k)
 
+
+def _get_redis_conn_kwargs():
+    return dict(
+        host=current_app.config["REDIS_HOST"],
+        port=current_app.config["REDIS_PORT"],
+        password=current_app.config["REDIS_PASSWORD"],
+        unix_socket_path=current_app.config["REDIS_UNIX_SOCKET_PATH"],
+        socket_timeout=current_app.config["REDISBOARD_SOCKET_TIMEOUT"],
+        socket_connect_timeout=current_app.config["REDISBOARD_SOCKET_CONNECT_TIMEOUT"],
+        socket_keepalive=current_app.config["REDISBOARD_SOCKET_KEEPALIVE"],
+        socket_keepalive_options=current_app.config[
+            "REDISBOARD_SOCKET_KEEPALIVE_OPTIONS"
+        ],
+    )
+
+
+# to store the same user with same redis client
+# key: a generate uuid
+# value: tuple(client, last_connect_time)
+user_redis_cli = {}
+
+# while clear_number grows to a num, clear long disconnect conn
+clear_number = 1
+
+
+def _clear_redis_connect():
+    for k, v in user_redis_cli.items():
+        if time.time() - v[1] > 60 * 60:
+            v[0].connection_pool.disconnect()
+            del user_redis_cli[k]
+
+
+def _get_current_user_redis_cli():
+    if "redis_cli" in session:
+        client, last_connect_time = user_redis_cli.get(session["redis_cli"])
+        # update last conn time
+        user_redis_cli[session["redis_cli"]] = client, time.time()
+    else:
+        user_id = str(uuid4())
+        session["redis_cli"] = user_id
+        client = redis.Redis(**_get_redis_conn_kwargs())
+        user_redis_cli[user_id] = client, time.time()
+
+    global clear_number
+    if clear_number % 10 == 0:
+        _clear_redis_connect()
+        clear_number = 0
+    clear_number += 1
+
+    return client

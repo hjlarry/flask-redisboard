@@ -38,7 +38,7 @@ def create_app():
 Now, you can go to 127.0.0.1:5000/redisboard 
 
 ## Todo
-- [ ] Command mode
+- [x] Command mode
 - [ ] Dashboard
 - [x] Config edit and view
 - [x] Slowlog
@@ -53,3 +53,4 @@ Now, you can go to 127.0.0.1:5000/redisboard
 - [ ] documents
 - [x] package and upload
 - [ ] merge js and css
+- [ ] clients list and manage
