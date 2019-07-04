@@ -1,8 +1,7 @@
-var ctx = document.getElementById("commands").getContext('2d');
-var myChart = new Chart(ctx, {
+var defaultChartOptions = {
   type: 'line',
   data: {
-    labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    labels: ["1", "2", "3", "4", "5", "6", "7"],
     datasets: [{
       label: 'Statistics',
       data: [460, 458, 330, 502, 430, 610, 488],
@@ -21,8 +20,7 @@ var myChart = new Chart(ctx, {
     scales: {
       yAxes: [{
         gridLines: {
-          drawBorder: false,
-          color: '#f2f2f2',
+          display: false,
         },
         ticks: {
           beginAtZero: true,
@@ -39,12 +37,17 @@ var myChart = new Chart(ctx, {
       }]
     },
   }
-});
+};
 
+var ctx = document.getElementById("commands").getContext('2d');
+var commandsChart = new Chart(ctx, defaultChartOptions);
 
-var statistics_chart = document.getElementById("network").getContext('2d');
+var ctx = document.getElementById("memory").getContext('2d');
+var memoryChart = new Chart(ctx, defaultChartOptions);
 
-var myChart = new Chart(statistics_chart, {
+var ctx = document.getElementById("network").getContext('2d');
+
+var networkChart = new Chart(ctx, {
   type: 'line',
   data: {
     labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
@@ -83,25 +86,17 @@ var myChart = new Chart(statistics_chart, {
   }
 });
 
-var ctx = document.getElementById("memory").getContext('2d');
-var chart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    datasets: [{
-      label: 'Statistics',
-      data: [640, 387, 530, 302, 430, 270, 488],
-      borderWidth: 5,
-      borderColor: '#6777ef',
-      backgroundColor: 'transparent',
-      pointBackgroundColor: '#fff',
-      pointBorderColor: '#6777ef',
-      pointRadius: 4
-    }]
-  },
-  options: {
-    tooltips: {
-      mode: 'point'
-    }
-  }
-});
+
+
+function addData(chart, label, data) {
+
+  chart.data.datasets.forEach((dataset) => {
+    dataset.data.push(data);
+    dataset.data.shift();
+  });
+  chart.update();
+};
+
+// $(function() {
+//   t = setInterval("addData(chart, '', 100)", 1000);
+// })

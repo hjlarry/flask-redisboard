@@ -92,12 +92,22 @@ def handle_exception(error):
 
 @module.route("/")
 def home():
-    return redirect(url_for("redisboard.info"))
+    return redirect(url_for("redisboard.dashboard"))
 
 
 @module.route("/dashboard/")
 def dashboard():
-    return render_template("dashboard.html")
+    total_keys = 0
+    for k, v in server.keyspace.items():
+        total_keys += v["keys"]
+    used_memory = server.info["Memory"]["used_memory_human"]
+    connected_clients = server.info["Clients"]["connected_clients"]
+    return render_template(
+        "dashboard.html",
+        total_keys=total_keys,
+        used_memory=used_memory,
+        connected_clients=connected_clients,
+    )
 
 
 @module.route("/info/")
