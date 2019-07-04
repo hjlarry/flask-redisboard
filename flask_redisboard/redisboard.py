@@ -42,7 +42,7 @@ class RedisServer:
     def connection(self):
         return redis.Redis(**_get_redis_conn_kwargs())
 
-    @cached_property
+    @property
     def info(self):
         pipe = self.connection.pipeline()
         for part in INFO_GROUPS:
@@ -50,9 +50,25 @@ class RedisServer:
         results = pipe.execute()
         return dict(zip(INFO_GROUPS, results))
 
+    @cached_property
+    def config_file(self):
+        return self.connection.info("Server").get("config_file")
+
     @property
     def keyspace(self):
         return self.connection.info("Keyspace")
+
+    @property
+    def memory(self):
+        return self.connection.info("Memory")
+
+    @property
+    def clients(self):
+        return self.connection.info("Clients")
+
+    @property
+    def stats(self):
+        return self.connection.info("Stats")
 
     @property
     def commandstats(self):
@@ -100,14 +116,29 @@ def dashboard():
     total_keys = 0
     for k, v in server.keyspace.items():
         total_keys += v["keys"]
-    used_memory = server.info["Memory"]["used_memory_human"]
-    connected_clients = server.info["Clients"]["connected_clients"]
+    used_memory = server.memory.get("used_memory_human")
+    connected_clients = server.clients.get("connected_clients")
     return render_template(
         "dashboard.html",
         total_keys=total_keys,
         used_memory=used_memory,
         connected_clients=connected_clients,
     )
+
+
+@module.route("/dashboard_api/")
+def dashboard_api():
+    cmd_per_sec = server.stats.get("instantaneous_ops_per_sec")
+    memory = server.memory.get("used_memory") / 1000 / 1000
+    network_input = server.stats.get("instantaneous_input_kbps")
+    network_output = server.stats.get("instantaneous_output_kbps")
+    data = {
+        "cmd_per_sec": cmd_per_sec,
+        "memory": memory,
+        "network_input": network_input,
+        "network_output": network_output,
+    }
+    return jsonify({"code": 0, "data": data})
 
 
 @module.route("/info/")
@@ -136,9 +167,8 @@ def config():
             return jsonify({"code": 999, "error": str(e)})
         return jsonify({"code": 0})
     config_value = conn.config_get()
-    config_file = server.info["Server"].get("config_file")
     _update_config(CONFIG, config_value)
-    return render_template("config.html", config_file=config_file, config=CONFIG)
+    return render_template("config.html", config_file=server.config_file, config=CONFIG)
 
 
 @module.route("/db/")

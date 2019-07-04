@@ -4,7 +4,7 @@ var defaultChartOptions = {
     labels: ["1", "2", "3", "4", "5", "6", "7"],
     datasets: [{
       label: 'Statistics',
-      data: [460, 458, 330, 502, 430, 610, 488],
+      data: [],
       borderWidth: 2,
       backgroundColor: '#6777ef',
       borderColor: '#6777ef',
@@ -24,7 +24,7 @@ var defaultChartOptions = {
         },
         ticks: {
           beginAtZero: true,
-          stepSize: 150
+          stepSize: 1
         }
       }],
       xAxes: [{
@@ -88,15 +88,40 @@ var networkChart = new Chart(ctx, {
 
 
 
-function addData(chart, label, data) {
-
-  chart.data.datasets.forEach((dataset) => {
-    dataset.data.push(data);
-    dataset.data.shift();
+function addData(data) {
+  commandsChart.data.datasets.forEach((dataset) => {
+    dataset.data.push(data.cmd_per_sec);
+    if (dataset.data.length >= 8) {
+      dataset.data.shift();
+    }
   });
-  chart.update();
+  commandsChart.update();
+  memoryChart.data.datasets.forEach((dataset) => {
+    dataset.data.push(data.memory);
+    if (dataset.data.length >= 8) {
+      dataset.data.shift();
+    }
+  });
+  memoryChart.update();
 };
 
-// $(function() {
-//   t = setInterval("addData(chart, '', 100)", 1000);
-// })
+function getData() {
+  $.ajax({
+    method: "get",
+    url: '/redisboard/dashboard_api/',
+    success: function(data) {
+      if (data.code == 0) {
+        addData(data.data)
+      } else {
+        iziToast.error({
+          title: 'Error!',
+          message: data.error,
+          position: 'topRight'
+        });
+      }
+    }
+  })
+};
+$(function() {
+  t = setInterval("getData()", 5000);
+})
