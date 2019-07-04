@@ -31,10 +31,10 @@
                 <nav class="navbar navbar-expand-lg navbar-secondary">
                     <div class="container">
                         <ul class="navbar-nav">
-                            <li class="nav-item {% if 'info' in request.path %} active {% endif%}">
-                                <a href="{{url_for('redisboard.info')}}" class="nav-link"><i
-                                        class="far fa-heart"></i><span>Server
-                                        Info</span></a>
+                            <li class="nav-item {% if 'dashboard' in request.path %} active {% endif%}">
+                                <a href="{{url_for('redisboard.dashboard')}}" class="nav-link"><i
+                                        class="far fa-heart"></i><span>Dashboard
+                                    </span></a>
                             </li>
                             <li class="nav-item dropdown {% if 'db' in request.path %} active {% endif%}">
                                 <a href="{{url_for('redisboard.db_detail')}}" data-toggle="dropdown"
@@ -48,10 +48,14 @@
                                     {% endfor %}
                                 </ul>
                             </li>
-
                             <li class="nav-item {% if 'command' in request.path %} active {% endif%}">
                                 <a href="{{url_for('redisboard.command')}}" class="nav-link"><i
                                         class="fas fa-terminal"></i><span>Command</span></a>
+                            </li>
+                            <li class="nav-item {% if 'info' in request.path %} active {% endif%}">
+                                <a href="{{url_for('redisboard.info')}}" class="nav-link"><i
+                                        class="far fa-file"></i><span>Server
+                                        Info</span></a>
                             </li>
                             <li class="nav-item {% if 'config' in request.path %} active {% endif%}">
                                 <a href="{{url_for('redisboard.config')}}" class="nav-link"><i
@@ -70,6 +74,7 @@
         </div>
         <script src="{{ url_for('redisboard.static', filename='modules/js.cookie.min.js') }}"></script>
         <script src="{{ url_for('redisboard.static', filename='modules/jquery.min.js') }}"></script>
+        <script src="{{ url_for('redisboard.static', filename='modules/chart.min.js') }}"></script>
         <script
             src="{{ url_for('redisboard.static', filename='modules/datatable/jquery.dataTables.min.js') }}"></script>
         <script

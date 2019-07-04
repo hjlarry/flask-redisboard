@@ -95,6 +95,11 @@ def home():
     return redirect(url_for("redisboard.info"))
 
 
+@module.route("/dashboard/")
+def dashboard():
+    return render_template("dashboard.html")
+
+
 @module.route("/info/")
 def info():
     return render_template(
@@ -400,7 +405,7 @@ def key_detail(db, key):
     )
 
 
-@module.route("/command", methods=["GET", "POST"])
+@module.route("/command/", methods=["GET", "POST"])
 def command():
     client = _get_current_user_redis_cli()
     if request.method == "GET":
