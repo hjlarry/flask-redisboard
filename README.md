@@ -2,13 +2,6 @@
 
 A flask extension to support user view and manage redis with beautiful interface.
 
-## Preview
-![demo](screenshot/demo1.png)
-
-![demo](screenshot/demo2.png)
-
-![demo](screenshot/demo3.png)
-
 
 ## Get Started
 
@@ -36,6 +29,17 @@ def create_app():
 ```
 
 Now, you can go to 127.0.0.1:5000/redisboard 
+
+
+## Preview
+![demo](screenshot/demo1.png)
+
+![demo](screenshot/demo2.png)
+
+![demo](screenshot/demo3.png)
+
+![demo](screenshot/demo4.png)
+
 
 ## Todo
 - [x] Command mode

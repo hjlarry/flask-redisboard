@@ -178,7 +178,11 @@ def _clear_redis_connect():
 
 def _get_current_user_redis_cli():
     if "redis_cli" in session:
-        client, last_connect_time = user_redis_cli.get(session["redis_cli"])
+        client, last_connect_time = user_redis_cli.get(
+            session["redis_cli"], (None, None)
+        )
+        if client is None:
+            client = redis.Redis(**_get_redis_conn_kwargs())
         # update last conn time
         user_redis_cli[session["redis_cli"]] = client, time.time()
     else:
