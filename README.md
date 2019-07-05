@@ -39,7 +39,7 @@ Now, you can go to 127.0.0.1:5000/redisboard
 
 ## Todo
 - [x] Command mode
-- [ ] Dashboard
+- [x] Dashboard
 - [x] Config edit and view
 - [x] Slowlog
 - [x] Add a key

@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 from collections.abc import Iterable
 
@@ -84,7 +84,7 @@ class RedisServer:
             for slowlog in self.connection.slowlog_get(count):
                 yield dict(
                     id=slowlog["id"],
-                    ts=datetime.datetime.fromtimestamp(slowlog["start_time"]),
+                    ts=datetime.fromtimestamp(slowlog["start_time"]),
                     duration=slowlog["duration"] // 1000,
                     command=_decode_bytes(slowlog["command"]),
                 )
@@ -129,7 +129,7 @@ def dashboard():
 @module.route("/dashboard_api/")
 def dashboard_api():
     cmd_per_sec = server.stats.get("instantaneous_ops_per_sec")
-    memory = server.memory.get("used_memory") / 1000 / 1000
+    memory = server.memory.get("used_memory") / 1024 / 1024
     network_input = server.stats.get("instantaneous_input_kbps")
     network_output = server.stats.get("instantaneous_output_kbps")
     data = {
@@ -137,6 +137,7 @@ def dashboard_api():
         "memory": memory,
         "network_input": network_input,
         "network_output": network_output,
+        "time": datetime.now().strftime("%H:%M:%S"),
     }
     return jsonify({"code": 0, "data": data})
 

@@ -1,79 +1,92 @@
-var defaultChartOptions = {
-  type: 'line',
-  data: {
-    labels: ["1", "2", "3", "4", "5", "6", "7"],
-    datasets: [{
-      label: 'Statistics',
-      data: [],
-      borderWidth: 2,
-      backgroundColor: '#6777ef',
-      borderColor: '#6777ef',
-      borderWidth: 2.5,
-      pointBackgroundColor: '#ffffff',
-      pointRadius: 4
-    }]
-  },
-  options: {
-    legend: {
-      display: false
-    },
-    scales: {
-      yAxes: [{
-        gridLines: {
-          display: false,
-        },
-        ticks: {
-          beginAtZero: true,
-          stepSize: 1
-        }
-      }],
-      xAxes: [{
-        ticks: {
-          display: false
-        },
-        gridLines: {
-          display: false
-        }
+function create_default_chart_option() {
+  var options = {
+    type: 'line',
+    data: {
+      labels: ["", "", "", "", "", "", ""],
+      datasets: [{
+        label: '',
+        data: ["", "", "", "", "", "", ""],
+        borderWidth: 2,
+        backgroundColor: '#6777ef',
+        borderColor: '#6777ef',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#ffffff',
+        pointRadius: 4
       }]
     },
-  }
-};
+    options: {
+      legend: {
+        display: false
+      },
+      scales: {
+        yAxes: [{
+          gridLines: {
+            display: false,
+          },
+          ticks: {
+            beginAtZero: true,
+            stepSize: 1
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            display: false
+          },
+          gridLines: {
+            display: false
+          }
+        }]
+      },
+    }
+  };
+  return options
+}
 
-var ctx = document.getElementById("commands").getContext('2d');
-var commandsChart = new Chart(ctx, defaultChartOptions);
 
-var ctx = document.getElementById("memory").getContext('2d');
-var memoryChart = new Chart(ctx, defaultChartOptions);
+var ctx1 = document.getElementById("commands").getContext('2d');
+var commandsChart = new Chart(ctx1, create_default_chart_option());
+
+var ctx2 = document.getElementById("memory").getContext('2d');
+var memoryChart = new Chart(ctx2, create_default_chart_option());
 
 var ctx = document.getElementById("network").getContext('2d');
-
 var networkChart = new Chart(ctx, {
   type: 'line',
   data: {
-    labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    labels: ["", "", "", "", "", "", "", "", "", "", "", "", "", ""],
     datasets: [{
-      label: 'Statistics',
-      data: [640, 387, 530, 302, 430, 270, 488],
-      borderWidth: 5,
+      label: 'Input',
+      data: ["", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+      borderWidth: 3,
       borderColor: '#6777ef',
       backgroundColor: 'transparent',
       pointBackgroundColor: '#fff',
       pointBorderColor: '#6777ef',
-      pointRadius: 4
+      pointRadius: 2.5
+    }, {
+      label: 'Output',
+      data: ["", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+      borderWidth: 3,
+      borderColor: 'rgba(254,86,83,.7)',
+      backgroundColor: 'transparent',
+      pointBackgroundColor: '#fff',
+      pointBorderColor: 'rgba(254,86,83,.7)',
+      pointRadius: 2.5
     }]
   },
   options: {
-    legend: {
-      display: false
-    },
     scales: {
       yAxes: [{
         gridLines: {
           display: false,
           drawBorder: false,
         },
+        scaleLabel: {
+          display: true,
+          labelString: 'Network I/O(kbps)'
+        },
         ticks: {
-          stepSize: 150
+          beginAtZero: true
         }
       }],
       xAxes: [{
@@ -83,27 +96,39 @@ var networkChart = new Chart(ctx, {
         }
       }]
     },
+    legend: {
+      position: "top",
+    }
   }
 });
 
 
 
-function addData(data) {
-  commandsChart.data.datasets.forEach((dataset) => {
-    dataset.data.push(data.cmd_per_sec);
+function addData(chart, data) {
+  chart.data.datasets.forEach((dataset) => {
+    dataset.data.push(data);
     if (dataset.data.length >= 8) {
       dataset.data.shift();
     }
   });
-  commandsChart.update();
-  memoryChart.data.datasets.forEach((dataset) => {
-    dataset.data.push(data.memory);
-    if (dataset.data.length >= 8) {
-      dataset.data.shift();
-    }
-  });
-  memoryChart.update();
+  chart.update();
 };
+
+function addNetworkData(data) {
+  var input_dataset = networkChart.data.datasets[0].data;
+  var output_dataset = networkChart.data.datasets[1].data;
+  networkChart.data.labels.push(data.time)
+  networkChart.data.labels.shift()
+  input_dataset.push(data.network_input)
+  output_dataset.push(data.network_output)
+  if (input_dataset.length >= 15) {
+    input_dataset.shift();
+  }
+  if (output_dataset.length >= 15) {
+    output_dataset.shift();
+  }
+  networkChart.update();
+}
 
 function getData() {
   $.ajax({
@@ -111,7 +136,9 @@ function getData() {
     url: '/redisboard/dashboard_api/',
     success: function(data) {
       if (data.code == 0) {
-        addData(data.data)
+        addData(commandsChart, data.data.cmd_per_sec)
+        addData(memoryChart, data.data.memory)
+        addNetworkData(data.data)
       } else {
         iziToast.error({
           title: 'Error!',
