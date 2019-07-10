@@ -56,6 +56,20 @@ $("#SlowlogTable").dataTable({
   "info": false,
 });
 
+$("#ListTable").dataTable({
+  "columnDefs": [
+    { "sortable": true, "targets": '_all' }
+  ],
+  "dom": "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'<'table-action'>>>" +
+    "<'row'<'col-sm-12'tr>>" +
+    "<'row'<'col-sm-12 col-md-5'li><'col-sm-12 col-md-7'p>>",
+  "iDisplayLength": 25
+});
+var btn = '<a href="#" class="btn btn-primary" id="list-add-btn"><i class="fas fa-plus"></i>Add</a> ' +
+  '<a href="#" class="btn btn-danger" id="list-del-btn"><i class="fas fa-trash"></i>Remove</a>'
+$(".table-action").html(btn);
+
+
 $.fn.editable.defaults.mode = 'inline';
 
 

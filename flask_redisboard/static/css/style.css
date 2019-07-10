@@ -2815,3 +2815,17 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
 .database_viewmore :hover{
     cursor: pointer;
 }
+
+.table-action .btn{
+    font-size: 12px;
+    border-radius: 30px !important;
+    padding-left: 13px !important;
+    padding-right: 13px !important;
+}
+
+.dataTables_filter{
+    float: left;
+}
+.table-action{
+    float: right;
+}

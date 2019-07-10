@@ -1,28 +1,26 @@
 {% extends "keydetail/base.html" %}
 {% block keydetail %}
-<div class="card-header">
-    <h4></h4>
-    <div class="card-header-action">
-        <a href="#" class="btn btn-primary" id="list-add-btn"><i class="fas fa-plus"></i>Add</a>
-        <a href="#" class="btn btn-danger" id="list-del-btn"><i class="fas fa-trash"></i>Remove</a>
-    </div>
-</div>
 <div class="card-body">
-    <table class="table table-striped">
-        <tr>
-            <th class="text-center" style="width: 10%" data-toggle="tooltip"
-                title="To view list values is an O(n) operation, only can priview front 1000 data">Index</th>
-            <th class="text-center" style="width: 90%">Value</th>
-        </tr>
-        {% for index, value in key_details.data %}
-        <tr>
-            <td class="text-center">{{index}}</td>
-            <td class="text-center">
-                {% set url=url_for('redisboard.list_edit_value', db=db, key=key_details.name|quote_plus) %}
-                <a href="#" class="myeditable" data-name="{{index}}" data-type="text" data-url="{{url}}">{{value}}</a>
-            </td>
-        </tr>
-        {% endfor %}
+    <table class="table table-striped" id="ListTable">
+        <thead>
+            <tr>
+                <th class="text-center" style="width: 10%" data-toggle="tooltip"
+                    title="To view list values is an O(n) operation, only can priview front 1000 data">Index</th>
+                <th class="text-center" style="width: 90%">Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, value in key_details.data %}
+            <tr>
+                <td class="text-center">{{index}}</td>
+                <td class="text-center">
+                    {% set url=url_for('redisboard.list_edit_value', db=db, key=key_details.name|quote_plus) %}
+                    <a href="#" class="myeditable" data-name="{{index}}" data-type="text"
+                        data-url="{{url}}">{{value}}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
 <div class="card-footer text-right">
