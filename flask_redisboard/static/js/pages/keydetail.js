@@ -85,97 +85,7 @@ $("#ttl_button").fireModal({
 });
 
 
-$("#list-add-btn").fireModal({
-  title: 'Add value to current list',
-  body: $("#list-add-value"),
-  footerClass: 'bg-whitesmoke',
-  autoFocus: false,
-  onFormSubmit: function(modal, e, form) {
-    let form_data = $(e.target).serialize();
-    console.log(form_data)
-    $.ajax({
-      method: "post",
-      url: e.target.baseURI + '/list_add',
-      data: form_data,
-      success: function(data) {
-        if (data.code == 0) {
-          Cookies.set("toast", "Add Value Success!");
-          window.location.assign(data.data);
-        } else {
-          iziToast.error({
-            title: 'Error!',
-            message: data.error,
-            position: 'topRight'
-          });
-        }
-      }
-    });
-    let fake_ajax = setTimeout(function() {
-      form.stopProgress();
-      clearInterval(fake_ajax);
-    }, 1500);
 
-    e.preventDefault();
-  },
-  shown: function(modal, form) {
-    console.log(form)
-  },
-  buttons: [
-    {
-      text: 'Save',
-      submit: true,
-      class: 'btn btn-primary btn-shadow',
-      handler: function(modal) {
-      }
-    }
-  ]
-});
-
-$("#list-del-btn").fireModal({
-  title: 'Remove value from current list',
-  body: $("#list-del-value"),
-  footerClass: 'bg-whitesmoke',
-  autoFocus: false,
-  onFormSubmit: function(modal, e, form) {
-    let form_data = $(e.target).serialize();
-    console.log(form_data)
-    $.ajax({
-      method: "post",
-      url: e.target.baseURI + '/list_rem',
-      data: form_data,
-      success: function(data) {
-        if (data.code == 0) {
-          Cookies.set("toast", "Remove Value Success!");
-          window.location.assign(data.data);
-        } else {
-          iziToast.error({
-            title: 'Error!',
-            message: data.error,
-            position: 'topRight'
-          });
-        }
-      }
-    });
-    let fake_ajax = setTimeout(function() {
-      form.stopProgress();
-      clearInterval(fake_ajax);
-    }, 1500);
-
-    e.preventDefault();
-  },
-  shown: function(modal, form) {
-    console.log(form)
-  },
-  buttons: [
-    {
-      text: 'Submit',
-      submit: true,
-      class: 'btn btn-primary btn-shadow',
-      handler: function(modal) {
-      }
-    }
-  ]
-});
 
 $("#hash-add-btn").fireModal({
   title: 'Add value to current hash',
@@ -448,4 +358,27 @@ $("#zset-del-btn").fireModal({
       }
     }
   ]
+});
+
+var success_func = function(data) {
+  if (data.code == 0) {
+    iziToast.success({
+      title: "Modify Success",
+      position: 'topRight',
+      timeout: 3000
+    });
+  } else {
+    iziToast.error({
+      title: "Error!",
+      position: 'topRight',
+      message: data.error,
+    });
+  }
+};
+
+$('.keydetail_editable').editable({
+  emptytext: "not set",
+  send: "always",
+  placement: "right",
+  success: success_func
 });

@@ -6,8 +6,9 @@
         <h1><a href="{{url_for('redisboard.db_detail', db=db)}}">Database {{db}}</a></h1>
         <div class="section-header-button">
             <a href="#" class="btn btn-primary" id="new-key-btn">Add New</a>
+            {% set flush_db_url = url_for('redisboard.db_flush', db=db)%}
             <a href="#" class="btn btn-danger" data-confirm="Are you sure to flush DB{{db}}?"
-                data-confirm-yes="flush_db('{{db}}')">Flush DB</a>
+                data-confirm-yes="flush_db('{{flush_db_url}}')">Flush DB</a>
         </div>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item">Keys: {{ db_summary['keys']}} </div>
@@ -205,5 +206,5 @@
 
 
 {% block js %}
-<script src="{{ url_for('redisboard.static', filename='js/database.js') }}"></script>
+<script src="{{ url_for('redisboard.static', filename='js/pages/database.js') }}"></script>
 {% endblock %}

@@ -127,3 +127,7 @@
     </div>
 </section>
 {% endblock %}
+
+{% block js %}
+<script src="{{ url_for('redisboard.static', filename='js/pages/serverinfo.js') }}"></script>
+{% endblock %}

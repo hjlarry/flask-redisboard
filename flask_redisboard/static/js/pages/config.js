@@ -1,78 +1,3 @@
-/**
- *
- * You can write your JS code here, DO NOT touch the default style file
- * because it will make it harder for you to update.
- * 
- */
-
-$(function() {
-  var toast = Cookies.get('toast');
-  if (toast) {
-    iziToast.success({
-      title: toast,
-      position: 'topRight',
-      timeout: 3000
-    });
-    Cookies.remove('toast')
-  }
-
-});
-
-
-function delete_key(url) {
-  $.ajax({
-    method: "delete",
-    url: url,
-    success: function(data) {
-      if (data.code == 0) {
-        Cookies.set("toast", "Delete Success!");
-        window.location.assign(data.data);
-      } else {
-        iziToast.error({
-          title: 'Error!',
-          message: data.error,
-          position: 'topRight'
-        });
-      }
-    }
-  });
-  $('#fire-modal-1').modal('hide');
-};
-
-$("#CmdTable").dataTable({
-  "columnDefs": [
-    { "sortable": true, "targets": '_all' }
-  ],
-  "paging": false,
-  "searching": false,
-  "info": false,
-});
-
-$("#SlowlogTable").dataTable({
-  "columnDefs": [
-    { "sortable": true, "targets": '_all' }
-  ],
-  "searching": false,
-  "info": false,
-});
-
-$("#ListTable").dataTable({
-  "columnDefs": [
-    { "sortable": true, "targets": '_all' }
-  ],
-  "dom": "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'<'table-action'>>>" +
-    "<'row'<'col-sm-12'tr>>" +
-    "<'row'<'col-sm-12 col-md-5'li><'col-sm-12 col-md-7'p>>",
-  "iDisplayLength": 25
-});
-var btn = '<a href="#" class="btn btn-primary" id="list-add-btn"><i class="fas fa-plus"></i>Add</a> ' +
-  '<a href="#" class="btn btn-danger" id="list-del-btn"><i class="fas fa-trash"></i>Remove</a>'
-$(".table-action").html(btn);
-
-
-$.fn.editable.defaults.mode = 'inline';
-
-
 var success_func = function(data) {
   if (data.code == 0) {
     iziToast.success({
@@ -159,10 +84,9 @@ $(yes_or_no_option).editable({
   success: success_func
 });
 
-$('.myeditable').editable({
+$('.config_editable').editable({
   emptytext: "not set",
   send: "always",
   placement: "right",
   success: success_func
 });
-

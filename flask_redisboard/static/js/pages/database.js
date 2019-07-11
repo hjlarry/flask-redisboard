@@ -1,4 +1,4 @@
-
+// 多选及批量相关操作
 $("[data-checkboxes]").each(function() {
   var me = $(this),
     group = me.data('checkboxes'),
@@ -26,26 +26,6 @@ $("[data-checkboxes]").each(function() {
     }
   });
 });
-
-function flush_db(db) {
-  $.ajax({
-    method: "delete",
-    url: '/redisboard/db/' + db + '/flush',
-    success: function(data) {
-      if (data.code == 0) {
-        Cookies.set("toast", "Flush DB Success!");
-        window.location.assign(data.data);
-      } else {
-        iziToast.error({
-          title: 'Error!',
-          message: data.error,
-          position: 'topRight'
-        });
-      }
-    }
-  });
-  $('#fire-modal-1').modal('hide');
-};
 
 
 $('.selectric').selectric().on('change', function() {
@@ -125,9 +105,31 @@ $('#batch-del-btn').click(function() {
   });
 });
 
+function flush_db(url) {
+  $.ajax({
+    method: "delete",
+    url: url,
+    success: function(data) {
+      if (data.code == 0) {
+        Cookies.set("toast", "Flush DB Success!");
+        window.location.assign(data.data);
+      } else {
+        iziToast.error({
+          title: 'Error!',
+          message: data.error,
+          position: 'topRight'
+        });
+      }
+    }
+  });
+  $('#fire-modal-1').modal('hide');
+};
+
+// 新key
 $('#new-key-btn').click(function() {
   $("#addKey").modal('show');
 });
+
 
 $('.selectgroup-input').change(function() {
   var v = $(this).val()
@@ -158,6 +160,7 @@ $('.selectgroup-input').change(function() {
   }
 });
 
+// 下拉加载更多
 $('#db_more').click(function() {
   $.ajax({
     url: this.dataset.url,

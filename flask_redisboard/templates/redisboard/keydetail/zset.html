@@ -19,7 +19,8 @@
             <td class="text-center">{{member}}</td>
             <td class="text-center">
                 {% set url=url_for('redisboard.zset_edit_score', db=db, key=key_details.name|quote_plus) %}
-                <a href="#" class="myeditable" data-name="{{member}}" data-type="text" data-url="{{url}}">{{score}}</a>
+                <a href="#" class="keydetail_editable" data-name="{{member}}" data-type="text"
+                    data-url="{{url}}">{{score}}</a>
             </td>
             <td class="text-center">
                 <a href="#" onclick="zset_del('{{member}}')" class="btn btn-danger"><i class="fas fa-trash"></i></a>

@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+<input type="hidden" value="{{url_for('redisboard.dashboard_api')}}" id="dashboard_api">
 <section class="section">
     <div class="row">
         <div class="col-lg-4 col-md-6 col-sm-6 col-12">
@@ -88,5 +89,5 @@
 {% endblock %}
 
 {% block js %}
-<script src="{{ url_for('redisboard.static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('redisboard.static', filename='js/pages/dashboard.js') }}"></script>
 {% endblock %}

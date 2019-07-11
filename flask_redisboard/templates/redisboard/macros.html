@@ -11,7 +11,7 @@
     </td>
     <td class="text-center">
         {% if v.can_edit %}
-        <a href="#" id="{{k}}" class="myeditable" data-name="{{k}}" data-type="{{v.type}}"
+        <a href="#" id="{{k}}" class="config_editable" data-name="{{k}}" data-type="{{v.type}}"
             data-url="{{url_for('redisboard.config')}}">{{v.value}}</a></td>
     {% elif v.value =='' %}
     not set

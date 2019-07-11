@@ -15,7 +15,7 @@
                 <td class="text-center">{{index}}</td>
                 <td class="text-center">
                     {% set url=url_for('redisboard.list_edit_value', db=db, key=key_details.name|quote_plus) %}
-                    <a href="#" class="myeditable" data-name="{{index}}" data-type="text"
+                    <a href="#" class="keydetail_editable" data-name="{{index}}" data-type="text"
                         data-url="{{url}}">{{value}}</a>
                 </td>
             </tr>
@@ -69,3 +69,9 @@
             value.</small>
     </div>
 </form> {% endblock %}
+
+
+{% block js %}
+{{ super() }}
+<script src="{{ url_for('redisboard.static', filename='js/pages/keydetail_list.js') }}"></script>
+{% endblock %}

@@ -133,7 +133,7 @@ function addNetworkData(data) {
 function getData() {
   $.ajax({
     method: "get",
-    url: '/redisboard/dashboard_api/',
+    url: $("#dashboard_api").val(),
     success: function(data) {
       if (data.code == 0) {
         addData(commandsChart, data.data.cmd_per_sec)
