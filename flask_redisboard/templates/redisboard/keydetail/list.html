@@ -1,11 +1,10 @@
 {% extends "keydetail/base.html" %}
 {% block keydetail %}
 <div class="card-body">
-    <table class="table table-striped" id="ListTable">
+    <table class="table table-striped" id="data-table">
         <thead>
             <tr>
-                <th class="text-center" style="width: 10%" data-toggle="tooltip"
-                    title="To view list values is an O(n) operation, only can priview front 1000 data">Index</th>
+                <th class="text-center" style="width: 10%">Index</th>
                 <th class="text-center" style="width: 90%">Value</th>
             </tr>
         </thead>
@@ -15,16 +14,13 @@
                 <td class="text-center">{{index}}</td>
                 <td class="text-center">
                     {% set url=url_for('redisboard.list_edit_value', db=db, key=key_details.name|quote_plus) %}
-                    <a href="#" class="keydetail_editable" data-name="{{index}}" data-type="text"
+                    <a href="#" class="keydetail-editable" data-name="{{index}}" data-type="text"
                         data-url="{{url}}">{{value}}</a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-</div>
-<div class="card-footer text-right">
-
 </div>
 
 <form class="modal-part" id="list-add-value">

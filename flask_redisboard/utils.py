@@ -19,7 +19,7 @@ def set_getter(conn, key):
 def list_getter(conn, key):
     return [
         (index, _decode_bytes(value))
-        for index, value in enumerate(conn.lrange(key, start=0, end=1000))
+        for index, value in enumerate(conn.lrange(key, start=0, end=-1))
     ]
 
 

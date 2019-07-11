@@ -4,7 +4,7 @@
     <div class="section-header">
         <h1>{{ key_details.name }}</h1>
         <div class="section-header-button">
-            <a href="#" class="btn btn-primary" id="rename_button">Rename</a>
+            <a href="#" class="btn btn-primary" id="rename-btn">Rename</a>
             {% set del_key_url = url_for('redisboard.key_delete', db=db, key=key_details.name|quote_plus)%}
             <a href="#" class="btn btn-danger" data-confirm="Really?|Do you want to delete {{ key_details.name }}?"
                 data-confirm-yes="delete_key('{{ del_key_url }}')">Delete</a>
@@ -36,7 +36,7 @@
                 </div>
                 <div class="card-wrap">
                     <div class="card-header">
-                        <h4>TTL <a href="#"><i class="far fa-edit" id="ttl_button"></i></a></h4>
+                        <h4>TTL <a href="#"><i class="far fa-edit" id="ttl-btn"></i></a></h4>
                     </div>
                     <div class="card-body">
                         {{ key_details.ttl }}

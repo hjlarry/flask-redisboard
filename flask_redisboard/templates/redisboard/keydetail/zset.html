@@ -1,37 +1,31 @@
 {% extends "keydetail/base.html" %}
 {% block keydetail %}
-<div class="card-header">
-    <h4></h4>
-    <div class="card-header-action">
-        <a href="#" class="btn btn-primary" id="zset-add-btn"><i class="fas fa-plus"></i>Add</a>
-        <a href="#" class="btn btn-danger" id="zset-del-btn"><i class="fas fa-trash"></i>Remove</a>
-    </div>
-</div>
+
 <div class="card-body">
-    <table class="table table-striped">
-        <tr>
-            <th class="text-center" style="width: 50%">Member</th>
-            <th class="text-center" style="width: 30%">Score</th>
-            <th class="text-center">Action</th>
-        </tr>
-        {% for member, score in key_details.data %}
-        <tr>
-            <td class="text-center">{{member}}</td>
-            <td class="text-center">
-                {% set url=url_for('redisboard.zset_edit_score', db=db, key=key_details.name|quote_plus) %}
-                <a href="#" class="keydetail_editable" data-name="{{member}}" data-type="text"
-                    data-url="{{url}}">{{score}}</a>
-            </td>
-            <td class="text-center">
-                <a href="#" onclick="zset_del('{{member}}')" class="btn btn-danger"><i class="fas fa-trash"></i></a>
-            </td>
-        </tr>
-        {% endfor %}
+    <table class="table table-striped" id="DataTable">
+        <thead>
+            <tr>
+                <th class="text-center" style="width: 50%">Member</th>
+                <th class="text-center" style="width: 30%">Score</th>
+                <th class="text-center nosort">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member, score in key_details.data %}
+            <tr>
+                <td class="text-center">{{member}}</td>
+                <td class="text-center">
+                    {% set url=url_for('redisboard.zset_edit_score', db=db, key=key_details.name|quote_plus) %}
+                    <a href="#" class="keydetail-editable" data-name="{{member}}" data-type="text"
+                        data-url="{{url}}">{{score}}</a>
+                </td>
+                <td class="text-center">
+                    <a href="#" onclick="zset_del('{{member}}')" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
-
-</div>
-<div class="card-footer text-right">
-
 </div>
 
 <form class="modal-part" id="zset-add-value">
@@ -71,4 +65,9 @@
 
     </div>
 </form>
+{% endblock %}
+
+{% block js %}
+{{ super() }}
+<script src="{{ url_for('redisboard.static', filename='js/pages/keydetail_zset.js') }}"></script>
 {% endblock %}

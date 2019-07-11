@@ -1,6 +1,6 @@
-$("#keydetail-add-btn").fireModal({
-  title: 'Add value to current list',
-  body: $("#list-add-value"),
+$("#set-add-btn").fireModal({
+  title: 'Add value to current set',
+  body: $("#set-add-value"),
   footerClass: 'bg-whitesmoke',
   autoFocus: false,
   onFormSubmit: function(modal, e, form) {
@@ -8,7 +8,7 @@ $("#keydetail-add-btn").fireModal({
     console.log(form_data)
     $.ajax({
       method: "post",
-      url: e.target.baseURI + '/list_add',
+      url: e.target.baseURI + '/set_add',
       data: form_data,
       success: function(data) {
         if (data.code == 0) {
@@ -44,9 +44,9 @@ $("#keydetail-add-btn").fireModal({
   ]
 });
 
-$("#keydetail-del-btn").fireModal({
-  title: 'Remove value from current list',
-  body: $("#list-del-value"),
+$("#set-del-btn").fireModal({
+  title: 'Remove value from current set',
+  body: $("#set-del-value"),
   footerClass: 'bg-whitesmoke',
   autoFocus: false,
   onFormSubmit: function(modal, e, form) {
@@ -54,7 +54,7 @@ $("#keydetail-del-btn").fireModal({
     console.log(form_data)
     $.ajax({
       method: "post",
-      url: e.target.baseURI + '/list_rem',
+      url: e.target.baseURI + '/set_rem',
       data: form_data,
       success: function(data) {
         if (data.code == 0) {
@@ -81,9 +81,9 @@ $("#keydetail-del-btn").fireModal({
   },
   buttons: [
     {
-      text: 'Submit',
+      text: 'Remove',
       submit: true,
-      class: 'btn btn-primary btn-shadow',
+      class: 'btn btn-danger btn-shadow',
       handler: function(modal) {
       }
     }
