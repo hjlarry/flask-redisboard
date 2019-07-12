@@ -39,6 +39,12 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
-    "jquery": "^3.3.1"
+    "bootstrap": "^4.3.1",
+    "chart": "^0.1.2",
+    "datatables.net": "^1.10.19",
+    "datatables.net-bs4": "^1.10.19",
+    "jquery": "^3.3.1",
+    "js.cookie": "0.0.4",
+    "popper.js": "^1.15.0"
   }
 }
