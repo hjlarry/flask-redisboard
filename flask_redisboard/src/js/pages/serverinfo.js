@@ -1,3 +1,5 @@
+import dt from 'datatables.net';
+
 $("#CmdTable").dataTable({
   "columnDefs": [
     { "sortable": true, "targets": '_all' }

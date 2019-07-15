@@ -5,6 +5,7 @@
  * 
  */
 import Cookie from "js.cookie";
+import './vendor/bootstrap-editable';
 
 
 $.fn.editable.defaults.mode = 'inline';

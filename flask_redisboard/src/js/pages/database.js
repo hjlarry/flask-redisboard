@@ -1,3 +1,6 @@
+import $ from 'jquery';
+var selectric = require('selectric');
+
 // 多选及批量相关操作
 $("[data-checkboxes]").each(function() {
   var me = $(this),
@@ -46,6 +49,9 @@ $('.selectric').selectric().on('change', function() {
     $("#batchDel").modal('show');
   }
 });
+
+
+
 
 $('#batch-ttl-btn').click(function() {
   var keyname = new Array();

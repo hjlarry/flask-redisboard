@@ -45,6 +45,7 @@
     "datatables.net-bs4": "^1.10.19",
     "jquery": "^3.3.1",
     "js.cookie": "0.0.4",
-    "popper.js": "^1.15.0"
+    "popper.js": "^1.15.0",
+    "selectric": "^1.13.0"
   }
 }
