@@ -1,5 +1,7 @@
 "use strict";
+import $ from 'jquery';
 
+window.$ = $;
 
 (function($, window, i) {
   // Bootstrap 4 Modal

@@ -11,6 +11,10 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
 @uses text
 @uses textarea
 **/
+import $ from 'jquery';
+
+window.$ = $;
+
 (function ($) {
     "use strict";
     

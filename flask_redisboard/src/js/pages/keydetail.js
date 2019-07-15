@@ -1,4 +1,5 @@
 import dt from 'datatables.net';
+// import 'datatables.net-bs4/css/dataTables.bootstrap4.min.css'; not work
 
 $("#data-table").dataTable({
   "columnDefs": [{
@@ -17,7 +18,7 @@ var btn = '<a href="#" class="btn btn-primary" id="keydetail-add-btn"><i class="
 $(".table-action").html(btn);
 
 
-$("#rename-btn").fireModal({
+window.$("#rename-btn").fireModal({
   title: 'Rename',
   body: $("#rename-panel"),
   footerClass: 'bg-whitesmoke',
@@ -57,7 +58,7 @@ $("#rename-btn").fireModal({
 });
 
 
-$("#ttl-btn").fireModal({
+window.$("#ttl-btn").fireModal({
   title: 'Set TTL',
   body: $("#ttl-panel"),
   footerClass: 'bg-whitesmoke',
@@ -121,7 +122,7 @@ var success_func = function(data) {
   }
 };
 
-$('.keydetail-editable').editable({
+window.$('.keydetail-editable').editable({
   emptytext: "not set",
   send: "always",
   placement: "right",

@@ -1,4 +1,4 @@
-$("#keydetail-add-btn").fireModal({
+window.$("#keydetail-add-btn").fireModal({
   title: 'Add value to current list',
   body: $("#list-add-value"),
   footerClass: 'bg-whitesmoke',
@@ -44,7 +44,7 @@ $("#keydetail-add-btn").fireModal({
   ]
 });
 
-$("#keydetail-del-btn").fireModal({
+window.$("#keydetail-del-btn").fireModal({
   title: 'Remove value from current list',
   body: $("#list-del-value"),
   footerClass: 'bg-whitesmoke',
