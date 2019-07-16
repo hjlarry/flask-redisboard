@@ -1,3 +1,5 @@
+import iziToast from 'izitoast/dist/js/iziToast.min.js';
+
 function create_default_chart_option() {
   var options = {
     type: 'line',

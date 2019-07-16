@@ -1,3 +1,5 @@
+import iziToast from 'izitoast/dist/js/iziToast.min.js';
+
 window.$("#keydetail-add-btn").fireModal({
   title: 'Add value to current list',
   body: $("#list-add-value"),

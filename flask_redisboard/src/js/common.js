@@ -6,6 +6,7 @@
  */
 import Cookie from "js.cookie";
 import './vendor/bootstrap-editable';
+import iziToast from 'izitoast/dist/js/iziToast.min.js';
 
 
 $.fn.editable.defaults.mode = 'inline';
@@ -43,8 +44,7 @@ function delete_key(url) {
 };
 
 
-
-
+window.delete_key = delete_key;
 
 
 

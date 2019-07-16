@@ -1,3 +1,5 @@
+import iziToast from 'izitoast/dist/js/iziToast.min.js';
+
 var success_func = function(data) {
   if (data.code == 0) {
     iziToast.success({
@@ -15,7 +17,7 @@ var success_func = function(data) {
 };
 
 
-$("#loglevel").editable({
+window.$("#loglevel").editable({
   send: "always",
   source: [
     { value: 'debug', text: 'Debug' },
@@ -26,7 +28,7 @@ $("#loglevel").editable({
   success: success_func
 });
 
-$("#maxmemory-policy").editable({
+window.$("#maxmemory-policy").editable({
   send: "always",
   source: [
     { value: 'allkeys-lfu', text: 'allkeys-lfu' },
@@ -41,7 +43,7 @@ $("#maxmemory-policy").editable({
   success: success_func
 });
 
-$("#appendfsync").editable({
+window.$("#appendfsync").editable({
   send: "always",
   source: [
     { value: 'always', text: 'always' },
@@ -51,7 +53,7 @@ $("#appendfsync").editable({
   success: success_func
 });
 
-$("#notify-keyspace-events").editable({
+window.$("#notify-keyspace-events").editable({
   send: "always",
   source: [
     { value: 'K', text: 'K-Keyspace events' },
@@ -75,7 +77,7 @@ var yes_or_no_option = "#protected-mode,#stop-writes-on-bgsave-error,#rdbcompres
   "#no-appendfsync-on-rewrite,#aof-load-truncated,#aof-use-rdb-preamble,#appendonly," +
   "#cluster-require-full-coverage,#activedefrag, #activerehashing,#aof-rewrite-incremental-fsync";
 
-$(yes_or_no_option).editable({
+window.$(yes_or_no_option).editable({
   send: "always",
   source: [
     { value: "yes", text: 'Yes' },
@@ -84,7 +86,7 @@ $(yes_or_no_option).editable({
   success: success_func
 });
 
-$('.config_editable').editable({
+window.$('.config_editable').editable({
   emptytext: "not set",
   send: "always",
   placement: "right",

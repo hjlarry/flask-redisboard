@@ -1,3 +1,5 @@
+import iziToast from 'izitoast/dist/js/iziToast.min.js';
+
 $("#set-add-btn").fireModal({
   title: 'Add value to current set',
   body: $("#set-add-value"),

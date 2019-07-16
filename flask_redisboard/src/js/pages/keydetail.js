@@ -1,4 +1,5 @@
 import dt from 'datatables.net';
+import iziToast from 'izitoast/dist/js/iziToast.min.js';
 // import 'datatables.net-bs4/css/dataTables.bootstrap4.min.css'; not work
 
 $("#data-table").dataTable({

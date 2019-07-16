@@ -1,3 +1,5 @@
+import iziToast from 'izitoast/dist/js/iziToast.min.js';
+
 function zset_del(member) {
   $.ajax({
     method: "post",

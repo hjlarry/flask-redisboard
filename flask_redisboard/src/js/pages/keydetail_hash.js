@@ -1,3 +1,5 @@
+import iziToast from 'izitoast/dist/js/iziToast.min.js';
+
 $("#keydetail-add-btn").fireModal({
   title: 'Add value to current hash',
   body: $("#hash-add-value"),

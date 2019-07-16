@@ -1,5 +1,6 @@
 import $ from 'jquery';
 var selectric = require('selectric');
+import iziToast from 'izitoast/dist/js/iziToast.min.js';
 
 // 多选及批量相关操作
 $("[data-checkboxes]").each(function() {
