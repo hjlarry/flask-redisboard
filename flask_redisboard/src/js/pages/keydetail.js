@@ -1,5 +1,6 @@
 import dt from 'datatables.net';
 import iziToast from 'izitoast/dist/js/iziToast.min.js';
+import Cookie from "js.cookie";
 // import 'datatables.net-bs4/css/dataTables.bootstrap4.min.css'; not work
 
 $("#data-table").dataTable({
@@ -31,7 +32,7 @@ window.$("#rename-btn").fireModal({
       url: e.target.baseURI + '/rename',
       data: form_data,
       success: function(data) {
-        Cookies.set("toast", "Rename Success!");
+        Cookie.set("toast", "Rename Success!");
         window.location.assign(data.data);
       },
       error: function(data) {
@@ -73,7 +74,7 @@ window.$("#ttl-btn").fireModal({
       data: form_data,
       success: function(data) {
         if (data.code == 0) {
-          Cookies.set("toast", "Set TTL Success!");
+          Cookie.set("toast", "Set TTL Success!");
           window.location.assign(data.data);
         } else {
           iziToast.error({

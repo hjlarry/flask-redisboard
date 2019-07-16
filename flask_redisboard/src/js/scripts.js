@@ -1,4 +1,5 @@
 "use strict";
+import niceScroll from 'jquery.nicescroll/dist/jquery.nicescroll.min.js';
 
 // ChartJS
 if (window.Chart) {

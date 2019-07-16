@@ -1,4 +1,5 @@
 import iziToast from 'izitoast/dist/js/iziToast.min.js';
+import Cookie from "js.cookie";
 
 window.$("#keydetail-add-btn").fireModal({
   title: 'Add value to current list',
@@ -14,7 +15,7 @@ window.$("#keydetail-add-btn").fireModal({
       data: form_data,
       success: function(data) {
         if (data.code == 0) {
-          Cookies.set("toast", "Add Value Success!");
+          Cookie.set("toast", "Add Value Success!");
           window.location.assign(data.data);
         } else {
           iziToast.error({
@@ -60,7 +61,7 @@ window.$("#keydetail-del-btn").fireModal({
       data: form_data,
       success: function(data) {
         if (data.code == 0) {
-          Cookies.set("toast", "Remove Value Success!");
+          Cookie.set("toast", "Remove Value Success!");
           window.location.assign(data.data);
         } else {
           iziToast.error({

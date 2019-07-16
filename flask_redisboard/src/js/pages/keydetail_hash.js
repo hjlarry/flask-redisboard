@@ -1,6 +1,7 @@
 import iziToast from 'izitoast/dist/js/iziToast.min.js';
+import Cookie from "js.cookie";
 
-$("#keydetail-add-btn").fireModal({
+window.$("#keydetail-add-btn").fireModal({
   title: 'Add value to current hash',
   body: $("#hash-add-value"),
   footerClass: 'bg-whitesmoke',
@@ -14,7 +15,7 @@ $("#keydetail-add-btn").fireModal({
       data: form_data,
       success: function(data) {
         if (data.code == 0) {
-          Cookies.set("toast", "Add Value Success!");
+          Cookie.set("toast", "Add Value Success!");
           window.location.assign(data.data);
         } else {
           iziToast.error({
@@ -55,7 +56,7 @@ function hash_del(index) {
     data: { 'index': index },
     success: function(data) {
       if (data.code == 0) {
-        Cookies.set("toast", "Delete Value Success!");
+        Cookie.set("toast", "Delete Value Success!");
         window.location.assign(data.data);
       } else {
         iziToast.error({
@@ -67,3 +68,5 @@ function hash_del(index) {
     }
   });
 };
+
+window.hash_del = hash_del;

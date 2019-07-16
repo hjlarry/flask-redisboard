@@ -1,5 +1,6 @@
 import $ from 'jquery';
-var selectric = require('selectric');
+import Cookie from "js.cookie";
+import selectric from 'selectric';
 import iziToast from 'izitoast/dist/js/iziToast.min.js';
 
 // 多选及批量相关操作
@@ -45,9 +46,9 @@ $('.selectric').selectric().on('change', function() {
       position: 'topRight'
     });
   } else if (operation == "expire") {
-    $("#batchTTL").modal('show');
+    window.$("#batchTTL").modal('show');
   } else if (operation == "delete") {
-    $("#batchDel").modal('show');
+    window.$("#batchDel").modal('show');
   }
 });
 
@@ -71,7 +72,7 @@ $('#batch-ttl-btn').click(function() {
     data: JSON.stringify(data),
     success: function(data) {
       if (data.code == 0) {
-        Cookies.set("toast", "Set TTL Success!");
+        Cookie.set("toast", "Set TTL Success!");
         window.location.assign(data.data);
       } else {
         iziToast.error({
@@ -99,7 +100,7 @@ $('#batch-del-btn').click(function() {
     data: JSON.stringify(data),
     success: function(data) {
       if (data.code == 0) {
-        Cookies.set("toast", "Delete Keys Success!");
+        Cookie.set("toast", "Delete Keys Success!");
         window.location.assign(data.data);
       } else {
         iziToast.error({
@@ -118,7 +119,7 @@ function flush_db(url) {
     url: url,
     success: function(data) {
       if (data.code == 0) {
-        Cookies.set("toast", "Flush DB Success!");
+        Cookie.set("toast", "Flush DB Success!");
         window.location.assign(data.data);
       } else {
         iziToast.error({
@@ -129,12 +130,12 @@ function flush_db(url) {
       }
     }
   });
-  $('#fire-modal-1').modal('hide');
+  window.$('#fire-modal-1').modal('hide');
 };
 
 // 新key
 $('#new-key-btn').click(function() {
-  $("#addKey").modal('show');
+  window.$("#addKey").modal('show');
 });
 
 
@@ -182,3 +183,5 @@ $('#db_more').click(function() {
     }
   })
 });
+
+window.flush_db = flush_db;

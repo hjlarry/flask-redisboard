@@ -1,4 +1,5 @@
 import iziToast from 'izitoast/dist/js/iziToast.min.js';
+import Cookie from "js.cookie";
 
 function zset_del(member) {
   $.ajax({
@@ -7,7 +8,7 @@ function zset_del(member) {
     data: { 'member': member },
     success: function(data) {
       if (data.code == 0) {
-        Cookies.set("toast", "Delete Value Success!");
+        Cookie.set("toast", "Delete Value Success!");
         window.location.assign(data.data);
       } else {
         iziToast.error({
@@ -20,8 +21,10 @@ function zset_del(member) {
   });
 };
 
+window.zset_del = zset_del;
 
-$("#keydetail-add-btn").fireModal({
+
+window.$("#keydetail-add-btn").fireModal({
   title: 'Add value to current zset',
   body: $("#zset-add-value"),
   footerClass: 'bg-whitesmoke',
@@ -34,7 +37,7 @@ $("#keydetail-add-btn").fireModal({
       data: form_data,
       success: function(data) {
         if (data.code == 0) {
-          Cookies.set("toast", "Add Value Success!");
+          Cookie.set("toast", "Add Value Success!");
           window.location.assign(data.data);
         } else {
           iziToast.error({
@@ -66,7 +69,7 @@ $("#keydetail-add-btn").fireModal({
   ]
 });
 
-$("#keydetail-del-btn").fireModal({
+window.$("#keydetail-del-btn").fireModal({
   title: 'Remove value from current zset',
   body: $("#zset-del-value"),
   footerClass: 'bg-whitesmoke',
@@ -80,7 +83,7 @@ $("#keydetail-del-btn").fireModal({
       data: form_data,
       success: function(data) {
         if (data.code == 0) {
-          Cookies.set("toast", "Remove Value Success!");
+          Cookie.set("toast", "Remove Value Success!");
           window.location.assign(data.data);
         } else {
           iziToast.error({
