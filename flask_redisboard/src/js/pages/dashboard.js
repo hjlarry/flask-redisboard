@@ -1,4 +1,5 @@
 import iziToast from 'izitoast/dist/js/iziToast.min.js';
+import Chart from 'chart.js';
 
 function create_default_chart_option() {
   var options = {
@@ -152,5 +153,11 @@ function getData() {
   })
 };
 $(function() {
-  t = setInterval("getData()", 5000);
+  let a = setInterval(function() {
+    getData();
+  }, 5000);
+
+  setTimeout(function() {
+    clearInterval(a);
+  }, 15000);
 })
