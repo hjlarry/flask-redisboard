@@ -1,4 +1,4 @@
-import dt from 'datatables.net';
+import dt from 'datatables.net-bs4';
 
 $("#CmdTable").dataTable({
   "columnDefs": [

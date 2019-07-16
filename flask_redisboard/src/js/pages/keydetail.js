@@ -1,13 +1,15 @@
-import dt from 'datatables.net';
+import dt from 'datatables.net-bs4';
+
 import iziToast from 'izitoast/dist/js/iziToast.min.js';
 import Cookie from "js.cookie";
-// import 'datatables.net-bs4/css/dataTables.bootstrap4.min.css'; not work
+
 
 $("#data-table").dataTable({
   "columnDefs": [{
     "targets": 'nosort',
     "orderable": false
   }],
+  renderer: "bootstrap",
   "dom": "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'<'table-action'>>>" +
     "<'row'<'col-sm-12'tr>>" +
     "<'row'<'col-sm-12 col-md-5'li><'col-sm-12 col-md-7'p>>",
