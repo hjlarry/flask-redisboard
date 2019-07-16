@@ -5,11 +5,11 @@
  * 
  */
 import Cookie from "js.cookie";
-import './vendor/bootstrap-editable';
+// import './vendor/bootstrap-editable';
 import iziToast from 'izitoast/dist/js/iziToast.min.js';
 
 
-$.fn.editable.defaults.mode = 'inline';
+// $.fn.editable.defaults.mode = 'inline';
 
 $(function() {
   var toast = Cookie.get('toast');

@@ -1,4 +1,5 @@
 import iziToast from 'izitoast/dist/js/iziToast.min.js';
+import editable from 'jquery-jeditable/dist/jquery.jeditable.min.js';
 
 var success_func = function(data) {
   if (data.code == 0) {
@@ -17,7 +18,7 @@ var success_func = function(data) {
 };
 
 
-window.$("#loglevel").editable({
+$("#loglevel").editable({
   send: "always",
   source: [
     { value: 'debug', text: 'Debug' },
@@ -28,7 +29,7 @@ window.$("#loglevel").editable({
   success: success_func
 });
 
-window.$("#maxmemory-policy").editable({
+$("#maxmemory-policy").editable({
   send: "always",
   source: [
     { value: 'allkeys-lfu', text: 'allkeys-lfu' },
@@ -43,7 +44,7 @@ window.$("#maxmemory-policy").editable({
   success: success_func
 });
 
-window.$("#appendfsync").editable({
+$("#appendfsync").editable({
   send: "always",
   source: [
     { value: 'always', text: 'always' },
@@ -53,7 +54,7 @@ window.$("#appendfsync").editable({
   success: success_func
 });
 
-window.$("#notify-keyspace-events").editable({
+$("#notify-keyspace-events").editable({
   send: "always",
   source: [
     { value: 'K', text: 'K-Keyspace events' },
@@ -77,7 +78,7 @@ var yes_or_no_option = "#protected-mode,#stop-writes-on-bgsave-error,#rdbcompres
   "#no-appendfsync-on-rewrite,#aof-load-truncated,#aof-use-rdb-preamble,#appendonly," +
   "#cluster-require-full-coverage,#activedefrag, #activerehashing,#aof-rewrite-incremental-fsync";
 
-window.$(yes_or_no_option).editable({
+$(yes_or_no_option).editable({
   send: "always",
   source: [
     { value: "yes", text: 'Yes' },
@@ -86,9 +87,14 @@ window.$(yes_or_no_option).editable({
   success: success_func
 });
 
-window.$('.config_editable').editable({
-  emptytext: "not set",
-  send: "always",
-  placement: "right",
-  success: success_func
-});
+$('.config_editable').editable(function(input, settings) {
+  console.log(input)
+  console.log(settings)
+  settings.type = this.dataset.type
+  console.log(this.dataset.type)
+  console.log(this.dataset.name)
+  return (input);
+}, {
+    cancel: '<button class="btn btn-sm btn-secondary"><i class="fas fa-times"></i></button>',
+    submit: '<button class="btn btn-sm btn-primary"><i class="fas fa-check"></i></button>',
+  });
