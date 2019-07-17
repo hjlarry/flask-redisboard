@@ -52,6 +52,7 @@
     "jquery.nicescroll": "^3.7.6",
     "js.cookie": "0.0.4",
     "popper.js": "^1.15.0",
-    "selectric": "^1.13.0"
+    "selectric": "^1.13.0",
+    "x-editable-bs4": "^1.5.4"
   }
 }

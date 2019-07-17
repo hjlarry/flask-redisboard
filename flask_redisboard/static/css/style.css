@@ -2829,3 +2829,7 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
 .table-action{
     float: right;
 }
+
+.editable-clear-x{
+    margin-right: 15px;
+}
