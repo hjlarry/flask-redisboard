@@ -1,6 +1,7 @@
 const glob = require('glob')
 const path = require('path')
 const webpack = require('webpack')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const resolve = path.resolve.bind(path, __dirname);
 
@@ -39,7 +40,7 @@ const config = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: ['style-loader', MiniCssExtractPlugin.loader, 'css-loader']
       },
       {
         test: /\.(png|woff|woff2|eot|ttf|svg|gif)$/,
@@ -53,7 +54,11 @@ const config = {
     path: path.join(__dirname, 'flask_redisboard/static/dist')
   },
 
-  plugins: [providePlugin,],
+  plugins: [providePlugin,
+    new MiniCssExtractPlugin({
+      filename: `[name].css`
+    }),
+  ],
 
   resolve: {
     alias: {
