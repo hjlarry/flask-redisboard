@@ -4,8 +4,9 @@
  * because it will make it harder for you to update.
  * 
  */
-import Cookie from "js.cookie";
 import 'x-editable-bs4/dist/bootstrap4-editable/js/bootstrap-editable';
+import 'jquery.nicescroll/dist/jquery.nicescroll.min.js';
+import Cookie from "js.cookie";
 import iziToast from 'izitoast/dist/js/iziToast.min.js';
 
 

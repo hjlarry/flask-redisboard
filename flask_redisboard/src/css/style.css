@@ -183,26 +183,6 @@ textarea.form-control {
 select.form-control:not([size]):not([multiple]) {
   height: calc(2.25rem + 6px); }
 
-.form-control.creditcard {
-  background-position: 98%;
-  background-repeat: no-repeat;
-  background-size: 40px;
-  padding-right: 60px; }
-  .form-control.creditcard.visa {
-    background-image: url("../img/visa.png"); }
-  .form-control.creditcard.americanexpress {
-    background-image: url("../img/americanexpress.png"); }
-  .form-control.creditcard.dinersclub {
-    background-image: url("../img/dinersclub.png"); }
-  .form-control.creditcard.discover {
-    background-image: url("../img/discover.png"); }
-  .form-control.creditcard.jcb {
-    background-image: url("../img/jcb.png"); }
-  .form-control.creditcard.mastercard {
-    background-image: url("../img/mastercard.png"); }
-  .form-control.creditcard.visa {
-    background-image: url("../img/visa.png"); }
-
 .form-group {
   margin-bottom: 25px; }
   .form-group .control-label,
