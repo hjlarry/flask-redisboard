@@ -259,194 +259,285 @@ LAZY_FREEING_CONFIG = OrderedDict(
     }
 )
 
-wait_to_add = "wait to add"
+
+auto_aof_rewrite_percentage_desc = "Automatic rewrite of the append only file. Redis is able to automatically rewrite the log file implicitly calling BGREWRITEAOF when the AOF log size grows by the specified percentage."
+auto_aof_rewrite_min_size_desc = "You need to specify a minimal size for the AOF file to be rewritten, this is useful to avoid rewriting the AOF file even if the percentage increase is reached but it is still pretty small."
+no_appendfsync_on_rewrite_desc = "In some Linux configurations Redis may block too long on the fsync() call.             "
+aof_load_truncated_desc = "An AOF file may be found to be truncated at the end during the Redis startup process, when the AOF data gets loaded back into memory."
+aof_use_rdb_preamble_desc = "When rewriting the AOF file, Redis is able to use an RDB preamble in the AOF file for faster rewrites and recoveries."
+appendfsync_desc = "The fsync() call tells the Operating System to actually write data on disk instead of waiting for more data in the output buffer. "
+appendonly_desc = "By default Redis asynchronously dumps the dataset on disk. This mode is good enough in many applications, but an issue with the Redis process or a power outage may result into a few minutes of writes lost."
 
 APPEND_ONLY_MODE_CONFIG = OrderedDict(
     {
         "auto-aof-rewrite-percentage": {
-            "desc": wait_to_add,
+            "desc": auto_aof_rewrite_percentage_desc,
             "type": "number",
             "can_edit": True,
         },
         "auto-aof-rewrite-min-size": {
-            "desc": wait_to_add,
+            "desc": auto_aof_rewrite_min_size_desc,
             "type": "number",
             "can_edit": True,
         },
         "no-appendfsync-on-rewrite": {
-            "desc": wait_to_add,
+            "desc": no_appendfsync_on_rewrite_desc,
             "type": "select",
             "can_edit": True,
         },
-        "aof-load-truncated": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "aof-load-truncated": {
+            "desc": aof_load_truncated_desc,
+            "type": "select",
+            "can_edit": True,
+        },
         "aof-use-rdb-preamble": {
-            "desc": wait_to_add,
+            "desc": aof_use_rdb_preamble_desc,
             "type": "select",
             "can_edit": True,
         },
-        "appendfsync": {"desc": wait_to_add, "type": "select", "can_edit": True},
-        "appendonly": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "appendfsync": {"desc": appendfsync_desc, "type": "select", "can_edit": True},
+        "appendonly": {"desc": appendonly_desc, "type": "select", "can_edit": True},
     }
 )
+
+
+lua_time_limit_desc = "Max execution time of a Lua script in milliseconds."
 
 LUA_SCRIPTING_CONFIG = OrderedDict(
-    {"lua-time-limit": {"desc": wait_to_add, "type": "number", "can_edit": True}}
-)
-
-REDIS_CLUSTER_CONFIG = OrderedDict(
     {
-        "cluster-node-timeout": {
-            "desc": wait_to_add,
-            "type": "number",
-            "can_edit": True,
-        },
-        "cluster-migration-barrier": {
-            "desc": wait_to_add,
-            "type": "number",
-            "can_edit": True,
-        },
-        "cluster-slave-validity-factor": {
-            "desc": wait_to_add,
-            "type": "number",
-            "can_edit": True,
-        },
-        "cluster-require-full-coverage": {
-            "desc": wait_to_add,
-            "type": "select",
-            "can_edit": True,
-        },
-    }
-)
-
-CLUSTER_DOCKER_NAT_CONFIG = OrderedDict(
-    {
-        "cluster-announce-ip": {"desc": wait_to_add, "type": "text", "can_edit": True},
-        "cluster-announce-port": {
-            "desc": wait_to_add,
-            "type": "number",
-            "can_edit": True,
-        },
-        "cluster-announce-bus-port ": {
-            "desc": wait_to_add,
-            "type": "number",
-            "can_edit": True,
-        },
-    }
-)
-
-SLOWLOG_CONFIG = OrderedDict(
-    {
-        "slowlog-log-slower-than": {
-            "desc": wait_to_add,
-            "type": "number",
-            "can_edit": True,
-        },
-        "slowlog-max-len": {"desc": wait_to_add, "type": "number", "can_edit": True},
-    }
-)
-
-LATENCY_MONITOR_CONFIG = OrderedDict(
-    {
-        "latency-monitor-threshold": {
-            "desc": wait_to_add,
+        "lua-time-limit": {
+            "desc": lua_time_limit_desc,
             "type": "number",
             "can_edit": True,
         }
     }
 )
 
+
+cluster_node_timeout_desc = "Cluster node timeout is the amount of milliseconds a node must be unreachable for it to be considered in failure state."
+cluster_migration_barrier_desc = "Slaves migrate to orphaned masters only if there are still at least a given number of other working slaves for their old master. This number is the migration barrier."
+cluster_slave_validity_factor_desc = "A large slave-validity-factor may allow slaves with too old data to failover a master, while a too small value may prevent the cluster from being able to elect a slave at all."
+cluster_require_full_coverage_desc = "By default Redis Cluster nodes stop accepting queries if they detect there is at least an hash slot uncovered (no available node is serving it)."
+
+REDIS_CLUSTER_CONFIG = OrderedDict(
+    {
+        "cluster-node-timeout": {
+            "desc": cluster_node_timeout_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+        "cluster-migration-barrier": {
+            "desc": cluster_migration_barrier_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+        "cluster-slave-validity-factor": {
+            "desc": cluster_slave_validity_factor_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+        "cluster-require-full-coverage": {
+            "desc": cluster_require_full_coverage_desc,
+            "type": "select",
+            "can_edit": True,
+        },
+    }
+)
+
+
+cluster_docker_nat_desc = "In certain deployments, Redis Cluster nodes address discovery fails, because addresses are NAT-ted or because ports are forwarded."
+
+CLUSTER_DOCKER_NAT_CONFIG = OrderedDict(
+    {
+        "cluster-announce-ip": {
+            "desc": cluster_docker_nat_desc,
+            "type": "text",
+            "can_edit": True,
+        },
+        "cluster-announce-port": {
+            "desc": cluster_docker_nat_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+        "cluster-announce-bus-port ": {
+            "desc": cluster_docker_nat_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+    }
+)
+
+
+slowlog_log_slower_than_desc = "This tells Redis what is the execution time, in microseconds, to exceed in order for the command to get logged."
+slowlog_max_len_desc = "This is the length of the slow log.There is no limit to this length. Just be aware that it will consume memory."
+
+SLOWLOG_CONFIG = OrderedDict(
+    {
+        "slowlog-log-slower-than": {
+            "desc": slowlog_log_slower_than_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+        "slowlog-max-len": {
+            "desc": slowlog_max_len_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+    }
+)
+
+
+latency_monitor_threshold_desc = "The Redis latency monitoring subsystem samples different operations at runtime in order to collect data related to possible sources of latency of a Redis instance."
+
+LATENCY_MONITOR_CONFIG = OrderedDict(
+    {
+        "latency-monitor-threshold": {
+            "desc": latency_monitor_threshold_desc,
+            "type": "number",
+            "can_edit": True,
+        }
+    }
+)
+
+
+notify_keyspace_events_desc = "The 'notify-keyspace-events' takes as argument a string that is composed of zero or multiple characters."
+
 EVENT_NOTIFICATION_CONFIG = OrderedDict(
     {
         "notify-keyspace-events": {
-            "desc": wait_to_add,
+            "desc": notify_keyspace_events_desc,
             "type": "checklist",
             "can_edit": True,
         }
     }
 )
 
+
+active_defrag_threshold_lower_desc = "Minimum percentage of fragmentation to start active defrag.                              "
+active_defrag_threshold_upper_desc = "Maximum percentage of fragmentation at which we use maximum effort.                      "
+active_defrag_ignore_bytes_desc = "Minimum amount of fragmentation waste to start active defrag.                               "
+active_defrag_cycle_min_desc = "Minimal effort for defrag in CPU percentage."
+active_defrag_cycle_max_desc = "Maximal effort for defrag in CPU percentage"
+activedefrag_desc = "Active defragmentation allows a Redis server to compact the spaces left between small allocations and deallocations of data in memory, thus allowing to reclaim back memory."
+
 DEFRAGMENTATION_CONFIG = OrderedDict(
     {
         "active-defrag-threshold-lower": {
-            "desc": wait_to_add,
+            "desc": active_defrag_threshold_lower_desc,
             "type": "number",
             "can_edit": True,
         },
         "active-defrag-threshold-upper": {
-            "desc": wait_to_add,
+            "desc": active_defrag_threshold_upper_desc,
             "type": "number",
             "can_edit": True,
         },
         "active-defrag-ignore-bytes": {
-            "desc": wait_to_add,
+            "desc": active_defrag_ignore_bytes_desc,
             "type": "number",
             "can_edit": True,
         },
         "active-defrag-cycle-min": {
-            "desc": wait_to_add,
+            "desc": active_defrag_cycle_min_desc,
             "type": "number",
             "can_edit": True,
         },
         "active-defrag-cycle-max": {
-            "desc": wait_to_add,
+            "desc": active_defrag_cycle_max_desc,
             "type": "number",
             "can_edit": True,
         },
-        "activedefrag": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "activedefrag": {"desc": activedefrag_desc, "type": "select", "can_edit": True},
     }
 )
 
+
+client_query_buffer_limit_desc = "Client query buffers accumulate new commands."
+lfu_log_factor_desc = "The LFU counter is just 8 bits per key, it's maximum value is 255, so Redis uses a probabilistic increment with logarithmic behavior."
+lfu_decay_time_desc = "The counter decay time is the time, in minutes, that must elapse in order for the key counter to be divided by two (or decremented if it has a value less <= 10)."
+hash_max_ziplist_entries_desc = "Hashes are encoded using a memory efficient data structure when they have a small number of entries, and the biggest entry does not exceed a given threshold.These thresholds can be configured using the above directive."
+hash_max_ziplist_value_desc = "Hashes are encoded using a memory efficient data structure when they have a small number of entries, and the biggest entry does not exceed a given threshold.These thresholds can be configured using the above directive."
+list_max_ziplist_size_desc = "Lists are also encoded in a special way to save a lot of space. The number of entries allowed per internal list node can be specified as a fixed maximum size or a maximum number of elements."
+list_compress_depth_desc = "Lists may also be compressed. Compress depth is the number of quicklist ziplist nodes from each side of the list to exclude from compression. The head and tail of the list are always uncompressed for fast push/pop operations."
+set_max_intset_entries_desc = "Sets have a special encoding in just one case: when a set is composed of just strings that happen to be integers in radix 10 in the range of 64 bit signed integers."
+zset_max_ziplist_entries_desc = "Sorted sets are also specially encoded in order to save a lot of space. This encoding is only used when the length and elements of a sorted set are below the specified limits."
+zset_max_ziplist_value_desc = "Sorted sets are also specially encoded in order to save a lot of space. This encoding is only used when the length and elements of a sorted set are below the specified limits."
+hll_sparse_max_bytes_desc = "HyperLogLog sparse representation bytes limit. The limit includes the 16 bytes header."
+hz_desc = "Redis calls an internal function to perform many background tasks, like closing connections of clients in timeout, purging expired keys that are never requested, and so forth. "
+activerehashing_desc = "Active rehashing uses 1 millisecond every 100 milliseconds of CPU time in order to help rehashing the main Redis hash table."
+aof_rewrite_incremental_fsync_desc = "When a child rewrites the AOF file, if the following option is enable the file will be fsync_ed every 32 MB of data generated. This is useful in order to commit the file to the disk more incrementally and avoid big latency spikes."
+client_output_buffer_limit_desc = "The client output buffer limits can be used to force disconnection of clients that are not reading data from the server fast enough for some reason.The limit can be set differently for the three different classes of clients: normal,slave or pubsub."
+
 ADVANCED_CONFIG = OrderedDict(
     {
+        "client-query-buffer-limit": {
+            "desc": client_query_buffer_limit_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+        "lfu-log-factor": {
+            "desc": lfu_log_factor_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+        "lfu-decay-time": {
+            "desc": lfu_decay_time_desc,
+            "type": "number",
+            "can_edit": True,
+        },
         "hash-max-ziplist-entries": {
-            "desc": wait_to_add,
+            "desc": hash_max_ziplist_entries_desc,
             "type": "number",
             "can_edit": True,
         },
         "hash-max-ziplist-value": {
-            "desc": wait_to_add,
+            "desc": hash_max_ziplist_value_desc,
             "type": "number",
             "can_edit": True,
         },
         "list-max-ziplist-size": {
-            "desc": wait_to_add,
+            "desc": list_max_ziplist_size_desc,
             "type": "number",
             "can_edit": True,
         },
         "list-compress-depth": {
-            "desc": wait_to_add,
+            "desc": list_compress_depth_desc,
             "type": "number",
             "can_edit": True,
         },
         "set-max-intset-entries": {
-            "desc": wait_to_add,
+            "desc": set_max_intset_entries_desc,
             "type": "number",
             "can_edit": True,
         },
         "zset-max-ziplist-entries": {
-            "desc": wait_to_add,
+            "desc": zset_max_ziplist_entries_desc,
             "type": "number",
             "can_edit": True,
         },
         "zset-max-ziplist-value": {
-            "desc": wait_to_add,
+            "desc": zset_max_ziplist_value_desc,
             "type": "number",
             "can_edit": True,
         },
         "hll-sparse-max-bytes": {
-            "desc": wait_to_add,
+            "desc": hll_sparse_max_bytes_desc,
             "type": "number",
             "can_edit": True,
         },
-        "hz": {"desc": wait_to_add, "type": "number", "can_edit": True},
-        "activerehashing": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "hz": {"desc": hz_desc, "type": "number", "can_edit": True},
+        "activerehashing": {
+            "desc": activerehashing_desc,
+            "type": "select",
+            "can_edit": True,
+        },
         "aof-rewrite-incremental-fsync": {
-            "desc": wait_to_add,
+            "desc": aof_rewrite_incremental_fsync_desc,
             "type": "select",
             "can_edit": True,
         },
         "client-output-buffer-limit": {
-            "desc": wait_to_add,
+            "desc": client_output_buffer_limit_desc,
             "type": "text",
             "can_edit": True,
         },

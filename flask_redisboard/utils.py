@@ -2,8 +2,8 @@ import datetime
 import time
 from uuid import uuid4
 
-from flask import abort, current_app, session
 import redis
+from flask import abort, current_app, session
 
 
 def zset_getter(conn, key):
