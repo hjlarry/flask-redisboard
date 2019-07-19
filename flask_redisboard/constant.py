@@ -192,42 +192,74 @@ REPLICATION_CONFIG = OrderedDict(
         "slaveof": {"desc": slaveof_desc, "can_edit": False},
     }
 )
-wait_to_add = "wait to add"
 
-SECURITY_CONFIG = OrderedDict({"requirepass": {"desc": wait_to_add, "can_edit": False}})
+
+requirepass_desc = "Require clients to issue AUTH <PASSWORD> before processing any other commands. This might be useful in environments in which you do not trust others with access to the host running redis-server."
+
+SECURITY_CONFIG = OrderedDict(
+    {"requirepass": {"desc": requirepass_desc, "can_edit": False}}
+)
+
+
+maxclients_desc = "Set the max number of connected clients at the same time.By default this limit is set to 10000 clients."
 
 CLIENTS_CONFIG = OrderedDict(
-    {"maxclients": {"desc": wait_to_add, "type": "number", "can_edit": True}}
+    {"maxclients": {"desc": maxclients_desc, "type": "number", "can_edit": True}}
 )
+
+
+maxmemory_desc = "Set a memory usage limit to the specified amount of bytes. When the memory limit is reached Redis will try to remove keys according to the eviction policy selected."
+maxmemory_samples_desc = "LRU, LFU and minimal TTL algorithms are not precise algorithms but approximated algorithms (in order to save memory), so you can tune it for speed or accuracy."
+maxmemory_policy_desc = "How Redis will select what to remove when maxmemory is reached. You can select among five behaviors."
 
 MEMORY_CONFIG = OrderedDict(
     {
-        "maxmemory": {"desc": wait_to_add, "type": "number", "can_edit": True},
-        "maxmemory-samples": {"desc": wait_to_add, "type": "number", "can_edit": True},
-        "maxmemory-policy": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "maxmemory": {"desc": maxmemory_desc, "type": "number", "can_edit": True},
+        "maxmemory-samples": {
+            "desc": maxmemory_samples_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+        "maxmemory-policy": {
+            "desc": maxmemory_policy_desc,
+            "type": "select",
+            "can_edit": True,
+        },
     }
 )
+
+
+lazyfree_lazy_eviction_desc = "Redis deletes objects independently of a user call On eviction, because of the maxmemory and maxmemory policy configurations, in order to make room for new data, without going over the specified memory limit."
+lazyfree_lazy_expire_desc = "Redis deletes objects independently of a user call because of expire. when a key with an associated time to live (see the EXPIRE command) must be deleted from memory."
+lazyfree_lazy_server_del_desc = "Redis deletes objects independently of a user call Because of a side effect of a command that stores data on a key that may already exist."
+slave_lazy_flush_desc = "Redis deletes objects independently of a user call During replication, when a slave performs a full resynchronization with its master, the content of the whole database is removed in order to load the RDB file just transfered."
 
 LAZY_FREEING_CONFIG = OrderedDict(
     {
         "lazyfree-lazy-eviction": {
-            "desc": wait_to_add,
+            "desc": lazyfree_lazy_eviction_desc,
             "type": "select",
             "can_edit": True,
         },
         "lazyfree-lazy-expire": {
-            "desc": wait_to_add,
+            "desc": lazyfree_lazy_expire_desc,
             "type": "select",
             "can_edit": True,
         },
         "lazyfree-lazy-server-del": {
-            "desc": wait_to_add,
+            "desc": lazyfree_lazy_server_del_desc,
             "type": "select",
             "can_edit": True,
         },
-        "slave-lazy-flush": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "slave-lazy-flush": {
+            "desc": slave_lazy_flush_desc,
+            "type": "select",
+            "can_edit": True,
+        },
     }
 )
+
+wait_to_add = "wait to add"
 
 APPEND_ONLY_MODE_CONFIG = OrderedDict(
     {
