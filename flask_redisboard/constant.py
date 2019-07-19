@@ -20,15 +20,13 @@ INFO_GROUPS = [
 ]
 
 
-logfile_desc = "You can specify the log file name.An empty string can be used to force Redis to log on the standard output. Note that if you use standard output for logging but daemonize, logs will be sent to /dev/null."
-pidfile_desc = "When redis is running as daemon it creates a pid file. Redis writes it where specified at startup and removes it at exit. You can set the path for pid file."
-databases_desc = "Set the number of databases.The default database is DB 0, you can select a different one on a per-connection basis using SELECT <dbid> where dbid is a number between 0 and 'databases'-1."
-daemonize_desc = "Use 'yes' if you want Redis to run as a daemon. By default Redis does not run as a daemon. Redis will write a pid file in /var/run/redis.pid when daemonized."
-loglevel_desc = "This config specifies the verbosity level.Debug is useful for development and testing as a lot of information is given.Verbose is selected to logs many rarely used info.Notice is used in production because it is moderately verbose.Warning as the name specifies logs only the very important messages"
-supervised_desc = "If you run Redis from upstart or systemd, Redis can interact with your supervision tree.If 'no' is selected then there will be no supervision interaction.If upstart is selected - signal upstart by putting Redis into SIGSTOP mode.If systemd is selected -signal systemd by writing READY=1 to $NOTIFY_SOCKET and If it is set to auto-detect upstart or systemd method based on UPSTART_JOB or NOTIFY_SOCKET environment variables."
-syslog_fac_desc = (
-    "Specifies the syslog facility. Must be USER or between LOCAL0-LOCAL7."
-)
+logfile_desc = "You can specify the log file name.An empty string can be used to force Redis to log on the standard output."
+pidfile_desc = "When redis is running as daemon it creates a pid file."
+databases_desc = "Set the number of databases."
+daemonize_desc = "Use 'yes' if you want Redis to run as a daemon. By default Redis does not run as a daemon. "
+loglevel_desc = "This config specifies the verbosity level.Debug is useful for development and testing as a lot of information is given."
+supervised_desc = "If you run Redis from upstart or systemd, Redis can interact with your supervision tree."
+syslog_facility_desc = "Specifies the syslog facility."
 
 
 GENERAL_CONFIG = OrderedDict(
@@ -39,21 +37,23 @@ GENERAL_CONFIG = OrderedDict(
         "daemonize": {"desc": daemonize_desc, "can_edit": False},
         "loglevel": {"desc": loglevel_desc, "type": "select", "can_edit": True},
         "supervised": {"desc": supervised_desc, "can_edit": False},
-        "syslog-facility": {"desc": syslog_fac_desc, "type": "text", "can_edit": True},
+        "syslog-facility": {
+            "desc": syslog_facility_desc,
+            "type": "text",
+            "can_edit": True,
+        },
     }
 )
 
 
-unixsocket_desc = "Specify the path for the Unix socket that will be used to listen for incoming connections.There is no default, so Redis will not listen on a unix socket when not specified."
-timeout_desc = (
-    "Close the connection after a client is idle for N seconds (0 to disable)."
-)
-port_desc = "Accept connections on the specified port, default is 6379 (IANA #815344). If port 0 is specified Redis will not listen on a TCP socket."
-tcp_backlog_desc = "In high requests-per-second environments you need an high backlog in order to avoid slow clients connections issues. Note that the Linux kernel will silently truncate it to the value of /proc/sys/net/core/somaxconn so make sure to raise both the value of somaxconn and tcp_max_syn_backlog in order to get the desired effect."
-tcp_keepalive_desc = "In absence of communication redis sends ACKs to clients to check for dead peers.This config specifies the time period used to send ACKs. To close the connection double the specified time is needed.Default is set to 300."
-protected_mode_desc = "Protected mode is a layer of security protection.By default protected mode is enabled.You should disable it only if you are sure you want clients from other hosts to connect to Redis even if no authentication is configured, nor a specific set of interfaces are explicitly listed using the bind directive."
-unixsocketperm_desc = "Specify the path for the Unix socket that will be used to listen for incoming connections. There is no default, so Redis will not listen on a unix socket when not specified."
-bind_desc = "By default, if no bind configuration directive is specified, Redis listens for connections from all the network interfaces available on the server.It is possible to listen to just one or multiple selected interfaces using the bind configuration directive, followed by one or more IP addresses."
+unixsocket_desc = "Specify the path for the Unix socket that will be used to listen for incoming connections."
+timeout_desc = "Close the connection after a client is idle for N seconds, 0 to disable.             "
+port_desc = "Accept connections on the specified port, default is 6379 (IANA #815344). "
+tcp_backlog_desc = "In high requests-per-second environments you need an high backlog in order to avoid slow clients connections issues."
+tcp_keepalive_desc = "In absence of communication redis sends ACKs to clients to check for dead peers.   "
+protected_mode_desc = "Protected mode is a layer of security protection.By default protected mode is enabled."
+unixsocketperm_desc = "Specify the path for the Unix socket that will be used to listen for incoming connections. "
+bind_desc = "By default, if no bind configuration directive is specified, Redis listens for connections from all the network interfaces available on the server."
 
 NETWORK_CONFIG = OrderedDict(
     {
@@ -77,11 +77,11 @@ NETWORK_CONFIG = OrderedDict(
 )
 
 dbfilename_desc = "The filename where to dump the database."
-stop_writes_on_bgsave_error_desc = "By default Redis will stop accepting writes if RDB snapshots are enabled and the latest background save failed. This will make you aware that data is not persisting on disk properly, otherwise chances are that no one will notice and some disaster will happen.If the background saving process will start working again Redis will automatically allow writes again.You can disable this so that Redis continue to work as usual even if there are problems with the disk."
-rdbcompression_desc = "This Compresses string objects using LZF when dump .rdb databases.By default it is set to yes.If you want to save some CPU then set it to no."
-rdbchecksum_desc = "Since version 5 of RDB a CRC64 checksum is placed at the end of the file. This makes the format more resistant to corruption but there is a performance hit to pay (around 10%) when saving and loading RDB files, so you can disable it for maximum performances.RDB files created with checksum disabled have a checksum of zero that will tell the loading code to skip the check."
-dir_desc = "The working directory.The DB will be written inside this directory, with the filename specified above using the 'dbfilename' configuration directive.The Append Only File will also be created inside this directory."
-save_desc = "Used for saving db on disk. The format is 'save <seconds><changes>'.Will save the DB if both the given number of seconds and the given number of write operations against the DB occurred."
+stop_writes_on_bgsave_error_desc = "By default Redis will stop accepting writes if RDB snapshots are enabled and the latest background save failed. "
+rdbcompression_desc = "This Compresses string objects using LZF when dump .rdb databases.By default it is set to yes."
+rdbchecksum_desc = "Since version 5 of RDB a CRC64 checksum is placed at the end of the file.          "
+dir_desc = "The working directory.The DB will be written inside this directory, with the filename specified above using the 'dbfilename' configuration directive."
+save_desc = "Used for saving db on disk. The format is 'save <seconds><changes>'."
 
 SNAPSHOTTING_CONFIG = OrderedDict(
     {
@@ -102,53 +102,97 @@ SNAPSHOTTING_CONFIG = OrderedDict(
     }
 )
 
-wait_to_add = "wait to add"
 
+masterauth_desc = "If the master is password protected it is possible to tell the slave to authenticate before starting the replication synchronization process, otherwise the master will refuse the slave request."
+slave_announce_ip_desc = "When port forwarding or Network Address Translation (NAT) is used, the slave may be actually reachable via different IP and port pairs. "
+repl_ping_slave_period_desc = "Slaves send PINGs to server in a predefined interval. It's possible to change this interval with the repl-ping-slave-period option.The default value is 10 seconds."
+repl_timeout_desc = "This config sets the replication timeout for 1.Bulk transfer I/O during SYNC from the point of view of slave,2.Master timeout from the point of view of slave and * Slave timeout from the point of view of masters."
+repl_backlog_size_desc = "The backlog is a buffer that accumulates slave data when slaves are disconnected for some time."
+repl_backlog_ttl_desc = "After a master has no longer connected slaves for some time, the backlog will be freed. "
+slave_priority_desc = "The slave priority is an integer number published by Redis in the INFO output.            "
+slave_announce_port_desc = "When port forwarding or Network Address Translation (NAT) is used, the slave may be actually reachable via different IP and port pairs."
+min_slaves_to_write_desc = "It is possible for a master to stop accepting writes if there are less than N slaves connected. setting this value to 0 disables the fature."
+min_slaves_max_lag_desc = "It is possible for a master to stop accepting writes if there are less than N slaves connected, having a lag less or equal than M seconds."
+repl_diskless_sync_delay_desc = "When diskless replication is enabled, it is possible to configure the delay the server waits in order to spawn the child that transfers the RDB via socket to the slaves."
+slave_serve_stale_data_desc = "This config is useful When a slave loses its connection with the master, or when the replication is still in progress. In this condition the slave can act in two different ways."
+slave_read_only_desc = "You can configure a slave instance to accept writes or not. Writing against a slave instance may be useful to store some ephemeral data but may also cause problems if clients are writing to it because of a misconfiguration."
+repl_disable_tcp_nodelay_desc = "If you select 'yes' Redis will use a smaller number of TCP packets and less bandwidth to send data to slaves. "
+repl_diskless_sync_desc = "When diskless replication is used, the master waits a configurable amount of time before starting the transfer of data in the hope that multiple slaves will arrive and the transfer can be parallelized."
+slaveof_desc = "Master-Slave replication. Use slaveof to make a Redis instance a copy of another Redis server.You need the master IP and master Port for this config."
 
 REPLICATION_CONFIG = OrderedDict(
     {
-        "masterauth": {"desc": wait_to_add, "can_edit": False},
-        "slave-announce-ip ": {"desc": wait_to_add, "type": "text", "can_edit": True},
+        "masterauth": {"desc": masterauth_desc, "can_edit": False},
+        "slave-announce-ip ": {
+            "desc": slave_announce_ip_desc,
+            "type": "text",
+            "can_edit": True,
+        },
         "repl-ping-slave-period ": {
-            "desc": wait_to_add,
+            "desc": repl_ping_slave_period_desc,
             "type": "number",
             "can_edit": True,
         },
-        "repl-timeout": {"desc": wait_to_add, "type": "number", "can_edit": True},
-        "repl-backlog-size": {"desc": wait_to_add, "type": "number", "can_edit": True},
-        "repl-backlog-ttl": {"desc": wait_to_add, "type": "number", "can_edit": True},
-        "slave-priority": {"desc": wait_to_add, "type": "number", "can_edit": True},
+        "repl-timeout": {"desc": repl_timeout_desc, "type": "number", "can_edit": True},
+        "repl-backlog-size": {
+            "desc": repl_backlog_size_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+        "repl-backlog-ttl": {
+            "desc": repl_backlog_ttl_desc,
+            "type": "number",
+            "can_edit": True,
+        },
+        "slave-priority": {
+            "desc": slave_priority_desc,
+            "type": "number",
+            "can_edit": True,
+        },
         "slave-announce-port": {
-            "desc": wait_to_add,
+            "desc": slave_announce_port_desc,
             "type": "number",
             "can_edit": True,
         },
         "min-slaves-to-write": {
-            "desc": wait_to_add,
+            "desc": min_slaves_to_write_desc,
             "type": "number",
             "can_edit": True,
         },
-        "min-slaves-max-lag": {"desc": wait_to_add, "type": "number", "can_edit": True},
+        "min-slaves-max-lag": {
+            "desc": min_slaves_max_lag_desc,
+            "type": "number",
+            "can_edit": True,
+        },
         "repl-diskless-sync-delay": {
-            "desc": wait_to_add,
+            "desc": repl_diskless_sync_delay_desc,
             "type": "number",
             "can_edit": True,
         },
         "slave-serve-stale-data": {
-            "desc": wait_to_add,
+            "desc": slave_serve_stale_data_desc,
             "type": "select",
             "can_edit": True,
         },
-        "slave-read-only": {"desc": wait_to_add, "type": "select", "can_edit": True},
+        "slave-read-only": {
+            "desc": slave_read_only_desc,
+            "type": "select",
+            "can_edit": True,
+        },
         "repl-disable-tcp-nodelay": {
-            "desc": wait_to_add,
+            "desc": repl_disable_tcp_nodelay_desc,
             "type": "select",
             "can_edit": True,
         },
-        "repl-diskless-sync": {"desc": wait_to_add, "type": "select", "can_edit": True},
-        "slaveof": {"desc": wait_to_add, "can_edit": False},
+        "repl-diskless-sync": {
+            "desc": repl_diskless_sync_desc,
+            "type": "select",
+            "can_edit": True,
+        },
+        "slaveof": {"desc": slaveof_desc, "can_edit": False},
     }
 )
+wait_to_add = "wait to add"
 
 SECURITY_CONFIG = OrderedDict({"requirepass": {"desc": wait_to_add, "can_edit": False}})
 
