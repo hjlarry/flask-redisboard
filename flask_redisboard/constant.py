@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-BADGE_CLASS = {
+BADGE_STYLE = {
     "string": "badge-info",
     "list": "badge-success",
     "set": "badge-warning",

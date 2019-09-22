@@ -24,7 +24,7 @@
 
 
 
-{% macro render_key_details(key_details,db, badge_class) %}
+{% macro render_key_details(key_details,db, badge_style) %}
 {% for key_detail in key_details %}
 <tr>
     <td class="p-0 text-center">
@@ -43,7 +43,7 @@
     </td>
     {% else %}
     <td class="text-center">
-        <div class="badge {{badge_class.get(key_detail.type)}}">{{ key_detail.type }}
+        <div class="badge {{badge_style.get(key_detail.type)}}">{{ key_detail.type }}
         </div>
     </td>
     <td class="text-center">{{ key_detail.encoding }}</td>

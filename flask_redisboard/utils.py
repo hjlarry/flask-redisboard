@@ -143,6 +143,7 @@ def _update_config(config_constants, config_value):
     for config_part, name in config_constants:
         for k, v in config_part.items():
             config_part[k]["value"] = config_value.get(k)
+    return config_value
 
 
 def _get_redis_conn_kwargs():

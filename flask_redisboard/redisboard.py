@@ -27,7 +27,7 @@ from .utils import (
     _get_redis_conn_kwargs,
     _get_current_user_redis_cli,
 )
-from .constant import BADGE_CLASS, INFO_GROUPS, CONFIG
+from .constant import BADGE_STYLE, INFO_GROUPS, CONFIG
 
 module = Blueprint(
     "redisboard",
@@ -167,8 +167,7 @@ def config():
         except Exception as e:
             return jsonify({"code": 999, "error": str(e)})
         return jsonify({"code": 0})
-    config_value = conn.config_get()
-    _update_config(CONFIG, config_value)
+    config_value = _update_config(CONFIG, conn.config_get())
     return render_template("config.html", config_file=server.config_file, config=CONFIG)
 
 
@@ -191,11 +190,11 @@ def db_detail(db=0):
             key_details=key_details,
             cursor=next_cursor,
             db=db,
-            badge_class=BADGE_CLASS,
+            badge_style=BADGE_STYLE,
             keypattern=keypattern,
         )
     macro = get_template_attribute("macros.html", "render_key_details")
-    html = macro(key_details, db, BADGE_CLASS)
+    html = macro(key_details, db, BADGE_STYLE)
     url = ""
     if next_cursor != 0:
         url = url_for(
