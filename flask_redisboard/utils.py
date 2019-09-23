@@ -27,7 +27,7 @@ def hash_getter(conn, key):
     return [(_decode_bytes(k), _decode_bytes(v)) for k, v in conn.hgetall(key).items()]
 
 
-VALUE_GETTERS = {
+VALUE_GETTER_FUNCS = {
     "list": list_getter,
     "string": lambda conn, key, *args: _decode_bytes(conn.get(key)),
     "set": set_getter,
@@ -36,7 +36,7 @@ VALUE_GETTERS = {
     "n/a": lambda conn, key, *args: (),
 }
 
-LENGTH_GETTERS = {
+LENGTH_GETTER_FUNCS = {
     b"list": lambda conn, key: conn.llen(key),
     b"string": lambda conn, key: conn.strlen(key),
     b"set": lambda conn, key: conn.scard(key),
@@ -55,7 +55,7 @@ def set_setter(conn, key, index, value):
     conn.sadd(key, *value)
 
 
-VALUE_SETTERS = {
+VALUE_SETTER_FUNCS = {
     "list": list_setter,
     "string": lambda conn, key, index, value: conn.set(key, value),
     "set": set_setter,
@@ -100,7 +100,7 @@ def _get_key_details(conn, db, key):
     conn.execute_command("SELECT", db)
     details = _get_key_info(conn, key)
     details["db"] = db
-    details["data"] = VALUE_GETTERS[details["type"]](conn, key)
+    details["data"] = VALUE_GETTER_FUNCS[details["type"]](conn, key)
     return details
 
 
@@ -113,7 +113,7 @@ def _get_key_info(conn, key):
         pipe.object("REFCOUNT", key)
         pipe.object("ENCODING", key)
         pipe.object("IDLETIME", key)
-        LENGTH_GETTERS[obj_type](pipe, key)
+        LENGTH_GETTER_FUNCS[obj_type](pipe, key)
         pipe.ttl(key)
 
         refcount, encoding, idletime, obj_length, obj_ttl = pipe.execute()

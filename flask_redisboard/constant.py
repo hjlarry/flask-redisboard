@@ -15,7 +15,7 @@ INFO_GROUPS = [
     "Persistence",
     "Stats",
     "Replication",
-    "Cpu",
+    "CPU",
     "Cluster",
 ]
 

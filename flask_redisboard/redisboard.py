@@ -21,7 +21,7 @@ from .utils import (
     _get_db_details,
     _get_key_details,
     _get_key_info,
-    VALUE_SETTERS,
+    VALUE_SETTER_FUNCS,
     _decode_bytes,
     _update_config,
     _get_redis_conn_kwargs,
@@ -208,11 +208,11 @@ def add_key(db):
     conn = server.connection
     conn.execute_command("SELECT", db)
     keyname = request.form.get("keyname")
-    typex = request.form.get("type")
+    type_ = request.form.get("type")
     index = request.form.get("index")
     value = request.form.get("value")
-    set_method = VALUE_SETTERS.get(typex)
-    set_method(conn, keyname, index, value)
+    set_fn = VALUE_SETTER_FUNCS.get(type_)
+    set_fn(conn, keyname, index, value)
     return redirect(url_for("redisboard.db_detail", db=db))
 
 
