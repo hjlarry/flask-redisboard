@@ -54,25 +54,9 @@ class RedisServer:
     def config_file(self):
         return self.connection.info("Server").get("config_file")
 
-    @property
-    def keyspace(self):
-        return self.connection.info("Keyspace")
-
-    @property
-    def memory(self):
-        return self.connection.info("Memory")
-
-    @property
-    def clients(self):
-        return self.connection.info("Clients")
-
-    @property
-    def stats(self):
-        return self.connection.info("Stats")
-
-    @property
-    def commandstats(self):
-        return self.connection.info("Commandstats")
+    def __getattr__(self, attr):
+        if attr in ("keyspace", "memory", "clients", "stats", "commandstats"):
+            return self.connection.info(attr)
 
     @property
     def databases(self):
