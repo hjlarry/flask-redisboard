@@ -67,12 +67,11 @@ VALUE_SETTER_FUNCS = {
 def _decode_bytes(value):
     if isinstance(value, bytes):
         try:
-            result = value.decode()
+            value = value.decode()
         except UnicodeDecodeError:
-            result = value
-    else:
-        result = value
-    return result
+            # some value may raise: "'utf-8' codec can't decode byte 0x80 in position 0: invalid start byte"
+            pass
+    return value
 
 
 def ttl_formatter(seconds):
