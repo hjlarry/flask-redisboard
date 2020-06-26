@@ -1,4 +1,4 @@
-from werkzeug import url_quote_plus
+from werkzeug.urls import url_quote_plus
 
 from .redisboard import module
 

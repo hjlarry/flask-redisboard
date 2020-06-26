@@ -15,8 +15,8 @@ from flask import (
     get_template_attribute,
 )
 
-from werkzeug import cached_property, url_quote_plus, url_unquote_plus
-
+from werkzeug.utils import cached_property 
+from werkzeug.urls import url_quote_plus, url_unquote_plus
 from .utils import (
     _get_db_details,
     _get_key_details,
