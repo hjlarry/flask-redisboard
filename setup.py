@@ -11,7 +11,7 @@ import pathlib
 
 import flask_redisboard
 
-current_dir = pathlib.Path(__file__) 
+current_dir = pathlib.Path(__file__).parent 
 with open(current_dir / 'README.md', encoding='utf-8') as f:
     long_description = f.read()
 
