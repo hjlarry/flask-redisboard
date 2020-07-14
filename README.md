@@ -21,6 +21,7 @@ Also support for factory pattern:
 ```
 from flask_redisboard import RedisBoardExtension
 from flask import Flask
+
 board = RedisBoardExtension()
 
 
