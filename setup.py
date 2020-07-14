@@ -7,46 +7,17 @@
     :license: MIT, see LICENSE for more details.
 """
 from setuptools import setup
+import pathlib
 
+import flask_redisboard
 
-long_description = """
-# flask-redisboard
-
-A flask extension to support user view and manage redis with beautiful interface.
-
-
-## Get Started
-
-Installation is easy:
-```
-$ pip install flask-redisboard
-```
-
-Initialize the extension:
-```
-from flask_redisboard import RedisBoardExtension
-...
-board = RedisBoardExtension(app)
-```
-
-Also support for factory pattern:
-```
-from flask_redisboard import RedisBoardExtension
-board = RedisBoardExtension()
-
-def create_app():
-    app = Flask(__name__)
-    ...
-    board.init_app(app)
-```
-
-Now, you can go to 127.0.0.1:5000/redisboard 
-"""
-
+current_dir = pathlib.Path(__file__) 
+with open(current_dir / 'README.md', encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name="Flask-Redisboard",
-    version="0.1.7",
+    version=flask_redisboard.__version__,
     url="https://github.com/hjlarry/flask-redisboard",
     license="MIT",
     author="hjlarry",
@@ -70,5 +41,10 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
+    entry_points={
+        'console_scripts': [
+            "redisboard=flask_redisboard.__main__:main",
+        ]
+    },
     python_requires='>=3.6',
 )
