@@ -4,6 +4,7 @@ from .redisboard import module
 
 __version__ = "0.1.8"
 
+
 class RedisBoardExtension:
     def __init__(self, app=None):
         self.app = app

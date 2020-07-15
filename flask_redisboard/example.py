@@ -1,7 +1,4 @@
-import sys
-
-sys.path.insert(0, ".")
-
+import click
 from flask import Flask, redirect
 from flask_redisboard import RedisBoardExtension
 
@@ -18,5 +15,8 @@ def index():
     return redirect("/redisboard/dashboard", code=302)
 
 
-if __name__ == "__main__":
-    app.run(port=6999)
+@click.command()
+@click.option("--port", default=6999, help="example site port")
+def main(port):
+    click.echo(f"redisboard example is run on port: {port}")
+    app.run(port=port)

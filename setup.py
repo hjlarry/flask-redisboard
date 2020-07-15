@@ -11,8 +11,8 @@ import pathlib
 
 import flask_redisboard
 
-current_dir = pathlib.Path(__file__).parent 
-with open(current_dir / 'README.md', encoding='utf-8') as f:
+current_dir = pathlib.Path(__file__).parent
+with open(current_dir / "README.md", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
@@ -41,10 +41,6 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    entry_points={
-        'console_scripts': [
-            "redisboard=flask_redisboard.__main__:main",
-        ]
-    },
-    python_requires='>=3.6',
+    entry_points={"console_scripts": ["redisboard=flask_redisboard.example:main",]},
+    python_requires=">=3.6",
 )

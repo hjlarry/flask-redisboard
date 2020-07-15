@@ -15,7 +15,7 @@ from flask import (
     get_template_attribute,
 )
 
-from werkzeug.utils import cached_property 
+from werkzeug.utils import cached_property
 from werkzeug.urls import url_quote_plus, url_unquote_plus
 from .utils import (
     _get_db_details,
@@ -441,4 +441,3 @@ def command():
     elif isinstance(result, Iterable):
         result = [r.decode() for r in result]
     return jsonify({"code": 0, "data": result})
-
