@@ -9,15 +9,13 @@
 from setuptools import setup
 import pathlib
 
-import flask_redisboard
-
 current_dir = pathlib.Path(__file__).parent
 with open(current_dir / "README.md", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
     name="Flask-Redisboard",
-    version=flask_redisboard.__version__,
+    version="0.1.9",
     url="https://github.com/hjlarry/flask-redisboard",
     license="MIT",
     author="hjlarry",

@@ -2,8 +2,6 @@ from werkzeug.urls import url_quote_plus
 
 from .redisboard import module
 
-__version__ = "0.1.8"
-
 
 class RedisBoardExtension:
     def __init__(self, app=None):
