@@ -10,6 +10,13 @@ Installation is easy:
 $ pip install flask-redisboard
 ```
 
+### Try to run
+Just type command:
+```
+$ redisboard
+```
+
+### Run in flask
 Initialize the extension:
 ```
 from flask_redisboard import RedisBoardExtension
