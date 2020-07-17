@@ -1,29 +1,31 @@
 import datetime
 import time
+from typing import List, Union, Tuple, Dict
 from uuid import uuid4
 
-import redis
+from redis import Redis
+from redis.exceptions import ResponseError
 from flask import abort, current_app, session
 
 
-def zset_getter(conn, key):
+def zset_getter(conn: Redis, key: str) -> List:
     result = conn.zrange(key, start=0, end=-1, withscores=True)
     result = [(_decode_bytes(item[0]), item[1]) for item in result]
     return result
 
 
-def set_getter(conn, key):
+def set_getter(conn: Redis, key: str) -> str:
     return ",   ".join([_decode_bytes(value) for value in conn.smembers(key)])
 
 
-def list_getter(conn, key):
+def list_getter(conn: Redis, key: str) -> List:
     return [
         (index, _decode_bytes(value))
         for index, value in enumerate(conn.lrange(key, start=0, end=-1))
     ]
 
 
-def hash_getter(conn, key):
+def hash_getter(conn: Redis, key: str) -> List:
     return [(_decode_bytes(k), _decode_bytes(v)) for k, v in conn.hgetall(key).items()]
 
 
@@ -45,12 +47,12 @@ LENGTH_GETTER_FUNCS = {
 }
 
 
-def list_setter(conn, key, index, value):
+def list_setter(conn: Redis, key: str, index: str, value: str) -> None:
     value = [item.strip() for item in value.split(",")]
     conn.lpush(key, *value)
 
 
-def set_setter(conn, key, index, value):
+def set_setter(conn: Redis, key: str, index: str, value: str) -> None:
     value = [item.strip() for item in value.split(",")]
     conn.sadd(key, *value)
 
@@ -64,7 +66,7 @@ VALUE_SETTER_FUNCS = {
 }
 
 
-def _decode_bytes(value):
+def _decode_bytes(value: Union[str, bytes]) -> Union[str, bytes]:
     if isinstance(value, bytes):
         try:
             value = value.decode()
@@ -74,7 +76,7 @@ def _decode_bytes(value):
     return value
 
 
-def ttl_formatter(seconds):
+def ttl_formatter(seconds: int) -> str:
     # redis-py under 3.0, if not set expired, the ttl return none.
     if seconds == -1 or seconds is None:
         return "forever"
@@ -87,7 +89,9 @@ def ttl_formatter(seconds):
         return f"{hh}hour,{mm}min,{ss}seconds"
 
 
-def _get_db_details(conn, db, cursor=0, keypattern=None, count=20):
+def _get_db_details(
+    conn: Redis, db: int, cursor: int = 0, keypattern: str = None, count: int = 20
+) -> Tuple[List, int]:
     conn.execute_command("SELECT", db)
     keypattern = f"*{keypattern}*" if keypattern else None
     cursor, keys = conn.scan(cursor=cursor, match=keypattern, count=count)
@@ -95,7 +99,7 @@ def _get_db_details(conn, db, cursor=0, keypattern=None, count=20):
     return key_details, cursor
 
 
-def _get_key_details(conn, db, key):
+def _get_key_details(conn: Redis, db: int, key: str) -> Dict:
     conn.execute_command("SELECT", db)
     details = _get_key_info(conn, key)
     details["db"] = db
@@ -103,7 +107,7 @@ def _get_key_details(conn, db, key):
     return details
 
 
-def _get_key_info(conn, key):
+def _get_key_info(conn: Redis, key: str) -> Dict:
     obj_type = conn.type(key)
     if obj_type == b"none":
         abort(404)
@@ -116,7 +120,7 @@ def _get_key_info(conn, key):
         pipe.ttl(key)
 
         refcount, encoding, idletime, obj_length, obj_ttl = pipe.execute()
-    except redis.exceptions.ResponseError as exc:
+    except ResponseError as exc:
         return {
             "type": obj_type,
             "name": key,
@@ -138,14 +142,14 @@ def _get_key_info(conn, key):
     }
 
 
-def _update_config(config_constants, config_value):
+def _update_config(config_constants: Tuple, config_value: Dict) -> Dict:
     for config_part, name in config_constants:
         for k, v in config_part.items():
             config_part[k]["value"] = config_value.get(k)
     return config_value
 
 
-def _get_redis_conn_kwargs():
+def _get_redis_conn_kwargs() -> Dict:
     return dict(
         host=current_app.config["REDIS_HOST"],
         port=current_app.config["REDIS_PORT"],
@@ -169,26 +173,26 @@ user_redis_cli = {}
 clear_number = 1
 
 
-def _clear_redis_connect():
+def _clear_redis_connect() -> None:
     for k, v in user_redis_cli.items():
         if time.time() - v[1] > 60 * 60:
             v[0].connection_pool.disconnect()
             del user_redis_cli[k]
 
 
-def _get_current_user_redis_cli():
+def _get_current_user_redis_cli() -> Redis:
     if "redis_cli" in session:
         client, last_connect_time = user_redis_cli.get(
             session["redis_cli"], (None, None)
         )
         if client is None:
-            client = redis.Redis(**_get_redis_conn_kwargs())
+            client = Redis(**_get_redis_conn_kwargs())
         # update last conn time
         user_redis_cli[session["redis_cli"]] = client, time.time()
     else:
         user_id = str(uuid4())
         session["redis_cli"] = user_id
-        client = redis.Redis(**_get_redis_conn_kwargs())
+        client = Redis(**_get_redis_conn_kwargs())
         user_redis_cli[user_id] = client, time.time()
 
     global clear_number
