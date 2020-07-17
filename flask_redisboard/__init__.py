@@ -1,16 +1,17 @@
+from flask import Flask
 from werkzeug.urls import url_quote_plus
 
 from .redisboard import module
 
 
 class RedisBoardExtension:
-    def __init__(self, app=None):
+    def __init__(self, app: Flask = None) -> None:
         self.app = app
 
         if app is not None:
             self.init_app(app)
 
-    def init_app(self, app):
+    def init_app(self, app: Flask) -> None:
         for k, v in self._default_config().items():
             app.config.setdefault(k, v)
 
@@ -22,7 +23,7 @@ class RedisBoardExtension:
         app.jinja_env.filters["quote_plus"] = url_quote_plus
         app.register_blueprint(module, url_prefix="/redisboard")
 
-    def _default_config(self):
+    def _default_config(self) -> None:
         return {
             "REDIS_HOST": "localhost",
             "REDIS_PORT": 6379,
