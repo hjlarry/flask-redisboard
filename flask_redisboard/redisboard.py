@@ -1,11 +1,12 @@
 from datetime import datetime
+from typing import Dict, List, Any
 
 from collections.abc import Iterable
 
 import redis
 from flask import (
     Blueprint,
-    abort,
+    Response,
     current_app,
     jsonify,
     redirect,
@@ -39,11 +40,11 @@ module = Blueprint(
 
 class RedisServer:
     @cached_property
-    def connection(self):
+    def connection(self) -> redis.Redis:
         return redis.Redis(**_get_redis_conn_kwargs())
 
     @property
-    def info(self):
+    def info(self) -> Dict:
         pipe = self.connection.pipeline()
         for part in INFO_GROUPS:
             pipe.info(part)
@@ -51,18 +52,18 @@ class RedisServer:
         return dict(zip(INFO_GROUPS, results))
 
     @cached_property
-    def config_file(self):
+    def config_file(self) -> str:
         return self.connection.info("Server").get("config_file")
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: Any) -> Any:
         if attr in ("keyspace", "memory", "clients", "stats", "commandstats"):
             return self.connection.info(attr)
 
     @property
-    def databases(self):
+    def databases(self) -> List:
         return [item[2:] for item in self.keyspace.keys()]
 
-    def slowlog_get(self, limit=None):
+    def slowlog_get(self, limit: int = None) -> Dict:
         try:
             count = limit if limit else current_app.config["REDISBOARD_SLOWLOG_LEN"]
             for slowlog in self.connection.slowlog_get(count):
@@ -81,22 +82,22 @@ server = RedisServer()
 
 
 @module.context_processor
-def inject_param():
+def inject_param() -> Dict:
     return {"databases": server.databases}
 
 
 @module.errorhandler(Exception)
-def handle_exception(error):
+def handle_exception(error: Exception) -> Response:
     return jsonify({"code": 999, "error": str(error)})
 
 
 @module.route("/")
-def home():
+def home() -> Response:
     return redirect(url_for("redisboard.dashboard"))
 
 
 @module.route("/dashboard/")
-def dashboard():
+def dashboard() -> Response:
     total_keys = 0
     for k, v in server.keyspace.items():
         total_keys += v["keys"]
@@ -111,7 +112,7 @@ def dashboard():
 
 
 @module.route("/dashboard_api/")
-def dashboard_api():
+def dashboard_api() -> Response:
     cmd_per_sec = server.stats.get("instantaneous_ops_per_sec")
     memory = server.memory.get("used_memory") / 1024 / 1024
     network_input = server.stats.get("instantaneous_input_kbps")
@@ -127,7 +128,7 @@ def dashboard_api():
 
 
 @module.route("/info/")
-def info():
+def info() -> Response:
     return render_template(
         "serverinfo.html",
         basic_info=server.info,
@@ -138,7 +139,7 @@ def info():
 
 
 @module.route("/config/", methods=["GET", "POST"])
-def config():
+def config() -> Response:
     conn = server.connection
     if request.method == "POST":
         value = ""
@@ -156,8 +157,8 @@ def config():
 
 
 @module.route("/db/")
-@module.route("/db/<db>/")
-def db_detail(db=0):
+@module.route("/db/<int:db>/")
+def db_detail(db: int = 0) -> Response:
     db_summary = server.keyspace.get(f"db{db}", dict())
     cursor = request.args.get("cursor", type=int, default=0)
     keypattern = request.args.get("keypattern", default="")
@@ -187,8 +188,8 @@ def db_detail(db=0):
     return jsonify({"code": 0, "html": html, "data": url})
 
 
-@module.route("/db/<db>/addkey", methods=["POST"])
-def add_key(db):
+@module.route("/db/<int:db>/addkey", methods=["POST"])
+def add_key(db: int) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     keyname = request.form.get("keyname")
@@ -200,8 +201,8 @@ def add_key(db):
     return redirect(url_for("redisboard.db_detail", db=db))
 
 
-@module.route("/db/<db>/batchttl", methods=["POST"])
-def batch_set_ttl(db):
+@module.route("/db/<int:db>/batchttl", methods=["POST"])
+def batch_set_ttl(db: int) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     pipe = conn.pipeline()
@@ -216,8 +217,8 @@ def batch_set_ttl(db):
     return jsonify({"code": 0, "data": url_for("redisboard.db_detail", db=db)})
 
 
-@module.route("/db/<db>/batchdel", methods=["POST"])
-def batch_delete_keys(db):
+@module.route("/db/<int:db>/batchdel", methods=["POST"])
+def batch_delete_keys(db: int) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     keys = request.json.get("keys", [])
@@ -225,16 +226,16 @@ def batch_delete_keys(db):
     return jsonify({"code": 0, "data": url_for("redisboard.db_detail", db=db)})
 
 
-@module.route("/db/<db>/flush", methods=["DELETE"])
-def db_flush(db):
+@module.route("/db/<int:db>/flush", methods=["DELETE"])
+def db_flush(db: int) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     conn.flushdb()
     return jsonify({"code": 0, "data": url_for("redisboard.db_detail", db=db)})
 
 
-@module.route("/db/<db>/key/<key>/del", methods=["DELETE"])
-def key_delete(db, key):
+@module.route("/db/<int:db>/key/<key>/del", methods=["DELETE"])
+def key_delete(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     key = url_unquote_plus(key)
@@ -242,8 +243,8 @@ def key_delete(db, key):
     return jsonify({"code": 0, "data": url_for("redisboard.db_detail", db=db)})
 
 
-@module.route("/db/<db>/<key>/rename", methods=["POST"])
-def key_rename(db, key):
+@module.route("/db/<int:db>/<key>/rename", methods=["POST"])
+def key_rename(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     key = url_unquote_plus(key)
@@ -259,8 +260,8 @@ def key_rename(db, key):
     )
 
 
-@module.route("/db/<db>/<key>/ttl", methods=["POST"])
-def key_set_ttl(db, key):
+@module.route("/db/<int:db>/<key>/ttl", methods=["POST"])
+def key_set_ttl(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -274,8 +275,8 @@ def key_set_ttl(db, key):
     )
 
 
-@module.route("/db/<db>/<key>/list_add", methods=["POST"])
-def list_add_value(db, key):
+@module.route("/db/<int:db>/<key>/list_add", methods=["POST"])
+def list_add_value(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -289,8 +290,8 @@ def list_add_value(db, key):
     )
 
 
-@module.route("/db/<db>/<key>/list_edit", methods=["POST"])
-def list_edit_value(db, key):
+@module.route("/db/<int:db>/<key>/list_edit", methods=["POST"])
+def list_edit_value(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -299,8 +300,8 @@ def list_edit_value(db, key):
     return jsonify({"code": 0})
 
 
-@module.route("/db/<db>/<key>/list_rem", methods=["POST"])
-def list_rem_value(db, key):
+@module.route("/db/<int:db>/<key>/list_rem", methods=["POST"])
+def list_rem_value(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -311,8 +312,8 @@ def list_rem_value(db, key):
     )
 
 
-@module.route("/db/<db>/<key>/hash_add", methods=["POST"])
-def hash_add_value(db, key):
+@module.route("/db/<int:db>/<key>/hash_add", methods=["POST"])
+def hash_add_value(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -327,8 +328,8 @@ def hash_add_value(db, key):
     )
 
 
-@module.route("/db/<db>/<key>/hash_edit", methods=["POST"])
-def hash_edit_value(db, key):
+@module.route("/db/<int:db>/<key>/hash_edit", methods=["POST"])
+def hash_edit_value(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -336,8 +337,8 @@ def hash_edit_value(db, key):
     return jsonify({"code": 0})
 
 
-@module.route("/db/<db>/<key>/hash_rem", methods=["POST"])
-def hash_rem_value(db, key):
+@module.route("/db/<int:db>/<key>/hash_rem", methods=["POST"])
+def hash_rem_value(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -348,7 +349,7 @@ def hash_rem_value(db, key):
 
 
 @module.route("/db/<db>/<key>/set_add", methods=["POST"])
-def set_add_value(db, key):
+def set_add_value(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -361,8 +362,8 @@ def set_add_value(db, key):
     )
 
 
-@module.route("/db/<db>/<key>/set_rem", methods=["POST"])
-def set_rem_value(db, key):
+@module.route("/db/<int:db>/<key>/set_rem", methods=["POST"])
+def set_rem_value(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -374,8 +375,8 @@ def set_rem_value(db, key):
     )
 
 
-@module.route("/db/<db>/<key>/zset_edit", methods=["POST"])
-def zset_edit_score(db, key):
+@module.route("/db/<int:db>/<key>/zset_edit", methods=["POST"])
+def zset_edit_score(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -384,8 +385,8 @@ def zset_edit_score(db, key):
     return jsonify({"code": 0})
 
 
-@module.route("/db/<db>/<key>/zset_add", methods=["POST"])
-def zset_add_value(db, key):
+@module.route("/db/<int:db>/<key>/zset_add", methods=["POST"])
+def zset_add_value(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -397,8 +398,8 @@ def zset_add_value(db, key):
     )
 
 
-@module.route("/db/<db>/<key>/zset_rem", methods=["POST"])
-def zset_rem_member(db, key):
+@module.route("/db/<int:db>/<key>/zset_rem", methods=["POST"])
+def zset_rem_member(db: int, key: str) -> Response:
     conn = server.connection
     conn.execute_command("SELECT", db)
     ori_key = url_unquote_plus(key)
@@ -417,8 +418,8 @@ def zset_rem_member(db, key):
     )
 
 
-@module.route("/db/<db>/<key>", methods=["GET", "POST"])
-def key_detail(db, key):
+@module.route("/db/<int:db>/<key>", methods=["GET", "POST"])
+def key_detail(db: int, key: str) -> Response:
     conn = server.connection
     key = url_unquote_plus(key)
     if request.method == "POST":
@@ -430,7 +431,7 @@ def key_detail(db, key):
 
 
 @module.route("/command/", methods=["GET", "POST"])
-def command():
+def command() -> Response:
     client = _get_current_user_redis_cli()
     if request.method == "GET":
         return render_template("command.html")

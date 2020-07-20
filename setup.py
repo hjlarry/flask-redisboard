@@ -15,7 +15,7 @@ with open(current_dir / "README.md", encoding="utf-8") as f:
 
 setup(
     name="Flask-Redisboard",
-    version="0.1.9",
+    version="0.2.0",
     url="https://github.com/hjlarry/flask-redisboard",
     license="MIT",
     author="hjlarry",
