@@ -16,7 +16,8 @@ def index() -> Response:
 
 
 @click.command()
+@click.option("--host", default="127.0.0.1", help="example site host")
 @click.option("--port", default=6999, help="example site port")
-def main(port: int) -> None:
+def main(host: str, port: int) -> None:
     click.echo(f"redisboard example is run on port: {port}")
-    app.run(port=port)
+    app.run(host=host, port=port)
