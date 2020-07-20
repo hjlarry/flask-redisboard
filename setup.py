@@ -12,10 +12,13 @@ import pathlib
 current_dir = pathlib.Path(__file__).parent
 with open(current_dir / "README.md", encoding="utf-8") as f:
     long_description = f.read()
+with open(current_dir / "flask_redisboard" / "VERSION", encoding="utf-8") as f:
+    version = f.read().strip()
+
 
 setup(
     name="Flask-Redisboard",
-    version="0.2.0",
+    version=version,
     url="https://github.com/hjlarry/flask-redisboard",
     license="MIT",
     author="hjlarry",
