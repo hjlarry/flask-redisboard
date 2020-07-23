@@ -22,6 +22,6 @@ def create_app() -> Flask:
 @click.option("--host", default="127.0.0.1", help="example site host")
 @click.option("--port", default=6999, help="example site port")
 def main(host: str, port: int) -> None:
-    click.echo(f"redisboard example is run on: http://{host}:{port}")
+    click.echo(f"redisboard example site is running on: http://{host}:{port}")
     app = create_app()
     app.run(host=host, port=port)
