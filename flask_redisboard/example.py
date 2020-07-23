@@ -1,5 +1,5 @@
 import click
-from flask import Flask, redirect, Response
+from flask import Flask, redirect, Response, url_for
 from flask_redisboard import RedisBoardExtension
 
 
@@ -13,7 +13,7 @@ def create_app() -> Flask:
 
     @app.route("/")
     def index() -> Response:
-        return redirect("/redisboard/dashboard", code=302)
+        return redirect(url_for("redisboard.dashboard"))
 
     return app
 
