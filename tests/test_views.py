@@ -179,6 +179,8 @@ def test_list(client):
         "/redisboard/db/2/addkey", data=dict(type="list", keyname="test_list"),
     )
     assert rv.status_code == 200
+
+    # test add multi list key
     rv = client.post(
         "/redisboard/db/2/test_list/list_add", data=dict(value="lista0", position=-1),
     )
@@ -189,18 +191,16 @@ def test_list(client):
     )
     assert rv.status_code == 200
     assert rv.get_json()["code"] == 0
-
     rv = client.get("/redisboard/db/2/test_list")
     assert b"listb1" in rv.data
 
+    # test edit and remove list key
     rv = client.post(
         "/redisboard/db/2/test_list/list_edit", data=dict(name=0, value="listc2")
     )
     assert rv.get_json()["code"] == 0
-
     rv = client.post("/redisboard/db/2/test_list/list_rem", data=dict(value="lista0"))
     assert rv.get_json()["code"] == 0
-
     rv = client.get("/redisboard/db/2/test_list")
     assert b"listc2" in rv.data
     assert b"lista0" not in rv.data
@@ -209,3 +209,45 @@ def test_list(client):
     rv = client.delete("/redisboard/db/2/key/test_list/del")
     assert rv.get_json()["code"] == 0
 
+
+def test_hash(client):
+    rv = client.post(
+        "/redisboard/db/2/addkey", data=dict(type="hash", keyname="test_hash"),
+    )
+    assert rv.status_code == 200
+
+    # test add hash key
+    rv = client.post(
+        "/redisboard/db/2/test_hash/hash_add",
+        data=dict(index="hashkey", value="hashvalue"),
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
+    rv = client.post(
+        "/redisboard/db/2/test_hash/hash_add",
+        data=dict(index="hashkey", value="hashvalue"),
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 1  # add exist key should error code 1
+    rv = client.get("/redisboard/db/2/test_hash")
+    assert b"hashkey" in rv.data
+    assert b"hashvalue" in rv.data
+
+    # test edit hash key
+    rv = client.post(
+        "/redisboard/db/2/test_hash/hash_edit",
+        data=dict(name="hashkey", value="hash_edited_value"),
+    )
+    assert rv.get_json()["code"] == 0
+    rv = client.get("/redisboard/db/2/test_hash")
+    assert b"hashvalue" not in rv.data
+    assert b"hash_edited_value" in rv.data
+
+    # test remove hash key
+    rv = client.post("/redisboard/db/2/test_hash/hash_rem", data=dict(index="hashkey"))
+    assert rv.get_json()["code"] == 0
+    rv = client.get("/redisboard/db/2/test_list")
+    assert b"hashkey" not in rv.data
+
+    rv = client.delete("/redisboard/db/2/key/test_hash/del")
+    assert rv.get_json()["code"] == 0
