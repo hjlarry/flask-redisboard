@@ -1,3 +1,6 @@
+import json
+
+
 def test_home_redirect(client):
     rv = client.get("/")
     assert rv.status_code == 302
@@ -46,7 +49,7 @@ def test_db(client):
     rv = client.get("/redisboard/db/?cursor=1")
     res = rv.get_json()
     assert res["code"] == 0
-    assert "/redisboard/db/" in res["data"]
+    assert "/redisboard/db/" in res["data"] or res["data"] is ""
 
 
 def test_add_and_get_key(client):
@@ -132,3 +135,34 @@ def test_set_ttl_key(client):
     rv = client.get("/redisboard/db/2/testttl")
     assert rv.status_code == 200
     assert b"forever" in rv.data
+
+
+def test_batch_set_ttl(client):
+    rv = client.post(
+        "/redisboard/db/2/batchttl",
+        data=json.dumps(dict(keys=["a", "b", "c"], ttl=36000)),
+        content_type="application/json",
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
+
+
+def test_batch_delete(client):
+    rv = client.post(
+        "/redisboard/db/2/addkey",
+        data=dict(type="string", keyname="testdel1", value="0"),
+    )
+    assert rv.status_code == 302
+    rv = client.post(
+        "/redisboard/db/2/addkey",
+        data=dict(type="string", keyname="testdel2", value="0"),
+    )
+    assert rv.status_code == 302
+    rv = client.post(
+        "/redisboard/db/2/batchdel",
+        data=json.dumps(dict(keys=["testdel1", "testdel2"])),
+        content_type="application/json",
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
+
