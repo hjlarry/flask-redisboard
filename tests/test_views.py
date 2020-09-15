@@ -145,6 +145,13 @@ def test_batch_set_ttl(client):
     )
     assert rv.status_code == 200
     assert rv.get_json()["code"] == 0
+    rv = client.post(
+        "/redisboard/db/2/batchttl",
+        data=json.dumps(dict(keys=["a", "b", "c"], ttl=-1)),
+        content_type="application/json",
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
 
 
 def test_batch_delete(client):
@@ -164,5 +171,41 @@ def test_batch_delete(client):
         content_type="application/json",
     )
     assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
+
+
+def test_list(client):
+    rv = client.post(
+        "/redisboard/db/2/addkey", data=dict(type="list", keyname="test_list"),
+    )
+    assert rv.status_code == 200
+    rv = client.post(
+        "/redisboard/db/2/test_list/list_add", data=dict(value="lista0", position=-1),
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
+    rv = client.post(
+        "/redisboard/db/2/test_list/list_add", data=dict(value="listb1", position=0)
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
+
+    rv = client.get("/redisboard/db/2/test_list")
+    assert b"listb1" in rv.data
+
+    rv = client.post(
+        "/redisboard/db/2/test_list/list_edit", data=dict(name=0, value="listc2")
+    )
+    assert rv.get_json()["code"] == 0
+
+    rv = client.post("/redisboard/db/2/test_list/list_rem", data=dict(value="lista0"))
+    assert rv.get_json()["code"] == 0
+
+    rv = client.get("/redisboard/db/2/test_list")
+    assert b"listc2" in rv.data
+    assert b"lista0" not in rv.data
+    assert b"listb1" not in rv.data
+
+    rv = client.delete("/redisboard/db/2/key/test_list/del")
     assert rv.get_json()["code"] == 0
 
