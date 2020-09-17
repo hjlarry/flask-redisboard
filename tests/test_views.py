@@ -251,3 +251,30 @@ def test_hash(client):
 
     rv = client.delete("/redisboard/db/2/key/test_hash/del")
     assert rv.get_json()["code"] == 0
+
+
+def test_set(client):
+    rv = client.post(
+        "/redisboard/db/2/addkey", data=dict(type="set", keyname="test_set"),
+    )
+    assert rv.status_code == 200
+
+    # test add set key
+    rv = client.post(
+        "/redisboard/db/2/test_set/set_add", data=dict(value="224,123,224,345"),
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
+    rv = client.get("/redisboard/db/2/test_set")
+    assert b"224" in rv.data
+    assert b"345" in rv.data
+
+    # test remove set key
+    rv = client.post("/redisboard/db/2/test_set/set_rem", data=dict(value="224,123"))
+    assert rv.get_json()["code"] == 0
+    rv = client.get("/redisboard/db/2/test_set")
+    assert b"224" not in rv.data
+    assert b"123" not in rv.data
+
+    rv = client.delete("/redisboard/db/2/key/test_set/del")
+    assert rv.get_json()["code"] == 0
