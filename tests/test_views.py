@@ -278,3 +278,54 @@ def test_set(client):
 
     rv = client.delete("/redisboard/db/2/key/test_set/del")
     assert rv.get_json()["code"] == 0
+
+
+def test_zset(client):
+    rv = client.post(
+        "/redisboard/db/2/addkey", data=dict(type="zset", keyname="test_zset"),
+    )
+    assert rv.status_code == 200
+
+    # test add zset key
+    rv = client.post(
+        "/redisboard/db/2/test_zset/zset_add", data=dict(member="abc", score=3.1415926),
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
+    rv = client.post(
+        "/redisboard/db/2/test_zset/zset_add", data=dict(member="def", score=3.1415927),
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
+    rv = client.post(
+        "/redisboard/db/2/test_zset/zset_add", data=dict(member="hjk", score=3.1415928),
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
+    rv = client.post(
+        "/redisboard/db/2/test_zset/zset_add", data=dict(member="lmn", score=2.1234),
+    )
+    assert rv.status_code == 200
+    assert rv.get_json()["code"] == 0
+    rv = client.get("/redisboard/db/2/test_zset")
+    assert b"3.1415926" in rv.data
+    assert b"3.1415927" in rv.data
+
+    # test edit and remove zset key
+    rv = client.post(
+        "/redisboard/db/2/test_zset/zset_edit", data=dict(name="abc", value=4.2345)
+    )
+    assert rv.get_json()["code"] == 0
+    rv = client.post("/redisboard/db/2/test_zset/zset_rem", data=dict(min=3.0, max=4.0))
+    assert rv.get_json()["code"] == 0
+    rv = client.post("/redisboard/db/2/test_zset/zset_rem", data=dict(member="lmn"))
+    assert rv.get_json()["code"] == 0
+    rv = client.get("/redisboard/db/2/test_zset")
+    assert b"3.1415926" not in rv.data
+    assert b"3.1415927" not in rv.data
+    assert b"3.1415928" not in rv.data
+    assert b"2.1234" not in rv.data
+    assert b"4.2345" in rv.data
+
+    rv = client.delete("/redisboard/db/2/key/test_zset/del")
+    assert rv.get_json()["code"] == 0
