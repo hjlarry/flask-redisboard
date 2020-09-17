@@ -329,3 +329,11 @@ def test_zset(client):
 
     rv = client.delete("/redisboard/db/2/key/test_zset/del")
     assert rv.get_json()["code"] == 0
+
+
+def test_command(client):
+    rv = client.get("/redisboard/command/")
+    assert b"Command Mode" in rv.data
+
+    rv = client.post("/redisboard/command/", data=dict(command="ping"))
+    assert rv.get_json()["code"] == 0
